@@ -49,7 +49,6 @@ namespace GDTB.EditorPrefsEditor
         private void OnGUI()
         {
             UpdateLayoutingSizes();
-            CheckChangesToList();
             GUI.skin = _epEditorSkin;
 
             DrawPrefs();

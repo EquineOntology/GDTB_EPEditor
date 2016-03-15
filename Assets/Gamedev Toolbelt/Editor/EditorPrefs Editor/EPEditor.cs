@@ -159,7 +159,7 @@ namespace GDTB.EditorPrefsEditor
             // Open edit window on click.
             if (GUI.Button(editRect, editButton))
             {
-                //GDTB_EPEditorEdit.Init(aPref);
+                EPEditorEdit.Init(aPref);
             }
 
             // "Complete" button.

@@ -143,6 +143,7 @@ namespace GDTB.EditorPrefsEditor
                                     EPEditor.Prefs.Add(new EditorPref((EditorPrefType)_type, _key, _stringValue));
                                     break;
                             }
+                            EPEditorIO.WritePrefsToFile();
                             EditorWindow.GetWindow(typeof(EPEditorAdd)).Close();
                             EditorWindow.GetWindow(typeof(EPEditor)).Repaint();
                         }

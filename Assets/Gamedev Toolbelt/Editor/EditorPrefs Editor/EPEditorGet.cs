@@ -98,6 +98,7 @@ namespace GDTB.EditorPrefsEditor
                                     break;
                             }
                             AddEditorPref();
+                            EPEditorIO.WritePrefsToFile();
                             EditorWindow.GetWindow(typeof(EPEditorGet)).Close();
                         }
                         else

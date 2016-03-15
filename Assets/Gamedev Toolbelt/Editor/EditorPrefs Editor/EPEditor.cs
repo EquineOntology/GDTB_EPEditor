@@ -7,6 +7,8 @@ namespace GDTB.EditorPrefsEditor
     public class EPEditor : EditorWindow
     {
         public static List<EditorPref> Prefs = new List<EditorPref>();
+        private static List<EditorPref> _oldPrefs;
+
         private GUISkin _epEditorSkin;
         private GUIStyle _typeStyle, _keyStyle, _valueStyle;
 
@@ -47,6 +49,7 @@ namespace GDTB.EditorPrefsEditor
         private void OnGUI()
         {
             UpdateLayoutingSizes();
+            CheckChangesToList();
             GUI.skin = _epEditorSkin;
 
             DrawPrefs();
@@ -85,7 +88,7 @@ namespace GDTB.EditorPrefsEditor
 
                 var helpBoxRect = _keyValueRect;
                 helpBoxRect.height = helpBoxHeight;
-                helpBoxRect.width = position.width - (IconSize * 2);
+                helpBoxRect.width = position.width - (IconSize * 2) + 1;
                 helpBoxRect.x += _offset;
 
                 _heightIndex += (int)helpBoxHeight + _offset;
@@ -148,7 +151,7 @@ namespace GDTB.EditorPrefsEditor
             // "Edit" button.
             var editRect = aRect;
             editRect.x = position.width - (IconSize * 2) - (_offset * 2);
-            editRect.y += IconSize;
+            editRect.y += _offset;
             editRect.width = IconSize;
             editRect.height = IconSize;
 
@@ -174,6 +177,7 @@ namespace GDTB.EditorPrefsEditor
                 {
                     EditorPrefs.DeleteKey(aPref.Key);
                     Prefs.Remove(aPref);
+                    EPEditorIO.WritePrefsToFile();
                     EditorWindow.GetWindow(typeof(EPEditor)).Repaint();
                 }
             }
@@ -220,7 +224,6 @@ namespace GDTB.EditorPrefsEditor
             _buttonsWidth = (IconSize * 2) + 5;
             _prefsWidth = (int)width - _typeWidth - _buttonsWidth - (_offset * 2);
         }
-
 
         /// Load the GDTB_GDTB_EPEditor skin.
         private void LoadSkin()

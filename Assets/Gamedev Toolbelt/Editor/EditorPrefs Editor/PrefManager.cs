@@ -2,7 +2,7 @@
 
 namespace GDTB.EditorPrefsEditor
 {
-    public static class Utils
+    public static class PrefManager
     {
         public static void AddPref(Pref aPref)
         {
@@ -41,7 +41,7 @@ namespace GDTB.EditorPrefsEditor
 
         public static void RemovePref(string aKey)
         {
-            GDTBEditorPrefs.DeleteKey(aKey);
+            NewEditorPrefs.DeleteKey(aKey);
             foreach (var pref in WindowMain.Prefs)
             {
                 if (pref.Key == aKey)
@@ -55,7 +55,7 @@ namespace GDTB.EditorPrefsEditor
 
         public static void RemovePref(Pref aPref)
         {
-            GDTBEditorPrefs.DeleteKey(aPref.Key);
+            NewEditorPrefs.DeleteKey(aPref.Key);
             WindowMain.Prefs.Remove(aPref);
             IO.WritePrefsToFile();
             EditorWindow.GetWindow(typeof(WindowMain)).Repaint();

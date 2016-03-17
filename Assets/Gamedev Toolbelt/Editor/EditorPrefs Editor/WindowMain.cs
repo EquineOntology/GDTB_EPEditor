@@ -46,17 +46,6 @@ namespace GDTB.EditorPrefsEditor
         }
 
 
-        private void OnGUI()
-        {
-            UpdateLayoutingSizes();
-            GUI.skin = _epEditorSkin;
-
-            DrawPrefs();
-            DrawAddButton();
-            DrawGetButton();
-        }
-
-
         public void OnEnable()
         {
             LoadSkin();
@@ -64,11 +53,30 @@ namespace GDTB.EditorPrefsEditor
         }
 
 
+        private void OnGUI()
+        {
+            UpdateLayoutingSizes();
+            GUI.skin = _epEditorSkin;
+
+            DrawBG();
+            DrawPrefs();
+            DrawAddButton();
+            DrawGetButton();
+        }
+
+
+        /// Draw the background texture.
+        private void DrawBG()
+        {
+            EditorGUI.DrawRect(new Rect(0,0, position.width, position.height), Constants.COLOR_UI_ACCENT);
+        }
+
+
         /// Draw preferences.
         private void DrawPrefs()
         {
-            _scrollViewRect.height = _heightIndex;
-            _scrollRect.width += IconSize + 2;
+            _scrollViewRect.height = _heightIndex - _offset;
+            _scrollRect.width += IconSize;
             _scrollPosition = GUI.BeginScrollView(_scrollRect, _scrollPosition, _scrollViewRect);
             _heightIndex = _offset;
             for (var i = 0; i < Prefs.Count; i++)
@@ -76,24 +84,22 @@ namespace GDTB.EditorPrefsEditor
                 var key = new GUIContent(Prefs[i].Key);
                 var val = new GUIContent(Prefs[i].Value);
                 var keyHeight = _keyStyle.CalcHeight(key, _prefsWidth);
-                var valHeight = +_valueStyle.CalcHeight(val, _prefsWidth);
+                var valHeight = _valueStyle.CalcHeight(val, _prefsWidth);
 
-                var helpBoxHeight = keyHeight + valHeight + Constants.LINE_HEIGHT + 5;
-                helpBoxHeight = helpBoxHeight < IconSize * 2.5f ? IconSize * 2.5f : helpBoxHeight;
+                var prefBGHeight = keyHeight + valHeight + Constants.LINE_HEIGHT + _offset;
+                prefBGHeight = prefBGHeight < IconSize * 2.5f ? IconSize * 2.5f : prefBGHeight;
 
-                _keyValueRect = new Rect(_offset, _heightIndex, _prefsWidth, helpBoxHeight);
-                _typeRect = new Rect(0, _keyValueRect.y, _typeWidth, helpBoxHeight);
-                _buttonsRect = new Rect(_prefsWidth + (_offset * 2), _keyValueRect.y, _buttonsWidth, helpBoxHeight);
+                _keyValueRect = new Rect(_offset, _heightIndex, _prefsWidth, prefBGHeight);
+                _typeRect = new Rect(-2, _keyValueRect.y, _typeWidth, prefBGHeight);
+                _buttonsRect = new Rect(_prefsWidth + (_offset * 2), _keyValueRect.y, _buttonsWidth, prefBGHeight);
 
-                var helpBoxRect = _keyValueRect;
-                helpBoxRect.height = helpBoxHeight;
-                helpBoxRect.width = position.width - (IconSize * 2) + 1;
-                helpBoxRect.x += _offset;
+                var prefBGRect = _keyValueRect;
+                prefBGRect.height = prefBGHeight - _offset;
+                prefBGRect.width = position.width - (IconSize * 2) + 2;
 
-                _heightIndex += (int)helpBoxHeight + _offset;
-                _scrollViewRect.height = _heightIndex;
+                _heightIndex += (int)prefBGHeight + _offset;
 
-                DrawHelpBox(helpBoxRect);
+                DrawPrefBG(prefBGRect);
                 DrawType(_typeRect, Prefs[i]);
                 DrawKeyAndValue(_keyValueRect, Prefs[i], keyHeight);
                 DrawEditAndRemoveButtons(_buttonsRect, Prefs[i]);
@@ -102,10 +108,13 @@ namespace GDTB.EditorPrefsEditor
         }
 
 
-        /// Draw the "Help box" style rectangle that separates the prefs visually.
-        private void DrawHelpBox(Rect aRect)
+        /// Draw the "Helpbox" style rectangle that separates the prefs visually.
+        private void DrawPrefBG(Rect aRect)
         {
-            EditorGUI.LabelField(aRect, "", EditorStyles.helpBox);
+            EditorGUI.DrawRect(new Rect(aRect.x,    aRect.y,    2,    aRect.height), Color.white);
+            EditorGUI.DrawRect(new Rect(aRect.x + aRect.width - 2,      aRect.y,    2,    aRect.height), Color.white);
+            EditorGUI.DrawRect(new Rect(aRect.x,    aRect.y,    aRect.width,    2),Color.white);
+            EditorGUI.DrawRect(new Rect(aRect.x,    aRect.y + aRect.height - 2,    aRect.width,    2), Color.white);
         }
 
 
@@ -130,14 +139,14 @@ namespace GDTB.EditorPrefsEditor
         {
             // Key.
             var keyRect = aRect;
-            keyRect.x = _typeWidth + IconSize;
+            keyRect.x = _typeWidth + IconSize / 2;
             keyRect.y += _offset;
             keyRect.height = aHeight;
             EditorGUI.LabelField(keyRect, aPref.Key, _keyStyle);
 
             // Value.
             var valueRect = aRect;
-            valueRect.x = _typeWidth + IconSize;
+            valueRect.x = _typeWidth + IconSize / 2;
             valueRect.y = aRect.y + aHeight + _offset;
 
             EditorGUI.LabelField(valueRect, aPref.Value, _valueStyle);
@@ -149,7 +158,7 @@ namespace GDTB.EditorPrefsEditor
         {
             // "Edit" button.
             var editRect = aRect;
-            editRect.x = position.width - (IconSize * 2) - (_offset * 2);
+            editRect.x = position.width - (IconSize * 3) + 2;
             editRect.y += _offset;
             editRect.width = IconSize;
             editRect.height = IconSize;
@@ -174,7 +183,7 @@ namespace GDTB.EditorPrefsEditor
                 // Confirmation dialog.
                 if (EditorUtility.DisplayDialog("Remove EditorPref", "Are you sure you want to delete this EditorPref?", "Delete pref", "Cancel"))
                 {
-                    Utils.RemovePref(aPref);
+                    PrefManager.RemovePref(aPref);
                 }
             }
         }
@@ -183,7 +192,7 @@ namespace GDTB.EditorPrefsEditor
         /// Draw the "Add" button.
         private void DrawAddButton()
         {
-            var addRect = new Rect((position.width / 2) - (IconSize +_offset)* 0.5f, position.height - (IconSize * 1.5f), IconSize, IconSize);
+            var addRect = new Rect((position.width / 2) - (_offset * 2), position.height - (IconSize * 1.5f), IconSize, IconSize);
             var addButton = new GUIContent(Resources.Load(Constants.FILE_GDTB_ADD, typeof(Texture2D)) as Texture2D, "Add a new key");
 
             // Add QQQ on click.
@@ -197,7 +206,7 @@ namespace GDTB.EditorPrefsEditor
         /// Draw the "Get key" button
         private void DrawGetButton()
         {
-            var getRect = new Rect((position.width / 2) + (IconSize + _offset)* 0.5f, position.height - (IconSize * 1.5f), IconSize, IconSize);
+            var getRect = new Rect((position.width / 2) + (_offset * 2), position.height - (IconSize * 1.5f), IconSize, IconSize);
             var getButton = new GUIContent(Resources.Load(Constants.FILE_GDTB_ADD, typeof(Texture2D)) as Texture2D, "Add existing key");
 
             // Get value and type on click.
@@ -212,7 +221,7 @@ namespace GDTB.EditorPrefsEditor
         {
             var width = position.width - IconSize;
 
-            _scrollRect = new Rect(_offset, _offset, width - (_offset * 2), position.height - IconSize * 2.5f);
+            _scrollRect = new Rect(_offset, _offset, width - (_offset * 2), position.height - IconSize * 3);
 
             _scrollViewRect = _scrollRect;
 
@@ -221,7 +230,7 @@ namespace GDTB.EditorPrefsEditor
             _prefsWidth = (int)width - _typeWidth - _buttonsWidth - (_offset * 2);
         }
 
-        /// Load the GDTB_GDTB_EPEditor skin.
+        /// Load the EPEditor skin.
         private void LoadSkin()
         {
             _epEditorSkin = Resources.Load(Constants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;

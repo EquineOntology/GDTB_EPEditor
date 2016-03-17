@@ -119,21 +119,21 @@ namespace GDTB.EditorPrefsEditor
                     switch (_type)
                     {
                         case 0:
-                            EditorPrefs.SetBool(_key, _boolValue);
+                            GDTBEditorPrefs.SetBool(_key, _boolValue);
                             break;
                         case 1:
-                            EditorPrefs.SetInt(_key, _intValue);
+                            GDTBEditorPrefs.SetInt(_key, _intValue);
                             break;
                         case 2:
-                            EditorPrefs.SetFloat(_key, _floatValue);
+                            GDTBEditorPrefs.SetFloat(_key, _floatValue);
                             break;
                         case 3:
-                            EditorPrefs.SetString(_key, _stringValue);
+                            GDTBEditorPrefs.SetString(_key, _stringValue);
                             break;
                     }
                     if (_key != _originalPref.Key)
                     {
-                        EditorPrefs.DeleteKey(_originalPref.Key);
+                        GDTBEditorPrefs.DeleteKey(_originalPref.Key);
                     }
                 }
                 EditorWindow.GetWindow(typeof(EPEditorEdit)).Close();

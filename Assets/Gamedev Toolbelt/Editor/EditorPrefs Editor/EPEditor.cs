@@ -173,10 +173,7 @@ namespace GDTB.EditorPrefsEditor
             {
                 // Confirmation dialog.
                 if (EditorUtility.DisplayDialog("Remove EditorPref", "Are you sure you want to delete this EditorPref?", "Delete pref", "Cancel"))
-                {
-                    EditorPrefs.DeleteKey(aPref.Key);
-                    Prefs.Remove(aPref);
-                    EPEditorIO.WritePrefsToFile();
+                {                    
                     EditorWindow.GetWindow(typeof(EPEditor)).Repaint();
                 }
             }

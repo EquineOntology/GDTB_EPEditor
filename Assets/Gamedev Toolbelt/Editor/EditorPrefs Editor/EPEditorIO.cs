@@ -138,7 +138,7 @@ namespace GDTB.EditorPrefsEditor
             var key = parts[1].Replace("(U+007C)", "|");
 
             // If the key doesn't exist, no sense in adding it.
-            if (!UnityEditor.EditorPrefs.HasKey(key))
+            if (!GDTBEditorPrefs.HasKey(key))
             {
                 return null;
             }
@@ -156,23 +156,23 @@ namespace GDTB.EditorPrefsEditor
             {
                 case "BOOL":
                     type = EditorPrefType.BOOL;
-                    boolValue = UnityEditor.EditorPrefs.GetBool(key, false);
+                    boolValue = GDTBEditorPrefs.GetBool(key, false);
                     pref = new EditorPref(type, key, boolValue.ToString());
                     break;
                 case "INT":
                     type = EditorPrefType.INT;
-                    intValue = UnityEditor.EditorPrefs.GetInt(key, 0);
+                    intValue = GDTBEditorPrefs.GetInt(key, 0);
                     pref = new EditorPref(type, key, intValue.ToString());
                     break;
                 case "FLOAT":
                     type = EditorPrefType.FLOAT;
-                    floatValue = UnityEditor.EditorPrefs.GetFloat(key, 0.0f);
+                    floatValue = GDTBEditorPrefs.GetFloat(key, 0.0f);
                     pref = new EditorPref(type, key, floatValue.ToString());
                     break;
                 case "STRING":
                 default:
                     type = EditorPrefType.STRING;
-                    stringValue = UnityEditor.EditorPrefs.GetString(key, "");
+                    stringValue = GDTBEditorPrefs.GetString(key, "");
                     pref = new EditorPref(type, key, stringValue);
                     break;
             }

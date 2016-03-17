@@ -4,7 +4,7 @@ using System;
 
 namespace GDTB.EditorPrefsEditor
 {
-    public static class EPEditorIO
+    public static class IO
     {
         /// Write Prefs in memory to the backup file.
         public static void WritePrefsToFile()
@@ -15,7 +15,7 @@ namespace GDTB.EditorPrefsEditor
             var writer = new StreamWriter(tempFile, false);
             try
             {
-                foreach (var pref in EPEditor.Prefs)
+                foreach (var pref in WindowMain.Prefs)
                 {
                     var type = pref.Type.ToString();
                     var key = pref.Key;
@@ -90,9 +90,9 @@ namespace GDTB.EditorPrefsEditor
             return relativePath;
         }
 
-        public static List<EditorPref> LoadStoredPrefs()
+        public static List<Pref> LoadStoredPrefs()
         {
-            var backedPrefs = new List<EditorPref>();
+            var backedPrefs = new List<Pref>();
 
             var bakFile = GetFirstInstanceOfFolder("EditorPrefs Editor") + "/bak.gdtb";
 
@@ -130,7 +130,7 @@ namespace GDTB.EditorPrefsEditor
 
 
         /// Parse a line in the backup file.
-        private static EditorPref ParsePref(string aString)
+        private static Pref ParsePref(string aString)
         {
             var parts = aString.Split('|');
 
@@ -145,35 +145,35 @@ namespace GDTB.EditorPrefsEditor
 
             // Get the type.
             var typeString = parts[0];
-            EditorPrefType type;
+            PrefType type;
             bool boolValue;
             int intValue;
             float floatValue;
             string stringValue;
 
-            EditorPref pref;
+            Pref pref;
             switch (typeString)
             {
                 case "BOOL":
-                    type = EditorPrefType.BOOL;
+                    type = PrefType.BOOL;
                     boolValue = GDTBEditorPrefs.GetBool(key, false);
-                    pref = new EditorPref(type, key, boolValue.ToString());
+                    pref = new Pref(type, key, boolValue.ToString());
                     break;
                 case "INT":
-                    type = EditorPrefType.INT;
+                    type = PrefType.INT;
                     intValue = GDTBEditorPrefs.GetInt(key, 0);
-                    pref = new EditorPref(type, key, intValue.ToString());
+                    pref = new Pref(type, key, intValue.ToString());
                     break;
                 case "FLOAT":
-                    type = EditorPrefType.FLOAT;
+                    type = PrefType.FLOAT;
                     floatValue = GDTBEditorPrefs.GetFloat(key, 0.0f);
-                    pref = new EditorPref(type, key, floatValue.ToString());
+                    pref = new Pref(type, key, floatValue.ToString());
                     break;
                 case "STRING":
                 default:
-                    type = EditorPrefType.STRING;
+                    type = PrefType.STRING;
                     stringValue = GDTBEditorPrefs.GetString(key, "");
-                    pref = new EditorPref(type, key, stringValue);
+                    pref = new Pref(type, key, stringValue);
                     break;
             }
             return pref;

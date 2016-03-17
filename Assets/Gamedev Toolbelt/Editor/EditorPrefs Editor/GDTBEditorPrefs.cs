@@ -7,7 +7,7 @@ public static class GDTBEditorPrefs
     public static void SetBool(string aKey, bool aValue)
     {
         EditorPrefs.SetBool(aKey, aValue);
-        EPEManager.AddPref(aKey, aValue);
+        Utils.AddPref(aKey, aValue);
     }
 
     public static bool GetBool(string aKey, bool aDefaultValue)
@@ -25,7 +25,7 @@ public static class GDTBEditorPrefs
     public static void SetInt(string aKey, int aValue)
     {
         EditorPrefs.SetInt(aKey, aValue);
-        EPEManager.AddPref(aKey, aValue);
+        Utils.AddPref(aKey, aValue);
     }
 
     public static int GetInt(string aKey, int aDefaultValue)
@@ -43,7 +43,7 @@ public static class GDTBEditorPrefs
     public static void SetFloat(string aKey, float aValue)
     {
         EditorPrefs.SetFloat(aKey, aValue);
-        EPEManager.AddPref(aKey, aValue);
+        Utils.AddPref(aKey, aValue);
     }
 
     public static float GetFloat(string aKey, float aDefaultValue)
@@ -61,7 +61,7 @@ public static class GDTBEditorPrefs
     public static void SetString(string aKey, string aValue)
     {
         EditorPrefs.SetString(aKey, aValue);
-        EPEManager.AddPref(aKey, aValue);
+        Utils.AddPref(aKey, aValue);
     }
 
     public static string GetString(string aKey, string aDefaultValue)

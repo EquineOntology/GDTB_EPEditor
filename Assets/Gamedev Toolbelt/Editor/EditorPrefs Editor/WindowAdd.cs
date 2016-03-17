@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 namespace GDTB.EditorPrefsEditor
 {
-    public class EPEditorAdd : EditorWindow
+    public class WindowAdd : EditorWindow
     {
         private string _key = "";
         private int _type = 0;
@@ -16,11 +16,10 @@ namespace GDTB.EditorPrefsEditor
         private string _stringValue = "";
 
         private GUISkin _GDTBSkin;
-        private GUISkin _defaultSkin;
 
         public static void Init()
         {
-            EPEditorAdd window = (EPEditorAdd)EditorWindow.GetWindow(typeof(EPEditorAdd));
+            WindowAdd window = (WindowAdd)EditorWindow.GetWindow(typeof(WindowAdd));
             window.minSize = new Vector2(200, 207);
             window.titleContent = new GUIContent("Add EditorPref");
             window.ShowUtility();
@@ -28,8 +27,7 @@ namespace GDTB.EditorPrefsEditor
 
         public void OnEnable()
         {
-            _defaultSkin = GUI.skin;
-            _GDTBSkin = Resources.Load(EPConstants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
+            _GDTBSkin = Resources.Load(Constants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
         }
 
         public void OnGUI()
@@ -96,7 +94,7 @@ namespace GDTB.EditorPrefsEditor
         private void DrawButton()
         {
             GUI.skin = _GDTBSkin;
-            EditorPref currentPref = null;
+            Pref currentPref = null;
 
             var buttonRect = new Rect(Mathf.Clamp((Screen.width / 2) - 60, 0, 190), 177, 120, 20);
 
@@ -114,7 +112,7 @@ namespace GDTB.EditorPrefsEditor
                     var shouldAddPref = true;
 
                     // If the key is already in prefs.
-                    foreach (var pref in EPEditor.Prefs)
+                    foreach (var pref in WindowMain.Prefs)
                     {
                         if (pref.Key == _key)
                         {
@@ -133,32 +131,32 @@ namespace GDTB.EditorPrefsEditor
                         try
                         {
                             bValue = GDTBEditorPrefs.GetBool(_key);
-                            currentPref = new EditorPref(EditorPrefType.BOOL, _key, bValue.ToString());
-                            EPEManager.AddPref(currentPref);
+                            currentPref = new Pref(PrefType.BOOL, _key, bValue.ToString());
+                            Utils.AddPref(currentPref);
                         }
                         catch (System.Exception) { }
 
                         try
                         {
                             iValue = GDTBEditorPrefs.GetInt(_key);
-                            currentPref = new EditorPref(EditorPrefType.BOOL, _key, iValue.ToString());
-                            EPEManager.AddPref(currentPref);
+                            currentPref = new Pref(PrefType.BOOL, _key, iValue.ToString());
+                            Utils.AddPref(currentPref);
                         }
                         catch (System.Exception) { }
 
                         try
                         {
                             fValue = GDTBEditorPrefs.GetFloat(_key);
-                            currentPref = new EditorPref(EditorPrefType.BOOL, _key, fValue.ToString());
-                            EPEManager.AddPref(currentPref);
+                            currentPref = new Pref(PrefType.BOOL, _key, fValue.ToString());
+                            Utils.AddPref(currentPref);
                         }
                         catch (System.Exception) { }
 
                         try
                         {
                             sValue = GDTBEditorPrefs.GetString(_key);
-                            currentPref = new EditorPref(EditorPrefType.BOOL, _key, sValue);
-                            EPEManager.AddPref(currentPref);
+                            currentPref = new Pref(PrefType.BOOL, _key, sValue);
+                            Utils.AddPref(currentPref);
                         }
                         catch (System.Exception) { }
                     }
@@ -168,8 +166,8 @@ namespace GDTB.EditorPrefsEditor
                     {
                         if (EditorUtility.DisplayDialog("Pref already exists.", "The key you're trying to use already exists.\nDo you want to edit it?", "Edit", "Cancel"))
                         {
-                            EditorWindow.GetWindow(typeof(EPEditorAdd)).Close();
-                            EPEditorEdit.Init(currentPref);
+                            EditorWindow.GetWindow(typeof(WindowAdd)).Close();
+                            WindowEdit.Init(currentPref);
                         }
                     }
                 }
@@ -180,48 +178,25 @@ namespace GDTB.EditorPrefsEditor
                         switch (_type)
                         {
                             case 0:
-                                GDTBEditorPrefs.SetBool(_key, _boolValue);
+                                Utils.AddPref(_key, _boolValue);
                                 break;
                             case 1:
-                                GDTBEditorPrefs.SetInt(_key, _intValue);
+                                Utils.AddPref(_key, _intValue);
                                 break;
                             case 2:
-                                GDTBEditorPrefs.SetFloat(_key, _floatValue);
+                                Utils.AddPref(_key, _floatValue);
                                 break;
                             case 3:
-                                GDTBEditorPrefs.SetString(_key, _stringValue);
+                                Utils.AddPref(_key, _stringValue);
                                 break;
                         }
-
-                        // Check that pref was added correctly.
-                        if (GDTBEditorPrefs.HasKey(_key))
-                        {
-                            switch (_type)
-                            {
-                                case 0:
-                                    EPEManager.AddPref(_key, _boolValue);
-                                    break;
-                                case 1:
-                                    EPEManager.AddPref(_key, _intValue);
-                                    break;
-                                case 2:
-                                    EPEManager.AddPref(_key, _floatValue);
-                                    break;
-                                case 3:
-                                    EPEManager.AddPref(_key, _stringValue);
-                                    break;
-                            }
-                            EPEditorIO.WritePrefsToFile();
-                            EditorWindow.GetWindow(typeof(EPEditorAdd)).Close();
-                            EditorWindow.GetWindow(typeof(EPEditor)).Repaint();
-                        }
-                        else
-                        {
-                            EditorUtility.DisplayDialog("No key added", "There was an unknown issue when adding your key.\nPlease try again", "Ok");
-                        }
+                        EditorWindow.GetWindow(typeof(WindowAdd)).Close();
+                    }
+                    else
+                    {
+                        EditorUtility.DisplayDialog("No key added", "There was an unknown issue when adding your key.\nPlease try again", "Ok");
                     }
                 }
-                GUI.skin = _defaultSkin;
             }
         }
     }

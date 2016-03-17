@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 namespace GDTB.EditorPrefsEditor
 {
-    public class EPEditorEdit : EditorWindow
+    public class WindowEdit : EditorWindow
     {
         private string _key = "";
         private int _type = 0;
@@ -19,11 +19,11 @@ namespace GDTB.EditorPrefsEditor
         private GUISkin _defaultSkin;
         private GUIStyle _wrappingStyle;
 
-        private EditorPref _originalPref;
+        private Pref _originalPref;
 
-        public static void Init(EditorPref aPref)
+        public static void Init(Pref aPref)
         {
-            EPEditorEdit window = (EPEditorEdit)EditorWindow.GetWindow(typeof(EPEditorEdit));
+            WindowEdit window = (WindowEdit)EditorWindow.GetWindow(typeof(WindowEdit));
             window.minSize = new Vector2(200, 207);
             window.titleContent = new GUIContent("Edit EditorPref");
             window.InitInputValues(aPref);
@@ -33,7 +33,7 @@ namespace GDTB.EditorPrefsEditor
 
         public void OnEnable()
         {
-            _GDTBSkin = Resources.Load(EPConstants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
+            _GDTBSkin = Resources.Load(Constants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
             _wrappingStyle = _GDTBSkin.GetStyle("textArea");
         }
 
@@ -136,14 +136,14 @@ namespace GDTB.EditorPrefsEditor
                         GDTBEditorPrefs.DeleteKey(_originalPref.Key);
                     }
                 }
-                EditorWindow.GetWindow(typeof(EPEditorEdit)).Close();
-                EditorWindow.GetWindow(typeof(EPEditor)).Repaint();
+                EditorWindow.GetWindow(typeof(WindowEdit)).Close();
+                EditorWindow.GetWindow(typeof(WindowMain)).Repaint();
             }
         }
 
 
         /// Set the values of the original pref for input fields.
-        private void InitInputValues(EditorPref aPref)
+        private void InitInputValues(Pref aPref)
         {
             _originalPref = aPref;
             _key = _originalPref.Key;

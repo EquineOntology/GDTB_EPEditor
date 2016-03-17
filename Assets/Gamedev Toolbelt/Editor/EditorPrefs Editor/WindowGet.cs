@@ -3,7 +3,7 @@ using UnityEditor;
 
 namespace GDTB.EditorPrefsEditor
 {
-    public class EPEditorGet : EditorWindow
+    public class WindowGet : EditorWindow
     {
         private string _key = "";
         private int _type = 0;
@@ -19,7 +19,7 @@ namespace GDTB.EditorPrefsEditor
 
         public static void Init()
         {
-            EPEditorGet window = (EPEditorGet)EditorWindow.GetWindow(typeof(EPEditorGet));
+            WindowGet window = (WindowGet)EditorWindow.GetWindow(typeof(WindowGet));
             window.minSize = new Vector2(200, 150);
             window.titleContent = new GUIContent("Get EditorPref");
             window.ShowUtility();
@@ -28,7 +28,7 @@ namespace GDTB.EditorPrefsEditor
         public void OnEnable()
         {
             _defaultSkin = GUI.skin;
-            _EPEditorSkin = Resources.Load(EPConstants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
+            _EPEditorSkin = Resources.Load(Constants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
         }
 
         public void OnGUI()
@@ -98,8 +98,7 @@ namespace GDTB.EditorPrefsEditor
                                     break;
                             }
                             AddEditorPref();
-                            EPEditorIO.WritePrefsToFile();
-                            EditorWindow.GetWindow(typeof(EPEditorGet)).Close();
+                            EditorWindow.GetWindow(typeof(WindowGet)).Close();
                         }
                         else
                         {
@@ -116,16 +115,16 @@ namespace GDTB.EditorPrefsEditor
             switch (_type)
             {
                 case 0:
-                    EPEManager.AddPref(_key, _boolValue);
+                    Utils.AddPref(_key, _boolValue);
                     break;
                 case 1:
-                    EPEManager.AddPref(_key, _intValue);
+                    Utils.AddPref(_key, _intValue);
                     break;
                 case 2:
-                    EPEManager.AddPref(_key, _floatValue);
+                    Utils.AddPref(_key, _floatValue);
                     break;
                 case 3:
-                    EPEManager.AddPref(_key, _stringValue);
+                    Utils.AddPref(_key, _stringValue);
                     break;
             }
         }

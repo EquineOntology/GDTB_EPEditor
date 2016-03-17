@@ -1,6 +1,6 @@
 namespace GDTB.EditorPrefsEditor
 {
-    public enum EditorPrefType
+    public enum PrefType
     {
         BOOL,
         INT,

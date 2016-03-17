@@ -1,6 +1,6 @@
 ﻿namespace GDTB.EditorPrefsEditor
 {
-    public static class EPConstants
+    public static class Constants
     {
         public const string FILE_GDTB_EDIT = "GUI/gdtb_EDIT";
         public const string FILE_GDTB_ADD = "GUI/gdtb_ADD";

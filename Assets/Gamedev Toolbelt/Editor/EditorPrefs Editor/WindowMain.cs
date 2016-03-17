@@ -4,10 +4,10 @@ using System.Collections.Generic;
 
 namespace GDTB.EditorPrefsEditor
 {
-    public class EPEditor : EditorWindow
+    public class WindowMain : EditorWindow
     {
-        public static List<EditorPref> Prefs = new List<EditorPref>();
-        private static List<EditorPref> _oldPrefs;
+        public static List<Pref> Prefs = new List<Pref>();
+        private static List<Pref> _oldPrefs;
 
         private GUISkin _epEditorSkin;
         private GUIStyle _typeStyle, _keyStyle, _valueStyle;
@@ -28,18 +28,18 @@ namespace GDTB.EditorPrefsEditor
         public static void Init()
         {
             // Get existing open window or if none, make a new one.
-            var window = (EPEditor)EditorWindow.GetWindow(typeof(EPEditor));
+            var window = (WindowMain)EditorWindow.GetWindow(typeof(WindowMain));
             window.titleContent = new GUIContent("EditorPrefs Editor");
             window.minSize = new Vector2(250f, 100f);
             window._typeLabelWidth = (int)window._typeStyle.CalcSize(new GUIContent("String")).x; // Not with the other layouting sizes because it only needs to be done once.
             window.UpdateLayoutingSizes();
 
             // Restore stored preferences.
-            var storedPrefs = EPEditorIO.LoadStoredPrefs();
+            var storedPrefs = IO.LoadStoredPrefs();
             if (storedPrefs.Count >= Prefs.Count)
             {
-                EPEditor.Prefs.Clear();
-                EPEditor.Prefs.AddRange(storedPrefs);
+                WindowMain.Prefs.Clear();
+                WindowMain.Prefs.AddRange(storedPrefs);
             }
 
             window.Show();
@@ -78,7 +78,7 @@ namespace GDTB.EditorPrefsEditor
                 var keyHeight = _keyStyle.CalcHeight(key, _prefsWidth);
                 var valHeight = +_valueStyle.CalcHeight(val, _prefsWidth);
 
-                var helpBoxHeight = keyHeight + valHeight + EPConstants.LINE_HEIGHT + 5;
+                var helpBoxHeight = keyHeight + valHeight + Constants.LINE_HEIGHT + 5;
                 helpBoxHeight = helpBoxHeight < IconSize * 2.5f ? IconSize * 2.5f : helpBoxHeight;
 
                 _keyValueRect = new Rect(_offset, _heightIndex, _prefsWidth, helpBoxHeight);
@@ -110,7 +110,7 @@ namespace GDTB.EditorPrefsEditor
 
 
         /// Draw the pref's type.
-        private void DrawType(Rect aRect, EditorPref aPref)
+        private void DrawType(Rect aRect, Pref aPref)
         {
             var typeRect = aRect;
             typeRect.width -= _offset;
@@ -126,7 +126,7 @@ namespace GDTB.EditorPrefsEditor
         }
 
 
-        private void DrawKeyAndValue(Rect aRect, EditorPref aPref, float aHeight)
+        private void DrawKeyAndValue(Rect aRect, Pref aPref, float aHeight)
         {
             // Key.
             var keyRect = aRect;
@@ -145,7 +145,7 @@ namespace GDTB.EditorPrefsEditor
 
 
         /// Draw the "Edit" and "Remove" buttons.
-        private void DrawEditAndRemoveButtons(Rect aRect, EditorPref aPref)
+        private void DrawEditAndRemoveButtons(Rect aRect, Pref aPref)
         {
             // "Edit" button.
             var editRect = aRect;
@@ -154,27 +154,27 @@ namespace GDTB.EditorPrefsEditor
             editRect.width = IconSize;
             editRect.height = IconSize;
 
-            var editButton = new GUIContent(Resources.Load(EPConstants.FILE_GDTB_EDIT, typeof(Texture2D)) as Texture2D, "Edit this EditorPref");
+            var editButton = new GUIContent(Resources.Load(Constants.FILE_GDTB_EDIT, typeof(Texture2D)) as Texture2D, "Edit this EditorPref");
 
             // Open edit window on click.
             if (GUI.Button(editRect, editButton))
             {
-                EPEditorEdit.Init(aPref);
+                WindowEdit.Init(aPref);
             }
 
             // "Complete" button.
             var removeRect = editRect;
             removeRect.y = editRect.y + editRect.height + 2;
 
-            var removeButton = new GUIContent(Resources.Load(EPConstants.FILE_GDTB_REMOVE, typeof(Texture2D)) as Texture2D, "Remove this EditorPref");
+            var removeButton = new GUIContent(Resources.Load(Constants.FILE_GDTB_REMOVE, typeof(Texture2D)) as Texture2D, "Remove this EditorPref");
 
             // Complete QQQ on click.
             if (GUI.Button(removeRect, removeButton))
             {
                 // Confirmation dialog.
                 if (EditorUtility.DisplayDialog("Remove EditorPref", "Are you sure you want to delete this EditorPref?", "Delete pref", "Cancel"))
-                {                    
-                    EditorWindow.GetWindow(typeof(EPEditor)).Repaint();
+                {
+                    Utils.RemovePref(aPref);
                 }
             }
         }
@@ -184,12 +184,12 @@ namespace GDTB.EditorPrefsEditor
         private void DrawAddButton()
         {
             var addRect = new Rect((position.width / 2) - (IconSize * 1.5f) - _offset, position.height - (IconSize * 1.5f), IconSize, IconSize);
-            var addButton = new GUIContent(Resources.Load(EPConstants.FILE_GDTB_ADD, typeof(Texture2D)) as Texture2D, "Add a new key");
+            var addButton = new GUIContent(Resources.Load(Constants.FILE_GDTB_ADD, typeof(Texture2D)) as Texture2D, "Add a new key");
 
             // Add QQQ on click.
             if (GUI.Button(addRect, addButton))
             {
-                EPEditorAdd.Init();
+                WindowAdd.Init();
             }
         }
 
@@ -198,12 +198,12 @@ namespace GDTB.EditorPrefsEditor
         private void DrawGetButton()
         {
             var getRect = new Rect((position.width / 2) + (IconSize * 1.5f) - _offset, position.height - (IconSize * 1.5f), IconSize, IconSize);
-            var getButton = new GUIContent(Resources.Load(EPConstants.FILE_GDTB_ADD, typeof(Texture2D)) as Texture2D, "Add existing key");
+            var getButton = new GUIContent(Resources.Load(Constants.FILE_GDTB_ADD, typeof(Texture2D)) as Texture2D, "Add existing key");
 
             // Get value and type on click.
             if (GUI.Button(getRect, getButton))
             {
-                EPEditorGet.Init();
+                EditorPrefsEditor.WindowGet.Init();
             }
         }
 
@@ -224,7 +224,7 @@ namespace GDTB.EditorPrefsEditor
         /// Load the GDTB_GDTB_EPEditor skin.
         private void LoadSkin()
         {
-            _epEditorSkin = Resources.Load(EPConstants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
+            _epEditorSkin = Resources.Load(Constants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
         }
 
 
@@ -239,7 +239,7 @@ namespace GDTB.EditorPrefsEditor
         /// Called when the window is closed.
         private void OnDestroy()
         {
-            EPEditorIO.WritePrefsToFile();
+            IO.WritePrefsToFile();
         }
     }
 }

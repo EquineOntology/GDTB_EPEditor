@@ -15,7 +15,8 @@ namespace GDTB.EditorPrefsEditor
         private float _floatValue = 0.0f;
         private string _stringValue = "";
 
-        private GUISkin _GDTBSkin;
+        private GUISkin _skin;
+        private GUIStyle _boldStyle;
 
         public static void Init()
         {
@@ -27,11 +28,13 @@ namespace GDTB.EditorPrefsEditor
 
         public void OnEnable()
         {
-            _GDTBSkin = Resources.Load(Constants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
+            _skin = Resources.Load(Constants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
+            _boldStyle = _skin.GetStyle("GDTB_EPEditor_key");
         }
 
         public void OnGUI()
         {
+            DrawBG();
             DrawKeyField();
             DrawTypePopup();
             DrawValueField();
@@ -39,13 +42,20 @@ namespace GDTB.EditorPrefsEditor
         }
 
 
+        /// Draw the background texture.
+        private void DrawBG()
+        {
+            EditorGUI.DrawRect(new Rect(0,0, position.width, position.height), Constants.COLOR_UI_ACCENT);
+        }
+
+
         /// Draw key input field.
         private void DrawKeyField()
         {
-            var labelRect = new Rect(10, 10, Mathf.Clamp(position.width - 20, 80, 500), 16);
-            EditorGUI.LabelField(labelRect, "Write the key:", EditorStyles.boldLabel);
+            var labelRect = new Rect(10, 10, position.width - 20, 16);
+            EditorGUI.LabelField(labelRect, "Write the key:", _boldStyle);
 
-            var keyRect = new Rect(10, 29, Mathf.Clamp(position.width - 20, 80, 500), 32);
+            var keyRect = new Rect(10, 29, position.width - 20, 32);
             _key = EditorGUI.TextField(keyRect, _key);
         }
 
@@ -54,10 +64,10 @@ namespace GDTB.EditorPrefsEditor
         private void DrawTypePopup()
         {
             var labelRect = new Rect(10, 71, Mathf.Clamp(position.width - 20, 80, 500), 16);
-            EditorGUI.LabelField(labelRect, "Choose a type:", EditorStyles.boldLabel);
+            EditorGUI.LabelField(labelRect, "Choose a type:", _boldStyle);
 
-            var priorityRect = new Rect(10, 90, 70, 16);
-            _type = EditorGUI.Popup(priorityRect, _type, _prefTypes);
+            var typeRect = new Rect(10, 90, 70, 16);
+            _type = EditorGUI.Popup(typeRect, _type, _prefTypes);
         }
 
 
@@ -65,12 +75,12 @@ namespace GDTB.EditorPrefsEditor
         private void DrawValueField()
         {
             var labelRect = new Rect(10, 116, Mathf.Clamp(position.width - 20, 80, 500), 16);
-            EditorGUI.LabelField(labelRect, "Insert the value:", EditorStyles.boldLabel);
+            EditorGUI.LabelField(labelRect, "Insert the value:", _boldStyle);
 
             switch (_type)
             {
                 case 0:
-                    var boolRect = new Rect(10, 135, 150, 16);
+                    var boolRect = new Rect(10, 135, 70, 16);
                     _boolIndex = EditorGUI.Popup(boolRect, _boolIndex, _boolValues);
                     _boolValue = _boolIndex == 0 ? false : true;
                     break;
@@ -83,7 +93,7 @@ namespace GDTB.EditorPrefsEditor
                     _floatValue = EditorGUI.FloatField(floatRect, _floatValue);
                     break;
                 case 3:
-                    var stringRect = new Rect(10, 135, Mathf.Clamp(position.width - 20, 80, 500), 32);
+                    var stringRect = new Rect(10, 135, position.width - 20, 32);
                     _stringValue = EditorGUI.TextField(stringRect, _stringValue);
                     break;
             }
@@ -93,7 +103,7 @@ namespace GDTB.EditorPrefsEditor
         /// Draw "Add pref" button.
         private void DrawButton()
         {
-            GUI.skin = _GDTBSkin;
+            GUI.skin = _skin;
             Pref currentPref = null;
 
             var buttonRect = new Rect(Mathf.Clamp((Screen.width / 2) - 60, 0, 190), 177, 120, 20);
@@ -107,7 +117,7 @@ namespace GDTB.EditorPrefsEditor
                 }
 
                 // If the key exists.
-                else if (GDTBEditorPrefs.HasKey(_key))
+                else if (NewEditorPrefs.HasKey(_key))
                 {
                     var shouldAddPref = true;
 
@@ -130,33 +140,33 @@ namespace GDTB.EditorPrefsEditor
                         string sValue;
                         try
                         {
-                            bValue = GDTBEditorPrefs.GetBool(_key);
+                            bValue = NewEditorPrefs.GetBool(_key);
                             currentPref = new Pref(PrefType.BOOL, _key, bValue.ToString());
-                            Utils.AddPref(currentPref);
+                            PrefManager.AddPref(currentPref);
                         }
                         catch (System.Exception) { }
 
                         try
                         {
-                            iValue = GDTBEditorPrefs.GetInt(_key);
+                            iValue = NewEditorPrefs.GetInt(_key);
                             currentPref = new Pref(PrefType.BOOL, _key, iValue.ToString());
-                            Utils.AddPref(currentPref);
+                            PrefManager.AddPref(currentPref);
                         }
                         catch (System.Exception) { }
 
                         try
                         {
-                            fValue = GDTBEditorPrefs.GetFloat(_key);
+                            fValue = NewEditorPrefs.GetFloat(_key);
                             currentPref = new Pref(PrefType.BOOL, _key, fValue.ToString());
-                            Utils.AddPref(currentPref);
+                            PrefManager.AddPref(currentPref);
                         }
                         catch (System.Exception) { }
 
                         try
                         {
-                            sValue = GDTBEditorPrefs.GetString(_key);
+                            sValue = NewEditorPrefs.GetString(_key);
                             currentPref = new Pref(PrefType.BOOL, _key, sValue);
-                            Utils.AddPref(currentPref);
+                            PrefManager.AddPref(currentPref);
                         }
                         catch (System.Exception) { }
                     }
@@ -178,16 +188,16 @@ namespace GDTB.EditorPrefsEditor
                         switch (_type)
                         {
                             case 0:
-                                Utils.AddPref(_key, _boolValue);
+                                PrefManager.AddPref(_key, _boolValue);
                                 break;
                             case 1:
-                                Utils.AddPref(_key, _intValue);
+                                PrefManager.AddPref(_key, _intValue);
                                 break;
                             case 2:
-                                Utils.AddPref(_key, _floatValue);
+                                PrefManager.AddPref(_key, _floatValue);
                                 break;
                             case 3:
-                                Utils.AddPref(_key, _stringValue);
+                                PrefManager.AddPref(_key, _stringValue);
                                 break;
                         }
                         EditorWindow.GetWindow(typeof(WindowAdd)).Close();

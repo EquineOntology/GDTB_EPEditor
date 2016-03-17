@@ -183,7 +183,7 @@ namespace GDTB.EditorPrefsEditor
         /// Draw the "Add" button.
         private void DrawAddButton()
         {
-            var addRect = new Rect((position.width / 2) - (IconSize * 1.5f) - _offset, position.height - (IconSize * 1.5f), IconSize, IconSize);
+            var addRect = new Rect((position.width / 2) - (IconSize +_offset)* 0.5f, position.height - (IconSize * 1.5f), IconSize, IconSize);
             var addButton = new GUIContent(Resources.Load(Constants.FILE_GDTB_ADD, typeof(Texture2D)) as Texture2D, "Add a new key");
 
             // Add QQQ on click.
@@ -197,7 +197,7 @@ namespace GDTB.EditorPrefsEditor
         /// Draw the "Get key" button
         private void DrawGetButton()
         {
-            var getRect = new Rect((position.width / 2) + (IconSize * 1.5f) - _offset, position.height - (IconSize * 1.5f), IconSize, IconSize);
+            var getRect = new Rect((position.width / 2) + (IconSize + _offset)* 0.5f, position.height - (IconSize * 1.5f), IconSize, IconSize);
             var getButton = new GUIContent(Resources.Load(Constants.FILE_GDTB_ADD, typeof(Texture2D)) as Texture2D, "Add existing key");
 
             // Get value and type on click.

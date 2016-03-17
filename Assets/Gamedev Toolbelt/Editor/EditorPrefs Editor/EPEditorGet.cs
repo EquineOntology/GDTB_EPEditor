@@ -80,21 +80,21 @@ namespace GDTB.EditorPrefsEditor
                     {
 
                         // Check that pref was added correctly.
-                        if (EditorPrefs.HasKey(_key))
+                        if (GDTBEditorPrefs.HasKey(_key))
                         {
                             switch (_type)
                             {
                                 case 0:
-                                    _boolValue = EditorPrefs.GetBool(_key, false);
+                                    _boolValue = GDTBEditorPrefs.GetBool(_key, false);
                                     break;
                                 case 1:
-                                    _intValue = EditorPrefs.GetInt(_key, 0);
+                                    _intValue = GDTBEditorPrefs.GetInt(_key, 0);
                                     break;
                                 case 2:
-                                    _floatValue = EditorPrefs.GetFloat(_key, 0.0f);
+                                    _floatValue = GDTBEditorPrefs.GetFloat(_key, 0.0f);
                                     break;
                                 case 3:
-                                    _stringValue = EditorPrefs.GetString(_key, "");
+                                    _stringValue = GDTBEditorPrefs.GetString(_key, "");
                                     break;
                             }
                             AddEditorPref();
@@ -116,16 +116,16 @@ namespace GDTB.EditorPrefsEditor
             switch (_type)
             {
                 case 0:
-                    EPEditor.Prefs.Add(new EditorPref(EditorPrefType.BOOL, _key, _boolValue.ToString()));
+                    EPEManager.AddPref(_key, _boolValue);
                     break;
                 case 1:
-                    EPEditor.Prefs.Add(new EditorPref(EditorPrefType.INT, _key, _intValue.ToString()));
+                    EPEManager.AddPref(_key, _intValue);
                     break;
                 case 2:
-                    EPEditor.Prefs.Add(new EditorPref(EditorPrefType.FLOAT, _key, _floatValue.ToString()));
+                    EPEManager.AddPref(_key, _floatValue);
                     break;
                 case 3:
-                    EPEditor.Prefs.Add(new EditorPref(EditorPrefType.STRING, _key, _stringValue));
+                    EPEManager.AddPref(_key, _stringValue);
                     break;
             }
         }

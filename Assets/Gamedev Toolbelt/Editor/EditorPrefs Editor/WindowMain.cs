@@ -24,12 +24,12 @@ namespace GDTB.EditorPrefsEditor
         private Rect prefContent, _scrollViewRect, _scrollRect, _typeRect, _keyValueRect, _buttonsRect;
 
         // ====================================================================
-        [MenuItem("Window/EditorPrefs Editor %]")]
+        [MenuItem("Window/Gamedev Toolbelt/EditorPrefs Editor %]")]
         public static void Init()
         {
             // Get existing open window or if none, make a new one.
             var window = (WindowMain)EditorWindow.GetWindow(typeof(WindowMain));
-            window.titleContent = new GUIContent("EditorPrefs Editor");
+            window.titleContent = new GUIContent("EditorPrefs");
             window.minSize = new Vector2(250f, 100f);
             window._typeLabelWidth = (int)window._typeStyle.CalcSize(new GUIContent("String")).x; // Not with the other layouting sizes because it only needs to be done once.
             window.UpdateLayoutingSizes();
@@ -41,7 +41,7 @@ namespace GDTB.EditorPrefsEditor
                 WindowMain.Prefs.Clear();
                 WindowMain.Prefs.AddRange(storedPrefs);
             }
-
+            //window.DebugPrefs();
             window.Show();
         }
 
@@ -182,9 +182,9 @@ namespace GDTB.EditorPrefsEditor
             if (GUI.Button(removeRect, removeButton))
             {
                 // Confirmation dialog.
-                if (EditorUtility.DisplayDialog("Remove EditorPref", "Are you sure you want to delete this EditorPref?", "Delete pref", "Cancel"))
+                if (EditorUtility.DisplayDialog("Remove EditorPref", "Are you sure you want to remove this EditorPref?", "Remove pref", "Cancel"))
                 {
-                    PrefManager.RemovePref(aPref);
+                    NewEditorPrefs.DeleteKey(aPref.Key);
                 }
             }
         }
@@ -254,10 +254,30 @@ namespace GDTB.EditorPrefsEditor
             _valueStyle = _epEditorSkin.GetStyle("GDTB_EPEditor_value");
         }
 
-        /// Called when the window is closed.
-        private void OnDestroy()
+        private void DebugPrefs()
         {
-            IO.WritePrefsToFile();
+            for (var i = 0; i < Prefs.Count; i++)
+            {
+                Debug.Log("[" + i + "] Type: " + Prefs[i].Type + ", Key: " + Prefs[i].Key + ", Value: " + Prefs[i].Value);
+                Debug.Log("Key exists: " + EditorPrefs.HasKey(Prefs[i].Key));
+
+                if (Prefs[i].Type == PrefType.BOOL)
+                {
+                    Debug.Log("EditorPref value: " + EditorPrefs.GetBool(Prefs[i].Key));
+                }
+                else if (Prefs[i].Type == PrefType.INT)
+                {
+                    Debug.Log("EditorPref value: " + EditorPrefs.GetInt(Prefs[i].Key));
+                }
+                else if (Prefs[i].Type == PrefType.FLOAT)
+                {
+                    Debug.Log("EditorPref value: " + EditorPrefs.GetFloat(Prefs[i].Key));
+                }
+                else if (Prefs[i].Type == PrefType.STRING)
+                {
+                    Debug.Log("EditorPref value: " + EditorPrefs.GetString(Prefs[i].Key));
+                }
+            }
         }
     }
 }

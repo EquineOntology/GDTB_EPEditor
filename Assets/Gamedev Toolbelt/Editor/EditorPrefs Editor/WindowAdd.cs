@@ -131,6 +131,7 @@ namespace GDTB.EditorPrefsEditor
                             break;
                         }
                     }
+
                     // If the key is not in prefs.
                     if (shouldAddPref)
                     {
@@ -142,33 +143,29 @@ namespace GDTB.EditorPrefsEditor
                         {
                             bValue = NewEditorPrefs.GetBool(_key);
                             currentPref = new Pref(PrefType.BOOL, _key, bValue.ToString());
-                            PrefManager.AddPref(currentPref);
                         }
-                        catch (System.Exception) { }
+                        catch (System.Exception) {}
 
                         try
                         {
                             iValue = NewEditorPrefs.GetInt(_key);
                             currentPref = new Pref(PrefType.INT, _key, iValue.ToString());
-                            PrefManager.AddPref(currentPref);
                         }
-                        catch (System.Exception) { }
+                        catch (System.Exception) {}
 
                         try
                         {
                             fValue = NewEditorPrefs.GetFloat(_key);
                             currentPref = new Pref(PrefType.FLOAT, _key, fValue.ToString());
-                            PrefManager.AddPref(currentPref);
                         }
-                        catch (System.Exception) { }
+                        catch (System.Exception) {}
 
                         try
                         {
                             sValue = NewEditorPrefs.GetString(_key);
                             currentPref = new Pref(PrefType.STRING, _key, sValue);
-                            PrefManager.AddPref(currentPref);
                         }
-                        catch (System.Exception) { }
+                        catch (System.Exception) {}
                     }
 
                     // Does the user want to edit the already existing key?
@@ -176,8 +173,12 @@ namespace GDTB.EditorPrefsEditor
                     {
                         if (EditorUtility.DisplayDialog("Pref already exists.", "The key you're trying to use already exists.\nDo you want to edit it?", "Edit", "Cancel"))
                         {
-                            EditorWindow.GetWindow(typeof(WindowAdd)).Close();
                             WindowEdit.Init(currentPref);
+                            EditorWindow.GetWindow(typeof(WindowAdd)).Close();
+                        }
+                        else
+                        {
+                            PrefManager.AddPref(currentPref);
                         }
                     }
                 }
@@ -188,16 +189,16 @@ namespace GDTB.EditorPrefsEditor
                         switch (_type)
                         {
                             case 0:
-                                PrefManager.AddPref(_key, _boolValue);
+                                NewEditorPrefs.SetBool(_key, _boolValue);
                                 break;
                             case 1:
-                                PrefManager.AddPref(_key, _intValue);
+                                NewEditorPrefs.SetInt(_key, _intValue);
                                 break;
                             case 2:
-                                PrefManager.AddPref(_key, _floatValue);
+                                NewEditorPrefs.SetFloat(_key, _floatValue);
                                 break;
                             case 3:
-                                PrefManager.AddPref(_key, _stringValue);
+                                NewEditorPrefs.SetString(_key, _stringValue);
                                 break;
                         }
                         EditorWindow.GetWindow(typeof(WindowAdd)).Close();

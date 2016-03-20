@@ -4,7 +4,7 @@
     {
         public const string FILE_GDTB_EDIT = "GUI/epeditor_EDIT";
         public const string FILE_GDTB_ADD = "GUI/epeditor_ADD";
-        public const string FILE_GDTB_EXISTING = "GUI/epeditor_EXISTING";
+        public const string FILE_GDTB_GET = "GUI/epeditor_GET";
         public const string FILE_GDTB_REMOVE = "GUI/epeditor_REMOVE";
 
         public const string FILE_GUISKIN = "GUI/epeditor_skin";

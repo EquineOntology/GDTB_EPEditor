@@ -149,7 +149,7 @@ namespace GDTB.EditorPrefsEditor
                         try
                         {
                             iValue = NewEditorPrefs.GetInt(_key);
-                            currentPref = new Pref(PrefType.BOOL, _key, iValue.ToString());
+                            currentPref = new Pref(PrefType.INT, _key, iValue.ToString());
                             PrefManager.AddPref(currentPref);
                         }
                         catch (System.Exception) { }
@@ -157,7 +157,7 @@ namespace GDTB.EditorPrefsEditor
                         try
                         {
                             fValue = NewEditorPrefs.GetFloat(_key);
-                            currentPref = new Pref(PrefType.BOOL, _key, fValue.ToString());
+                            currentPref = new Pref(PrefType.FLOAT, _key, fValue.ToString());
                             PrefManager.AddPref(currentPref);
                         }
                         catch (System.Exception) { }
@@ -165,7 +165,7 @@ namespace GDTB.EditorPrefsEditor
                         try
                         {
                             sValue = NewEditorPrefs.GetString(_key);
-                            currentPref = new Pref(PrefType.BOOL, _key, sValue);
+                            currentPref = new Pref(PrefType.STRING, _key, sValue);
                             PrefManager.AddPref(currentPref);
                         }
                         catch (System.Exception) { }

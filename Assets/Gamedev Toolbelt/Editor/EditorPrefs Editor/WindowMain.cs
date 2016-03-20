@@ -60,6 +60,7 @@ namespace GDTB.EditorPrefsEditor
 
             DrawBG();
             DrawPrefs();
+            DrawSeparator();
             DrawAddButton();
             DrawGetButton();
         }
@@ -189,6 +190,14 @@ namespace GDTB.EditorPrefsEditor
         }
 
 
+        /// Draw a white line separating scrollview and lower buttons.
+        private void DrawSeparator()
+        {
+            var separator = new Rect(0, position.height - (IconSize * 2), position.width, 1);
+            EditorGUI.DrawRect(separator, Color.white);
+        }
+
+
         /// Draw the "Add" button.
         private void DrawAddButton()
         {
@@ -221,7 +230,7 @@ namespace GDTB.EditorPrefsEditor
         {
             var width = position.width - IconSize;
 
-            _scrollRect = new Rect(_offset, _offset, width - (_offset * 2), position.height - IconSize * 3);
+            _scrollRect = new Rect(_offset, _offset, width - (_offset * 2), position.height - IconSize - _offset * 4);
 
             _scrollViewRect = _scrollRect;
 

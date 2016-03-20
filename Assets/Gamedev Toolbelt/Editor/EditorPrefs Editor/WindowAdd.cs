@@ -21,7 +21,7 @@ namespace GDTB.EditorPrefsEditor
         public static void Init()
         {
             WindowAdd window = (WindowAdd)EditorWindow.GetWindow(typeof(WindowAdd));
-            window.minSize = new Vector2(275, 207);
+            window.minSize = new Vector2(275, 209);
             window.titleContent = new GUIContent("Add EditorPref");
             window.ShowUtility();
         }
@@ -54,7 +54,7 @@ namespace GDTB.EditorPrefsEditor
         private void DrawKeyField()
         {
             var labelRect = new Rect(10, 10, position.width - 20, 16);
-            EditorGUI.LabelField(labelRect, "Write the key:", _boldStyle);
+            EditorGUI.LabelField(labelRect, "Key:", _boldStyle);
 
             var keyRect = new Rect(10, 29, position.width - 20, 32);
             _key = EditorGUI.TextField(keyRect, _key);
@@ -65,7 +65,7 @@ namespace GDTB.EditorPrefsEditor
         private void DrawTypePopup()
         {
             var labelRect = new Rect(10, 71, Mathf.Clamp(position.width - 20, 80, 500), 16);
-            EditorGUI.LabelField(labelRect, "Choose a type:", _boldStyle);
+            EditorGUI.LabelField(labelRect, "Type:", _boldStyle);
 
             var typeRect = new Rect(10, 90, position.width - 20, 20);
             _type = GUI.SelectionGrid(typeRect, _type, _prefTypes, _prefTypes.Length, _gridStyle);
@@ -76,7 +76,7 @@ namespace GDTB.EditorPrefsEditor
         private void DrawValueField()
         {
             var labelRect = new Rect(10, 118, Mathf.Clamp(position.width - 20, 80, 500), 16);
-            EditorGUI.LabelField(labelRect, "Insert the value:", _boldStyle);
+            EditorGUI.LabelField(labelRect, "Value:", _boldStyle);
 
             switch (_type)
             {
@@ -107,7 +107,7 @@ namespace GDTB.EditorPrefsEditor
             GUI.skin = _skin;
             Pref currentPref = null;
 
-            var buttonRect = new Rect(Mathf.Clamp((Screen.width / 2) - 60, 0, position.width), 177, 120, 20);
+            var buttonRect = new Rect(Mathf.Clamp((Screen.width / 2) - 60, 0, position.width), 179, 120, 20);
 
             if (GUI.Button(buttonRect, "Add EditorPref"))
             {

@@ -41,12 +41,12 @@ namespace GDTB.EditorPrefsEditor
 
         public static void RemovePref(string aKey)
         {
-            NewEditorPrefs.DeleteKey(aKey);
-            foreach (var pref in WindowMain.Prefs)
+            // Iterate backwards by index, a foreach will throw an InvalidOperationException.
+            for (var i = WindowMain.Prefs.Count - 1; i >= 0; i--)
             {
-                if (pref.Key == aKey)
+                if (WindowMain.Prefs[i].Key == aKey)
                 {
-                    WindowMain.Prefs.Remove(pref);
+                    WindowMain.Prefs.Remove(WindowMain.Prefs[i]);
                 }
             }
             IO.WritePrefsToFile();
@@ -55,7 +55,6 @@ namespace GDTB.EditorPrefsEditor
 
         public static void RemovePref(Pref aPref)
         {
-            NewEditorPrefs.DeleteKey(aPref.Key);
             WindowMain.Prefs.Remove(aPref);
             IO.WritePrefsToFile();
             EditorWindow.GetWindow(typeof(WindowMain)).Repaint();

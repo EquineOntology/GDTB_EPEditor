@@ -178,5 +178,16 @@ namespace GDTB.EditorPrefsEditor
             }
             return pref;
         }
+
+
+        // Empty the bak file.
+        public static void ClearStoredPrefs()
+        {
+            var bakFile = GetFirstInstanceOfFolder("EditorPrefs Editor") + "/bak.gdtb";
+            if (File.Exists(bakFile))
+            {
+                System.IO.File.WriteAllText(bakFile, string.Empty);
+            }
+        }
     }
 }

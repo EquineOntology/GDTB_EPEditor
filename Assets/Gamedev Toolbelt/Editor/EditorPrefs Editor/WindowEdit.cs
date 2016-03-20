@@ -119,6 +119,8 @@ namespace GDTB.EditorPrefsEditor
                 }
                 else
                 {
+                    NewEditorPrefs.DeleteKey(_originalPref.Key);
+
                     switch (_type)
                     {
                         case 0:
@@ -133,10 +135,6 @@ namespace GDTB.EditorPrefsEditor
                         case 3:
                             NewEditorPrefs.SetString(_key, _stringValue);
                             break;
-                    }
-                    if (_key != _originalPref.Key)
-                    {
-                        NewEditorPrefs.DeleteKey(_originalPref.Key);
                     }
                 }
                 EditorWindow.GetWindow(typeof(WindowEdit)).Close();
@@ -154,7 +152,7 @@ namespace GDTB.EditorPrefsEditor
             switch (_type)
             {
                 case 0:
-                    _boolValue = aPref.Value == "true" ? true : false;
+                    _boolValue = aPref.Value == "True" ? true : false;
                     _boolIndex = _boolValue == true ? 1 : 0;
                     break;
                 case 1:

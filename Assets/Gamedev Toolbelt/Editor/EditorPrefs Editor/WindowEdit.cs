@@ -16,14 +16,14 @@ namespace GDTB.EditorPrefsEditor
         private string _stringValue = "";
 
         private GUISkin _skin;
-        private GUIStyle _boldStyle;
+        private GUIStyle _boldStyle, _gridStyle;
 
         private Pref _originalPref;
 
         public static void Init(Pref aPref)
         {
             WindowEdit window = (WindowEdit)EditorWindow.GetWindow(typeof(WindowEdit));
-            window.minSize = new Vector2(200, 207);
+            window.minSize = new Vector2(275, 209);
             window.titleContent = new GUIContent("Edit EditorPref");
             window.InitInputValues(aPref);
 
@@ -34,6 +34,7 @@ namespace GDTB.EditorPrefsEditor
         {
             _skin = Resources.Load(Constants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
             _boldStyle = _skin.GetStyle("GDTB_EPEditor_key");
+            _gridStyle = _skin.GetStyle("GDTB_EPEditor_selectionGrid");
         }
 
         public void OnGUI()
@@ -70,34 +71,34 @@ namespace GDTB.EditorPrefsEditor
             var labelRect = new Rect(10, 71, Mathf.Clamp(position.width - 20, 80, position.width), 16);
             EditorGUI.LabelField(labelRect, "Type:", _boldStyle);
 
-            var priorityRect = new Rect(10, 90, 70, 16);
-            _type = EditorGUI.Popup(priorityRect, _type, _prefTypes);
+            var typeRect = new Rect(10, 90, position.width - 20, 20);
+            _type = GUI.SelectionGrid(typeRect, _type, _prefTypes, _prefTypes.Length, _gridStyle);
         }
 
 
         /// Draw value input field.
         private void DrawValueField()
         {
-            var labelRect = new Rect(10, 116, Mathf.Clamp(position.width - 20, 80, position.width), 16);
+            var labelRect = new Rect(10, 118, Mathf.Clamp(position.width - 20, 80, position.width), 16);
             EditorGUI.LabelField(labelRect, "Value:", _boldStyle);
 
             switch (_type)
             {
                 case 0:
-                    var boolRect = new Rect(10, 135, 150, 16);
-                    _boolIndex = EditorGUI.Popup(boolRect, _boolIndex, _boolValues);
+                    var boolRect = new Rect(10, 137, 130, 20);
+                    _boolIndex = GUI.SelectionGrid(boolRect, _boolIndex, _boolValues, _boolValues.Length, _gridStyle);
                     _boolValue = _boolIndex == 0 ? false : true;
                     break;
                 case 1:
-                    var intRect = new Rect(10, 135, 70, 16);
+                    var intRect = new Rect(10, 137, position.width - 20, 16);
                     _intValue = EditorGUI.IntField(intRect, _intValue);
                     break;
                 case 2:
-                    var floatRect = new Rect(10, 135, 70, 16);
+                    var floatRect = new Rect(10, 137, position.width - 20, 16);
                     _floatValue = EditorGUI.FloatField(floatRect, _floatValue);
                     break;
                 case 3:
-                    var stringRect = new Rect(10, 135, Mathf.Clamp(position.width - 20, 80, position.width), 32);
+                    var stringRect = new Rect(10, 137, position.width - 20, 32);
                     _stringValue = EditorGUI.TextField(stringRect, _stringValue);
                     break;
             }
@@ -109,7 +110,7 @@ namespace GDTB.EditorPrefsEditor
         {
             GUI.skin = _skin;
 
-            var buttonRect = new Rect(Mathf.Clamp((Screen.width / 2) - 60, 0, 190), 177, 120, 20);
+            var buttonRect = new Rect(Mathf.Clamp((Screen.width / 2) - 60, 0, position.width), 179, 120, 20);
 
             if (GUI.Button(buttonRect, "Edit EditorPref"))
             {

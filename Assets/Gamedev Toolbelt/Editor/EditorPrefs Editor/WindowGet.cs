@@ -15,12 +15,12 @@ namespace GDTB.EditorPrefsEditor
         private string _stringValue = "";
 
         private GUISkin _skin;
-        private GUIStyle _boldStyle;
+        private GUIStyle _boldStyle, _gridStyle;
 
         public static void Init()
         {
             WindowGet window = (WindowGet)EditorWindow.GetWindow(typeof(WindowGet));
-            window.minSize = new Vector2(200, 150);
+            window.minSize = new Vector2(275, 162);
             window.titleContent = new GUIContent("Get EditorPref");
             window.ShowUtility();
         }
@@ -29,6 +29,7 @@ namespace GDTB.EditorPrefsEditor
         {
             _skin = Resources.Load(Constants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
             _boldStyle = _skin.GetStyle("GDTB_EPEditor_key");
+            _gridStyle = _skin.GetStyle("GDTB_EPEditor_selectionGrid");
         }
 
         public void OnGUI()
@@ -51,7 +52,7 @@ namespace GDTB.EditorPrefsEditor
         private void DrawKeyField()
         {
             var labelRect = new Rect(10, 10, position.width - 20, 16);
-            EditorGUI.LabelField(labelRect, "Write the key:", _boldStyle);
+            EditorGUI.LabelField(labelRect, "Key:", _boldStyle);
 
             var keyRect = new Rect(10, 29, position.width - 20, 32);
             _key = EditorGUI.TextField(keyRect, _key);
@@ -62,10 +63,10 @@ namespace GDTB.EditorPrefsEditor
         private void DrawTypePopup()
         {
             var labelRect = new Rect(10, 71, position.width - 20, 16);
-            EditorGUI.LabelField(labelRect, "Choose a type:", _boldStyle);
+            EditorGUI.LabelField(labelRect, "Type:", _boldStyle);
 
-            var priorityRect = new Rect(10, 90, 70, 16);
-            _type = EditorGUI.Popup(priorityRect, _type, _prefTypes);
+            var typeRect = new Rect(10, 90, position.width - 20, 20);
+            _type = GUI.SelectionGrid(typeRect, _type, _prefTypes, _prefTypes.Length, _gridStyle);
         }
 
 
@@ -74,7 +75,7 @@ namespace GDTB.EditorPrefsEditor
         {
             GUI.skin = _skin;
 
-            var buttonRect = new Rect((Screen.width / 2) - 60, 116, 120, 20);
+            var buttonRect = new Rect((Screen.width / 2) - 60, 126, 120, 20);
 
             if (GUI.Button(buttonRect, "Get EditorPref"))
             {

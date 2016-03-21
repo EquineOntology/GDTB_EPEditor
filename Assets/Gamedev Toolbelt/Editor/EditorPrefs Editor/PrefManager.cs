@@ -59,5 +59,16 @@ namespace GDTB.EditorPrefsEditor
             IO.WritePrefsToFile();
             EditorWindow.GetWindow(typeof(WindowMain)).Repaint();
         }
+
+
+        public static void RefreshPrefs()
+        {
+            var storedPrefs = IO.LoadStoredPrefs();
+            if (storedPrefs.Count >= WindowMain.Prefs.Count)
+            {
+                WindowMain.Prefs.Clear();
+                WindowMain.Prefs.AddRange(storedPrefs);
+            }
+        }
     }
 }

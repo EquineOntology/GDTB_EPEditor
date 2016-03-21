@@ -15,13 +15,13 @@ namespace GDTB.EditorPrefsEditor
         // ========================= Editor layouting =========================
         private const int IconSize = 16;
 
-        private int _typeWidth, _prefsWidth, _buttonsWidth;
         private int _offset = 5;
 
+        private int _typeWidth, _prefsWidth, _buttonsWidth;
         private int _typeLabelWidth;
         private float _heightIndex = 0;
         private Vector2 _scrollPosition = new Vector2(Screen.width - 5, Screen.height);
-        private Rect prefContent, _scrollViewRect, _scrollRect, _typeRect, _keyValueRect, _buttonsRect;
+        private Rect _scrollViewRect, _scrollRect, _typeRect, _keyValueRect, _buttonsRect;
 
         // ====================================================================
         [MenuItem("Window/Gamedev Toolbelt/EditorPrefs Editor %]")]
@@ -34,13 +34,8 @@ namespace GDTB.EditorPrefsEditor
             window._typeLabelWidth = (int)window._typeStyle.CalcSize(new GUIContent("String")).x; // Not with the other layouting sizes because it only needs to be done once.
             window.UpdateLayoutingSizes();
 
-            // Restore stored preferences.
-            var storedPrefs = IO.LoadStoredPrefs();
-            if (storedPrefs.Count >= Prefs.Count)
-            {
-                WindowMain.Prefs.Clear();
-                WindowMain.Prefs.AddRange(storedPrefs);
-            }
+            PrefManager.RefreshPrefs();
+
             //window.DebugPrefs();
             window.Show();
         }
@@ -63,6 +58,7 @@ namespace GDTB.EditorPrefsEditor
             DrawSeparator();
             DrawAddButton();
             DrawGetButton();
+            DrawRefreshButton();
         }
 
 
@@ -148,7 +144,7 @@ namespace GDTB.EditorPrefsEditor
             // Value.
             var valueRect = aRect;
             valueRect.x = _typeWidth + IconSize / 2;
-            valueRect.y = aRect.y + aHeight + _offset;
+            valueRect.y = aRect.y + aHeight + (_offset * 1.5f);
 
             EditorGUI.LabelField(valueRect, aPref.Value, _valueStyle);
         }
@@ -201,7 +197,7 @@ namespace GDTB.EditorPrefsEditor
         /// Draw the "Add" button.
         private void DrawAddButton()
         {
-            var addRect = new Rect((position.width / 2 - IconSize * 1.5f), position.height - (IconSize * 1.5f), IconSize, IconSize);
+            var addRect = new Rect((position.width / 2 - IconSize * 2), position.height - (IconSize * 1.5f), IconSize, IconSize);
             var addButton = new GUIContent(Resources.Load(Constants.FILE_GDTB_ADD, typeof(Texture2D)) as Texture2D, "Add a new key");
 
             // Add QQQ on click.
@@ -212,16 +208,30 @@ namespace GDTB.EditorPrefsEditor
         }
 
 
-        /// Draw the "Get key" button
+        /// Draw the "Get key" button.
         private void DrawGetButton()
         {
-            var getRect = new Rect((position.width / 2 + IconSize * 0.5f), position.height - (IconSize * 1.5f), IconSize, IconSize);
+            var getRect = new Rect((position.width / 2 - IconSize * 0.5f), position.height - (IconSize * 1.5f), IconSize, IconSize);
             var getButton = new GUIContent(Resources.Load(Constants.FILE_GDTB_GET, typeof(Texture2D)) as Texture2D, "Add existing key");
 
             // Get value and type on click.
             if (GUI.Button(getRect, getButton))
             {
                 EditorPrefsEditor.WindowGet.Init();
+            }
+        }
+
+
+        /// Draw the "Refresh prefs" button.
+        private void DrawRefreshButton()
+        {
+            var refreshRect = new Rect((position.width / 2 + IconSize * 1), position.height - (IconSize * 1.5f), IconSize, IconSize);
+            var refreshButton = new GUIContent(Resources.Load(Constants.FILE_GDTB_REFRESH, typeof(Texture2D)) as Texture2D, "Refresh list");
+
+            // Refresh prefs on click.
+            if (GUI.Button(refreshRect, refreshButton))
+            {
+                PrefManager.RefreshPrefs();
             }
         }
 
@@ -239,6 +249,7 @@ namespace GDTB.EditorPrefsEditor
             _prefsWidth = (int)width - _typeWidth - _buttonsWidth - (_offset * 2);
         }
 
+
         /// Load the EPEditor skin.
         private void LoadSkin()
         {
@@ -253,6 +264,7 @@ namespace GDTB.EditorPrefsEditor
             _keyStyle = _epEditorSkin.GetStyle("GDTB_EPEditor_key");
             _valueStyle = _epEditorSkin.GetStyle("GDTB_EPEditor_value");
         }
+
 
         private void DebugPrefs()
         {

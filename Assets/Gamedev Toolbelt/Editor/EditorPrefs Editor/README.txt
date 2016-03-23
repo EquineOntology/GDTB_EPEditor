@@ -47,11 +47,11 @@ and you can also edit and remove them.
 
 You can use EPEditor in two ways:
 
-The first is by using the interface: you can either add a new EditorPref or retrieve the value
+The first is by using the interface - you can either add a new EditorPref or retrieve the value
 of one whose key and type you know. When they're part of the "database" you can edit and remove
 them individually.
 
-The second way to use it is in conjunction with code. The extension includes an EditorPrefs
+The second way to use it is in conjunction with code - the extension includes an EditorPrefs
 wrapper called NewEditorPrefs, which works the same as the Unity one (it relies on their own
 functions, as a matter of fact), but is also integrated with the interface of the extension, so
 that you can add an EditorPref from code and have it automatically added to the EPEditor interface.

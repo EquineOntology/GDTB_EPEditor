@@ -24,7 +24,7 @@ namespace GDTB.EditorPrefsEditor
         private Rect _scrollViewRect, _scrollRect, _typeRect, _keyValueRect, _buttonsRect;
 
         // ====================================================================
-        [MenuItem("Window/Gamedev Toolbelt/EditorPrefs Editor %]")]
+        [MenuItem("Window/Gamedev Toolbelt/EditorPrefs Editor")]
         public static void Init()
         {
             // Get existing open window or if none, make a new one.
@@ -105,7 +105,7 @@ namespace GDTB.EditorPrefsEditor
         }
 
 
-        /// Draw the "Helpbox" style rectangle that separates the prefs visually.
+        /// Draw the rectangle that separates the prefs visually.
         private void DrawPrefBG(Rect aRect)
         {
             EditorGUI.DrawRect(new Rect(aRect.x,    aRect.y,    2,    aRect.height), Color.white);
@@ -161,23 +161,18 @@ namespace GDTB.EditorPrefsEditor
             editRect.height = IconSize;
 
             var editButton = new GUIContent(Resources.Load(Constants.FILE_GDTB_EDIT, typeof(Texture2D)) as Texture2D, "Edit this EditorPref");
-
-            // Open edit window on click.
             if (GUI.Button(editRect, editButton))
             {
                 WindowEdit.Init(aPref);
             }
 
-            // "Complete" button.
+            // "Remove" button.
             var removeRect = editRect;
             removeRect.y = editRect.y + editRect.height + 2;
 
             var removeButton = new GUIContent(Resources.Load(Constants.FILE_GDTB_REMOVE, typeof(Texture2D)) as Texture2D, "Remove this EditorPref");
-
-            // Complete QQQ on click.
             if (GUI.Button(removeRect, removeButton))
             {
-                // Confirmation dialog.
                 if (EditorUtility.DisplayDialog("Remove EditorPref", "Are you sure you want to remove this EditorPref?", "Remove pref", "Cancel"))
                 {
                     NewEditorPrefs.DeleteKey(aPref.Key);
@@ -200,7 +195,6 @@ namespace GDTB.EditorPrefsEditor
             var addRect = new Rect((position.width / 2 - IconSize * 2), position.height - (IconSize * 1.5f), IconSize, IconSize);
             var addButton = new GUIContent(Resources.Load(Constants.FILE_GDTB_ADD, typeof(Texture2D)) as Texture2D, "Add a new key");
 
-            // Add QQQ on click.
             if (GUI.Button(addRect, addButton))
             {
                 WindowAdd.Init();
@@ -208,13 +202,12 @@ namespace GDTB.EditorPrefsEditor
         }
 
 
-        /// Draw the "Get key" button.
+        /// Draw the "Get" button.
         private void DrawGetButton()
         {
             var getRect = new Rect((position.width / 2 - IconSize * 0.5f), position.height - (IconSize * 1.5f), IconSize, IconSize);
             var getButton = new GUIContent(Resources.Load(Constants.FILE_GDTB_GET, typeof(Texture2D)) as Texture2D, "Add existing key");
 
-            // Get value and type on click.
             if (GUI.Button(getRect, getButton))
             {
                 EditorPrefsEditor.WindowGet.Init();
@@ -222,13 +215,12 @@ namespace GDTB.EditorPrefsEditor
         }
 
 
-        /// Draw the "Refresh prefs" button.
+        /// Draw the "Refresh" button.
         private void DrawRefreshButton()
         {
             var refreshRect = new Rect((position.width / 2 + IconSize * 1), position.height - (IconSize * 1.5f), IconSize, IconSize);
             var refreshButton = new GUIContent(Resources.Load(Constants.FILE_GDTB_REFRESH, typeof(Texture2D)) as Texture2D, "Refresh list");
 
-            // Refresh prefs on click.
             if (GUI.Button(refreshRect, refreshButton))
             {
                 PrefManager.RefreshPrefs();

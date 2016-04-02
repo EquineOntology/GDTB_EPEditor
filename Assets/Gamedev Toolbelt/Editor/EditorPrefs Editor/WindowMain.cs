@@ -9,7 +9,7 @@ namespace GDTB.EditorPrefsEditor
         public static List<Pref> Prefs = new List<Pref>();
         private static List<Pref> _oldPrefs;
 
-        private GUISkin _epEditorSkin;
+        private GUISkin _skin, _defaultSkin;
         private GUIStyle _typeStyle, _keyStyle, _valueStyle;
 
         // ========================= Editor layouting =========================
@@ -51,7 +51,18 @@ namespace GDTB.EditorPrefsEditor
         private void OnGUI()
         {
             UpdateLayoutingSizes();
-            GUI.skin = _epEditorSkin;
+            if (_defaultSkin == null)
+            {
+                _defaultSkin = GUI.skin;
+            }
+            GUI.skin = _skin;
+
+            // If the list is clean (for instance because we just recompiled) load QQQs based on preferences.
+            if (Prefs.Count == 0)
+            {
+                Prefs.Clear();
+                Prefs.AddRange(IO.LoadStoredPrefs());
+            }
 
             DrawBG();
             DrawPrefs();
@@ -245,16 +256,16 @@ namespace GDTB.EditorPrefsEditor
         /// Load the EPEditor skin.
         private void LoadSkin()
         {
-            _epEditorSkin = Resources.Load(Constants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
+            _skin = Resources.Load(Constants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
         }
 
 
         /// Assign the GUI Styles
         private void LoadStyles()
         {
-            _typeStyle = _epEditorSkin.GetStyle("GDTB_EPEditor_type");
-            _keyStyle = _epEditorSkin.GetStyle("GDTB_EPEditor_key");
-            _valueStyle = _epEditorSkin.GetStyle("GDTB_EPEditor_value");
+            _typeStyle = _skin.GetStyle("GDTB_EPEditor_type");
+            _keyStyle = _skin.GetStyle("GDTB_EPEditor_key");
+            _valueStyle = _skin.GetStyle("GDTB_EPEditor_value");
         }
 
 

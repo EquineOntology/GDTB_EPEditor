@@ -123,16 +123,16 @@ namespace GDTB.EditorPrefsEditor
             switch (_type)
             {
                 case 0:
-                    PrefManager.AddPref(_key, _boolValue);
+                    PrefOps.AddPref(_key, _boolValue);
                     break;
                 case 1:
-                    PrefManager.AddPref(_key, _intValue);
+                    PrefOps.AddPref(_key, _intValue);
                     break;
                 case 2:
-                    PrefManager.AddPref(_key, _floatValue);
+                    PrefOps.AddPref(_key, _floatValue);
                     break;
                 case 3:
-                    PrefManager.AddPref(_key, _stringValue);
+                    PrefOps.AddPref(_key, _stringValue);
                     break;
             }
         }

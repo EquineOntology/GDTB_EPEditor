@@ -2,7 +2,7 @@
 
 namespace GDTB.EditorPrefsEditor
 {
-    public static class PrefManager
+    public static class PrefOps
     {
         public static void AddPref(Pref aPref)
         {

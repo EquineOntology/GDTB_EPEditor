@@ -14,7 +14,7 @@ public static class NewEditorPrefs
         }
         else
         {
-            PrefManager.AddPref(aKey, aValue);
+            PrefOps.AddPref(aKey, aValue);
         }
     }
 
@@ -41,7 +41,7 @@ public static class NewEditorPrefs
         }
         else
         {
-            PrefManager.AddPref(aKey, aValue);
+            PrefOps.AddPref(aKey, aValue);
         }
     }
 
@@ -68,7 +68,7 @@ public static class NewEditorPrefs
         }
         else
         {
-            PrefManager.AddPref(aKey, aValue);
+            PrefOps.AddPref(aKey, aValue);
         }
     }
 
@@ -95,7 +95,7 @@ public static class NewEditorPrefs
         }
         else
         {
-            PrefManager.AddPref(aKey, aValue);
+            PrefOps.AddPref(aKey, aValue);
         }
     }
 
@@ -122,7 +122,7 @@ public static class NewEditorPrefs
     public static void DeleteKey(string aKey)
     {
         EditorPrefs.DeleteKey(aKey);
-        PrefManager.RemovePref(aKey);
+        PrefOps.RemovePref(aKey);
     }
 
 

@@ -6,36 +6,6 @@ namespace GDTB.EditorPrefsEditor
 {
     public static class IO
     {
-        /// Write Prefs in memory to the backup file.
-        public static void WritePrefsToFile()
-        {
-            var tempFile = Path.GetTempFileName();
-            var bakFile = GetFirstInstanceOfFolder("EditorPrefs Editor") + "/bak.gdtb";
-
-            var writer = new StreamWriter(tempFile, false);
-            try
-            {
-                foreach (var pref in WindowMain.Prefs)
-                {
-                    var type = pref.Type.ToString();
-                    var key = pref.Key;
-                    var line = type + "|" + key;
-                    writer.WriteLine(line);
-                }
-                writer.Close();
-            }
-            catch (Exception)
-            {
-                writer.Dispose();
-            }
-
-            if (File.Exists(bakFile))
-            {
-                File.Delete(bakFile);
-            }
-            File.Move(tempFile, bakFile);
-        }
-
         /// Return the first instance of the given folder.
         /// This is a non-recursive, breadth-first search algorithm.
         private static string GetFirstInstanceOfFolder(string aFolderName)
@@ -90,6 +60,56 @@ namespace GDTB.EditorPrefsEditor
             return relativePath;
         }
 
+
+        /// Get the path of a file based on the ending provided.
+        private static string GetFilePath(string aPathEnd)
+        {
+            var assetsPaths = UnityEditor.AssetDatabase.GetAllAssetPaths();
+            var filePath = "";
+            foreach (var path in assetsPaths)
+            {
+                if (path.EndsWith(aPathEnd))
+                {
+                    filePath = path;
+                    break;
+                }
+            }
+            return filePath;
+        }
+
+
+        /// Write Prefs in memory to the backup file.
+        public static void WritePrefsToFile()
+        {
+            var tempFile = Path.GetTempFileName();
+            var bakFile = GetFirstInstanceOfFolder("EditorPrefs Editor") + "/bak.gdtb";
+
+            var writer = new StreamWriter(tempFile, false);
+            try
+            {
+                foreach (var pref in WindowMain.Prefs)
+                {
+                    var type = pref.Type.ToString();
+                    var key = pref.Key;
+                    var line = type + "|" + key;
+                    writer.WriteLine(line);
+                }
+                writer.Close();
+            }
+            catch (Exception)
+            {
+                writer.Dispose();
+            }
+
+            if (File.Exists(bakFile))
+            {
+                File.Delete(bakFile);
+            }
+            File.Move(tempFile, bakFile);
+        }
+
+
+        /// Load Prefs from the backup.
         public static List<Pref> LoadStoredPrefs()
         {
             var backedPrefs = new List<Pref>();
@@ -180,13 +200,55 @@ namespace GDTB.EditorPrefsEditor
         }
 
 
-        // Empty the bak file.
+        /// Empty the bak file.
         public static void ClearStoredPrefs()
         {
             var bakFile = GetFirstInstanceOfFolder("EditorPrefs Editor") + "/bak.gdtb";
             if (File.Exists(bakFile))
             {
                 System.IO.File.WriteAllText(bakFile, string.Empty);
+            }
+        }
+
+
+        /// Overwrite the shortcut code in WindowMain.
+        public static void OverwriteShortcut(string aShortcut)
+        {
+            var tempFile = Path.GetTempFileName();
+            var file = GetFilePath("Gamedev Toolbelt/Editor/EditorPrefs Editor/WindowMain.cs");
+
+            var writer = new StreamWriter(tempFile, false);
+            var reader = new StreamReader(file);
+
+            var line = "";
+            try
+            {
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if(line.Contains("[MenuItem"))
+                    {
+                        writer.WriteLine("        [MenuItem(" + '"' + "Window/Gamedev Toolbelt/EditorPrefs Editor " + aShortcut + '"' + ")]");
+                    }
+                    else
+                    {
+                        writer.WriteLine(line);
+                    }
+                }
+                reader.Close();
+                writer.Close();
+
+                // Overwrite the old file with the temp file.
+                File.Delete(file);
+                File.Move(tempFile, file);
+                UnityEditor.AssetDatabase.ImportAsset(file);
+            }
+            catch (Exception ex)
+            {
+                UnityEngine.Debug.Log(ex.Message);
+                UnityEngine.Debug.Log(ex.Data);
+                UnityEngine.Debug.Log(ex.StackTrace);
+                reader.Dispose();
+                writer.Dispose();
             }
         }
     }

@@ -179,7 +179,7 @@ namespace GDTB.EditorPrefsEditor
                         }
                         else
                         {
-                            PrefManager.AddPref(currentPref);
+                            PrefOps.AddPref(currentPref);
                         }
                     }
                 }

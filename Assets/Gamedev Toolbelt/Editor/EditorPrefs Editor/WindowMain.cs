@@ -24,7 +24,7 @@ namespace GDTB.EditorPrefsEditor
         private Rect _scrollViewRect, _scrollRect, _typeRect, _keyValueRect, _buttonsRect;
 
         // ====================================================================
-        [MenuItem("Window/Gamedev Toolbelt/EditorPrefs Editor")]
+        [MenuItem("Window/Gamedev Toolbelt/EditorPrefs Editor %q")]
         public static void Init()
         {
             // Get existing open window or if none, make a new one.
@@ -34,7 +34,7 @@ namespace GDTB.EditorPrefsEditor
             window._typeLabelWidth = (int)window._typeStyle.CalcSize(new GUIContent("String")).x; // Not with the other layouting sizes because it only needs to be done once.
             window.UpdateLayoutingSizes();
 
-            PrefManager.RefreshPrefs();
+            PrefOps.RefreshPrefs();
 
             //window.DebugPrefs();
             window.Show();
@@ -251,7 +251,7 @@ namespace GDTB.EditorPrefsEditor
 
             if (GUI.Button(refreshRect, refreshButton))
             {
-                PrefManager.RefreshPrefs();
+                PrefOps.RefreshPrefs();
             }
         }
 

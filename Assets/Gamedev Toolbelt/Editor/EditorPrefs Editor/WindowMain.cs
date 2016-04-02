@@ -206,7 +206,22 @@ namespace GDTB.EditorPrefsEditor
             var removeButton = new GUIContent(Resources.Load(Constants.FILE_GDTB_REMOVE, typeof(Texture2D)) as Texture2D, "Remove this EditorPref");
             if (GUI.Button(removeRect, removeButton))
             {
-                if (EditorUtility.DisplayDialog("Remove EditorPref", "Are you sure you want to remove this EditorPref?", "Remove pref", "Cancel"))
+                // Get confirmation through dialog (or not if the user doesn't want to).
+                var canExecute = false;
+                if (Preferences.ShowConfirmationDialogs == true)
+                {
+                    if (EditorUtility.DisplayDialog("Remove EditorPref", "Are you sure you want to remove this EditorPref?", "Remove pref", "Cancel"))
+                    {
+                        canExecute = true;
+                    }
+                }
+                else
+                {
+                    canExecute = true;
+                }
+
+                // Actually do the thing.
+                if (canExecute == true)
                 {
                     NewEditorPrefs.DeleteKey(aPref.Key);
                 }

@@ -191,7 +191,22 @@ namespace GDTB.EditorPrefsEditor
                 }
                 else
                 {
-                    if (EditorUtility.DisplayDialog("Add editor preference?", "Are you sure you want to add this key to EditorPrefs?", "Add key", "Cancel"))
+                    // Get confirmation through dialog (or not if the user doesn't want to).
+                    var canExecute = false;
+                    if (Preferences.ShowConfirmationDialogs == true)
+                    {
+                        if (EditorUtility.DisplayDialog("Add editor preference?", "Are you sure you want to add this key to EditorPrefs?", "Add key", "Cancel"))
+                        {
+                            canExecute = true;
+                        }
+                    }
+                    else
+                    {
+                        canExecute = true;
+                    }
+
+                    // Actually do the thing.
+                    if (canExecute == true)
                     {
                         switch (_type)
                         {
@@ -209,10 +224,6 @@ namespace GDTB.EditorPrefsEditor
                                 break;
                         }
                         EditorWindow.GetWindow(typeof(WindowAdd)).Close();
-                    }
-                    else
-                    {
-                        EditorUtility.DisplayDialog("No key added", "There was an unknown issue when adding your key.\nPlease try again", "Ok");
                     }
                 }
             }

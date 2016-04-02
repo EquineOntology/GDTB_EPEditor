@@ -91,9 +91,23 @@ namespace GDTB.EditorPrefsEditor
                 }
                 else
                 {
-                    if (EditorUtility.DisplayDialog("Get editor preference?", "Are you sure you want to get this key from EditorPrefs?\nIf it's not found, we'll tell you and no key will be added to the interface, no worries.", "Add key", "Cancel"))
+                    // Get confirmation through dialog (or not if the user doesn't want to).
+                    var canExecute = false;
+                    if (Preferences.ShowConfirmationDialogs == true)
                     {
+                        if (EditorUtility.DisplayDialog("Get editor preference?", "Are you sure you want to get this key from EditorPrefs?\nIf it's not found, we'll tell you and no key will be added to the interface, no worries.", "Add key", "Cancel"))
+                        {
+                            canExecute = true;
+                        }
+                    }
+                    else
+                    {
+                        canExecute = true;
+                    }
 
+                    // Actually do the thing.
+                    if (canExecute == true)
+                    {
                         // Check that pref was added correctly.
                         if (NewEditorPrefs.HasKey(_key))
                         {

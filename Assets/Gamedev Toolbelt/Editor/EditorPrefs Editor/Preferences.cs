@@ -8,7 +8,7 @@ namespace GDTB.EditorPrefsEditor
         #region fields
 
         // Buttons displayed as normal buttons or smaller icons.
-        public const string PREFS_CODETODOS_BUTTONS_DISPLAY = "GDTB_EPEditor_ButtonDisplay";
+        private const string PREFS_EPEDITOR_BUTTONS_DISPLAY = "GDTB_EPEditor_ButtonDisplay";
         private static ButtonsDisplayFormat _buttonsDisplay = ButtonsDisplayFormat.COOL_ICONS;
         private static int _buttonsDisplay_default = 1;
         public static ButtonsDisplayFormat ButtonsDisplay
@@ -19,7 +19,7 @@ namespace GDTB.EditorPrefsEditor
 
 
         // Confirmation dialogs
-        public const string PREFS_CODETODOS_CONFIRMATION_DIALOGS = "GDTB_EPEditor_ConfirmationDialogs";
+        private const string PREFS_EPEDITOR_CONFIRMATION_DIALOGS = "GDTB_EPEditor_ConfirmationDialogs";
         private static bool _confirmationDialogs = true;
         private static bool _confirmationDialogs_default = true;
         public static bool ShowConfirmationDialogs
@@ -29,7 +29,7 @@ namespace GDTB.EditorPrefsEditor
 
 
         // Custom shortcut
-        public const string PREFS_CODETODOS_SHORTCUT = "GDTB_EPEditor_Shortcut";
+        private const string PREFS_EPEDITOR_SHORTCUT = "GDTB_EPEditor_Shortcut";
         private static string _shortcut = "%|q";
         private static string _newShortcut;
         private static string _shortcut_default = "%|q";
@@ -73,8 +73,8 @@ namespace GDTB.EditorPrefsEditor
         /// Set the value of all preferences.
         private static void SetPrefValues()
         {
-            EditorPrefs.SetInt(PREFS_CODETODOS_BUTTONS_DISPLAY, System.Convert.ToInt16(_buttonsDisplay));
-            EditorPrefs.SetBool(PREFS_CODETODOS_CONFIRMATION_DIALOGS, _confirmationDialogs);
+            EditorPrefs.SetInt(PREFS_EPEDITOR_BUTTONS_DISPLAY, System.Convert.ToInt16(_buttonsDisplay));
+            EditorPrefs.SetBool(PREFS_EPEDITOR_CONFIRMATION_DIALOGS, _confirmationDialogs);
             SetShortcutPrefs();
         }
 
@@ -85,7 +85,7 @@ namespace GDTB.EditorPrefsEditor
             if (_newShortcut != _shortcut)
             {
                 _shortcut = _newShortcut;
-                EditorPrefs.SetString(PREFS_CODETODOS_SHORTCUT, _shortcut);
+                EditorPrefs.SetString(PREFS_EPEDITOR_SHORTCUT, _shortcut);
                 var formattedShortcut = _shortcut.Replace("|", "");
                 IO.OverwriteShortcut(formattedShortcut);
             }
@@ -95,9 +95,9 @@ namespace GDTB.EditorPrefsEditor
         /// If preferences have keys already saved in EditorPrefs, get them. Otherwise, set them.
         public static void GetAllPrefValues()
         {
-            _buttonsDisplay = (ButtonsDisplayFormat)EditorPrefs.GetInt(PREFS_CODETODOS_BUTTONS_DISPLAY, _buttonsDisplay_default); // Buttons display.
-            _confirmationDialogs = GetPrefValue(PREFS_CODETODOS_CONFIRMATION_DIALOGS, _confirmationDialogs_default);
-            _shortcut = GetPrefValue(PREFS_CODETODOS_SHORTCUT, _shortcut_default); // Shortcut.
+            _buttonsDisplay = (ButtonsDisplayFormat)EditorPrefs.GetInt(PREFS_EPEDITOR_BUTTONS_DISPLAY, _buttonsDisplay_default); // Buttons display.
+            _confirmationDialogs = GetPrefValue(PREFS_EPEDITOR_CONFIRMATION_DIALOGS, _confirmationDialogs_default);
+            _shortcut = GetPrefValue(PREFS_EPEDITOR_SHORTCUT, _shortcut_default); // Shortcut.
             ParseShortcutValues();
         }
 

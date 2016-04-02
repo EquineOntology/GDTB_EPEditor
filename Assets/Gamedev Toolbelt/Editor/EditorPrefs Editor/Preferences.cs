@@ -65,6 +65,7 @@ namespace GDTB.EditorPrefsEditor
             {
                 SetPrefValues();
                 GetAllPrefValues();
+                RepaintOpenWindows();
             }
         }
 
@@ -227,6 +228,28 @@ namespace GDTB.EditorPrefsEditor
 
             SetPrefValues();
             GetAllPrefValues();
+        }
+
+
+        /// Repaint all open EPEditor windows.
+        private static void RepaintOpenWindows()
+        {
+            if (WindowMain.IsOpen)
+            {
+                EditorWindow.GetWindow(typeof(WindowMain)).Repaint();
+            }
+            if (WindowAdd.IsOpen)
+            {
+                EditorWindow.GetWindow(typeof(WindowAdd)).Repaint();
+            }
+            if (WindowEdit.IsOpen)
+            {
+                EditorWindow.GetWindow(typeof(WindowEdit)).Repaint();
+            }
+            if (WindowGet.IsOpen)
+            {
+                EditorWindow.GetWindow(typeof(WindowGet)).Repaint();
+            }
         }
     }
 

@@ -50,8 +50,8 @@ namespace GDTB.EditorPrefsEditor
             GetAllPrefValues();
 
             EditorGUILayout.BeginVertical();
+            _buttonsDisplay = (ButtonsDisplayFormat)EditorGUILayout.Popup("Button style", System.Convert.ToInt16(_buttonsDisplay), _buttonsFormatsString);
             _confirmationDialogs = EditorGUILayout.Toggle("Show confirmation dialogs", _confirmationDialogs);
-
             EditorGUILayout.Separator();
 
             _newShortcut = DrawShortcutSelector();

@@ -13,11 +13,13 @@ namespace GDTB.EditorPrefsEditor
             get { return Instance != null; }
         }
 
-        private GUISkin _skin, _defaultSkin;
+        private GUISkin _editorSkin, _defaultSkin;
         private GUIStyle _typeStyle, _keyStyle, _valueStyle;
 
         // ========================= Editor layouting =========================
         private const int IconSize = 16;
+        private const int ButtonWidth = 70;
+        private const int ButtonHeight = 18;
 
         private int _offset = 5;
 
@@ -60,7 +62,7 @@ namespace GDTB.EditorPrefsEditor
             {
                 _defaultSkin = GUI.skin;
             }
-            GUI.skin = _skin;
+            GUI.skin = _editorSkin;
 
             // If the list is clean (for instance because we just recompiled) load Prefs again.
             if (Prefs.Count == 0)
@@ -118,6 +120,10 @@ namespace GDTB.EditorPrefsEditor
 
                 var prefBGHeight = keyHeight + valHeight + Constants.LINE_HEIGHT + _offset;
                 prefBGHeight = prefBGHeight < IconSize * 2.5f ? IconSize * 2.5f : prefBGHeight;
+                if (Preferences.ButtonsDisplay.ToString() == "REGULAR_BUTTONS")
+                {
+                    prefBGHeight += 4;
+                }
 
                 _keyValueRect = new Rect(_offset, _heightIndex, _prefsWidth, prefBGHeight);
                 _typeRect = new Rect(-2, _keyValueRect.y, _typeWidth, prefBGHeight);
@@ -132,7 +138,7 @@ namespace GDTB.EditorPrefsEditor
                 DrawPrefBG(prefBGRect);
                 DrawType(_typeRect, Prefs[i]);
                 DrawKeyAndValue(_keyValueRect, Prefs[i], keyHeight);
-                DrawEditAndRemoveButtons(_buttonsRect, Prefs[i]);
+                DrawEditAndRemove_Default(_buttonsRect, Prefs[i]);
             }
             GUI.EndScrollView();
         }
@@ -183,9 +189,73 @@ namespace GDTB.EditorPrefsEditor
         }
 
 
-        /// Draw the "Edit" and "Remove" buttons.
-        private void DrawEditAndRemoveButtons(Rect aRect, Pref aPref)
+        #region EditAndRemove
+        /// Select which format to use based on the user preference.
+        private void DrawEditAndRemove(Rect aRect, Pref aPref)
         {
+            switch (Preferences.ButtonsDisplay)
+            {
+                case ButtonsDisplayFormat.REGULAR_BUTTONS:
+                    DrawEditAndRemove_Default(aRect, aPref);
+                    break;
+                default:
+                    DrawEditAndRemove_Icon(aRect, aPref);
+                    break;
+            }
+        }
+
+
+        /// Draw normal Edit and Remove.
+        private void DrawEditAndRemove_Default(Rect aRect, Pref aPref)
+        {
+            GUI.skin = _defaultSkin;
+            // "Edit" button.
+            var editRect = aRect;
+            editRect.x = position.width - ButtonWidth - IconSize - (_offset * 2);
+            editRect.y += _offset;
+            editRect.width = ButtonWidth;
+            editRect.height = ButtonHeight;
+
+            var editContent = new GUIContent("Edit", "Edit this EditorPref");
+            if (GUI.Button(editRect, editContent))
+            {
+                WindowEdit.Init(aPref);
+            }
+
+            // "Remove" button.
+            var removeRect = editRect;
+            removeRect.y = editRect.y + editRect.height + 2;
+
+            var removeContent = new GUIContent("Remove", "Remove this EditorPref");
+            if (GUI.Button(removeRect, removeContent))
+            {
+                // Get confirmation through dialog (or not if the user doesn't want to).
+                var canExecute = false;
+                if (Preferences.ShowConfirmationDialogs == true)
+                {
+                    if (EditorUtility.DisplayDialog("Remove EditorPref", "Are you sure you want to remove this EditorPref?", "Remove pref", "Cancel"))
+                    {
+                        canExecute = true;
+                    }
+                }
+                else
+                {
+                    canExecute = true;
+                }
+
+                // Actually do the thing.
+                if (canExecute == true)
+                {
+                    NewEditorPrefs.DeleteKey(aPref.Key);
+                }
+            }
+        }
+
+
+        /// Draw icon Edit and Remove.
+        private void DrawEditAndRemove_Icon(Rect aRect, Pref aPref)
+        {
+            GUI.skin = _editorSkin;
             // "Edit" button.
             var editRect = aRect;
             editRect.x = position.width - (IconSize * 3) + 2;
@@ -227,7 +297,7 @@ namespace GDTB.EditorPrefsEditor
                 }
             }
         }
-
+        #endregion
 
         /// Draw a white line separating scrollview and lower buttons.
         private void DrawSeparator()
@@ -285,7 +355,15 @@ namespace GDTB.EditorPrefsEditor
             _scrollViewRect = _scrollRect;
 
             _typeWidth = _typeLabelWidth + (_offset * 2);
-            _buttonsWidth = (IconSize * 2) + 5;
+            // Same for buttons size
+            if(Preferences.ButtonsDisplay.ToString() == "COOL_ICONS")
+            {
+                _buttonsWidth = (IconSize * 2) + 5;
+            }
+            else
+            {
+                _buttonsWidth = ButtonWidth + _offset;
+            }
             _prefsWidth = (int)width - _typeWidth - _buttonsWidth - (_offset * 2);
         }
 
@@ -293,16 +371,16 @@ namespace GDTB.EditorPrefsEditor
         /// Load the EPEditor skin.
         private void LoadSkin()
         {
-            _skin = Resources.Load(Constants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
+            _editorSkin = Resources.Load(Constants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
         }
 
 
         /// Assign the GUI Styles
         private void LoadStyles()
         {
-            _typeStyle = _skin.GetStyle("GDTB_EPEditor_type");
-            _keyStyle = _skin.GetStyle("GDTB_EPEditor_key");
-            _valueStyle = _skin.GetStyle("GDTB_EPEditor_value");
+            _typeStyle = _editorSkin.GetStyle("GDTB_EPEditor_type");
+            _keyStyle = _editorSkin.GetStyle("GDTB_EPEditor_key");
+            _valueStyle = _editorSkin.GetStyle("GDTB_EPEditor_value");
         }
 
 

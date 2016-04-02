@@ -30,7 +30,7 @@ namespace GDTB.EditorPrefsEditor
             // Get existing open window or if none, make a new one.
             var window = (WindowMain)EditorWindow.GetWindow(typeof(WindowMain));
             window.titleContent = new GUIContent("EditorPrefs");
-            window.minSize = new Vector2(250f, 100f);
+            window.minSize = new Vector2(250f, 150f);
             window._typeLabelWidth = (int)window._typeStyle.CalcSize(new GUIContent("String")).x; // Not with the other layouting sizes because it only needs to be done once.
             window.UpdateLayoutingSizes();
 
@@ -57,7 +57,7 @@ namespace GDTB.EditorPrefsEditor
             }
             GUI.skin = _skin;
 
-            // If the list is clean (for instance because we just recompiled) load QQQs based on preferences.
+            // If the list is clean (for instance because we just recompiled) load Prefs again.
             if (Prefs.Count == 0)
             {
                 Prefs.Clear();
@@ -65,6 +65,13 @@ namespace GDTB.EditorPrefsEditor
             }
 
             DrawBG();
+
+            // If the list is still clean after the above, then we really have no Prefs to show.
+            if (Prefs.Count == 0)
+            {
+                DrawNoPrefsMessage();
+            }
+
             DrawPrefs();
             DrawSeparator();
             DrawAddButton();
@@ -79,6 +86,16 @@ namespace GDTB.EditorPrefsEditor
             EditorGUI.DrawRect(new Rect(0,0, position.width, position.height), Constants.COLOR_UI_ACCENT);
         }
 
+
+        /// Draw a message in center screen warning the user they have no prefs.
+        private void DrawNoPrefsMessage()
+        {
+            var label = "There are currently no EditorPrefs loaded.\nYou can add a new EditorPref or\nget an existing one with the buttons below.\n\nIf you see this after the project recompiled,\ntry refreshing the window!\nYour prefs should come back just fine.";
+            var labelContent = new GUIContent(label);
+            var labelSize = EditorStyles.centeredGreyMiniLabel.CalcSize(labelContent);
+            var labelRect = new Rect(position.width / 2 - labelSize.x / 2, position.height / 2 - labelSize.y / 2 - _offset * 2.5f, labelSize.x, labelSize.y);
+            EditorGUI.LabelField(labelRect, labelContent, EditorStyles.centeredGreyMiniLabel);
+        }
 
         /// Draw preferences.
         private void DrawPrefs()

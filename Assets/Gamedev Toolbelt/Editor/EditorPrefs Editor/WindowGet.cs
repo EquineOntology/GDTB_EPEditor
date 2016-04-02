@@ -5,6 +5,11 @@ namespace GDTB.EditorPrefsEditor
 {
     public class WindowGet : EditorWindow
     {
+        public static WindowGet Instance { get; private set; }
+        public static bool IsOpen {
+            get { return Instance != null; }
+        }
+
         private string _key = "";
         private int _type = 0;
         private string[] _prefTypes = { "Bool", "Int", "Float", "String" };
@@ -27,6 +32,7 @@ namespace GDTB.EditorPrefsEditor
 
         public void OnEnable()
         {
+            Instance = this;
             _skin = Resources.Load(Constants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
             _boldStyle = _skin.GetStyle("GDTB_EPEditor_key");
             _gridStyle = _skin.GetStyle("GDTB_EPEditor_selectionGrid");

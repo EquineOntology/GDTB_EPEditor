@@ -7,7 +7,11 @@ namespace GDTB.EditorPrefsEditor
     public class WindowMain : EditorWindow
     {
         public static List<Pref> Prefs = new List<Pref>();
-        private static List<Pref> _oldPrefs;
+
+        public static WindowMain Instance { get; private set; }
+        public static bool IsOpen {
+            get { return Instance != null; }
+        }
 
         private GUISkin _skin, _defaultSkin;
         private GUIStyle _typeStyle, _keyStyle, _valueStyle;
@@ -43,6 +47,7 @@ namespace GDTB.EditorPrefsEditor
 
         public void OnEnable()
         {
+            Instance = this;
             LoadSkin();
             LoadStyles();
         }

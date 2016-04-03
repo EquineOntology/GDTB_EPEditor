@@ -13,14 +13,25 @@ namespace GDTB.EditorPrefsEditor
         public static Texture2D Texture_Edit = Resources.Load(Constants.FILE_GDTB_EDIT, typeof(Texture2D)) as Texture2D;
         public static Texture2D Texture_Remove = Resources.Load(Constants.FILE_GDTB_REMOVE, typeof(Texture2D)) as Texture2D;
 
-        // Draw texture for a button based on preferences.
-        public static void DrawButtonTexture(Rect aRect, Texture2D aTexture)
+        /// Draw "fake" texture button for a button based on preferences.
+        public static void DrawTextureButton(Rect aRect, Texture2D aTexture)
         {
             EditorGUI.DrawRect(aRect, Preferences.Color_Primary);
             GUI.DrawTexture(new Rect(aRect.x + 2, aRect.y + 2, Constants.BUTTON_TEXTURE_SIZE, Constants.BUTTON_TEXTURE_SIZE), aTexture);
             DrawBoundingRect(aRect);
         }
 
+
+        /// Draw "fake" text button based on preferences.
+        public static void DrawTextButton(Rect aRect, string aString, GUIStyle aStyle)
+        {
+            EditorGUI.DrawRect(aRect, Preferences.Color_Primary);
+            GUI.Label(new Rect(aRect.x, aRect.y - 1, aRect.width, aRect.height), aString, aStyle);
+            DrawBoundingRect(aRect);
+        }
+
+
+        /// Draw borders of a rect.
         public static void DrawBoundingRect(Rect aRect)
         {
             EditorGUI.DrawRect(new Rect(aRect.x, aRect.y, Constants.BUTTON_BORDER_THICKNESS, aRect.height), Preferences.Color_Secondary);

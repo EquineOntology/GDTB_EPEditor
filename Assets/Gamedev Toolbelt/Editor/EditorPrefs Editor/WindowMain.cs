@@ -16,7 +16,7 @@ namespace GDTB.EditorPrefsEditor
 
         //============================ Editor GUI =============================
         private GUISkin skin_custom, _defaultSkin;
-        private GUIStyle style_type, style_key, style_value;
+        private GUIStyle style_type, style_key, style_value, style_buttonText;
         private Texture2D t_add, t_get, t_refresh, t_settings, t_nuke, t_edit, t_remove;
 
         // ========================= Editor layouting =========================
@@ -140,10 +140,10 @@ namespace GDTB.EditorPrefsEditor
                 _buttonsRect = new Rect(width_prefs + (_offset * 2), _keyValueRect.y, width_buttons, prefBGHeight);
 
                 var prefBGRect = _keyValueRect;
-                prefBGRect.height = prefBGHeight + 1;
+                prefBGRect.height = prefBGHeight - _offset;
                 prefBGRect.width = position.width - (IconSize * 2) + 2;
 
-                idx_height += (int)prefBGHeight + _offset;
+                idx_height += prefBGRect.height + _offset;
 
                 DrawPrefBG(prefBGRect);
                 DrawType(_typeRect, Prefs[i]);
@@ -168,7 +168,7 @@ namespace GDTB.EditorPrefsEditor
             typeRect.width -= _offset;
             typeRect.height -= (IconSize / 2 + _offset);
 
-            var newX = (int)typeRect.x + IconSize;
+            var newX = (int)typeRect.x + IconSize - _offset + 1;
             var newY = (int)typeRect.y + _offset;
             typeRect.position = new Vector2(newX, newY);
 
@@ -220,7 +220,14 @@ namespace GDTB.EditorPrefsEditor
             {
                 WindowEdit.Init(aPref);
             }
-            DrawingUtils.DrawButtonTexture(editRect, DrawingUtils.Texture_Edit);
+            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
+            {
+                DrawingUtils.DrawTextureButton(editRect, DrawingUtils.Texture_Edit);
+            }
+            else
+            {
+                DrawingUtils.DrawTextButton(editRect, editContent.text, style_buttonText);
+            }
 
             if (GUI.Button(removeRect, removeContent))
             {
@@ -244,7 +251,14 @@ namespace GDTB.EditorPrefsEditor
                     NewEditorPrefs.DeleteKey(aPref.Key);
                 }
             }
-            DrawingUtils.DrawButtonTexture(removeRect, DrawingUtils.Texture_Remove);
+            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
+            {
+                DrawingUtils.DrawTextureButton(removeRect, DrawingUtils.Texture_Remove);
+            }
+            else
+            {
+                DrawingUtils.DrawTextButton(removeRect, removeContent.text, style_buttonText);
+            }
         }
 
 
@@ -341,7 +355,11 @@ namespace GDTB.EditorPrefsEditor
             }
             if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
             {
-                DrawingUtils.DrawButtonTexture(addRect, DrawingUtils.Texture_Add);
+                DrawingUtils.DrawTextureButton(addRect, DrawingUtils.Texture_Add);
+            }
+            else
+            {
+                DrawingUtils.DrawTextButton(addRect, addContent.text, style_buttonText);
             }
 
             // Get already existing pref.
@@ -351,7 +369,11 @@ namespace GDTB.EditorPrefsEditor
             }
             if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
             {
-                DrawingUtils.DrawButtonTexture(getRect, DrawingUtils.Texture_Get);
+                DrawingUtils.DrawTextureButton(getRect, DrawingUtils.Texture_Get);
+            }
+            else
+            {
+                DrawingUtils.DrawTextButton(getRect, getContent.text, style_buttonText);
             }
 
             // Refresh list of prefs.
@@ -361,7 +383,11 @@ namespace GDTB.EditorPrefsEditor
             }
             if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
             {
-                DrawingUtils.DrawButtonTexture(refreshRect, DrawingUtils.Texture_Refresh);
+                DrawingUtils.DrawTextureButton(refreshRect, DrawingUtils.Texture_Refresh);
+            }
+            else
+            {
+                DrawingUtils.DrawTextButton(refreshRect, refreshContent.text, style_buttonText);
             }
 
             // Open settings.
@@ -373,9 +399,14 @@ namespace GDTB.EditorPrefsEditor
                 var method = type.GetMethod("ShowPreferencesWindow", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
                 method.Invoke(null, null);
             }
+
             if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
             {
-                DrawingUtils.DrawButtonTexture(settingsRect, DrawingUtils.Texture_Settings);
+                DrawingUtils.DrawTextureButton(settingsRect, DrawingUtils.Texture_Settings);
+            }
+            else
+            {
+                DrawingUtils.DrawTextButton(settingsRect, settingsContent.text, style_buttonText);
             }
 
 
@@ -404,7 +435,11 @@ namespace GDTB.EditorPrefsEditor
             }
             if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
             {
-                DrawingUtils.DrawButtonTexture(nukeRect, DrawingUtils.Texture_Nuke);
+                DrawingUtils.DrawTextureButton(nukeRect, DrawingUtils.Texture_Nuke);
+            }
+            else
+            {
+                DrawingUtils.DrawTextButton(nukeRect, nukeContent.text, style_buttonText);
             }
         }
 
@@ -498,7 +533,7 @@ namespace GDTB.EditorPrefsEditor
             }
             else
             {
-                width_buttons = ButtonWidth + _offset * 3 - 2;
+                width_buttons = ButtonWidth + _offset * 4;
             }
             width_prefs = (int)width - width_type - width_buttons - (_offset * 2);
         }
@@ -517,19 +552,7 @@ namespace GDTB.EditorPrefsEditor
             style_type = skin_custom.GetStyle("GDTB_EPEditor_type");
             style_key = skin_custom.GetStyle("GDTB_EPEditor_key");
             style_value = skin_custom.GetStyle("GDTB_EPEditor_value");
-        }
-
-
-        /// Initialize textures (so that they're not instantiated every frame in OnGUI).
-        private void InitButtonTextures()
-        {
-            t_add = Resources.Load(Constants.FILE_GDTB_ADD, typeof(Texture2D)) as Texture2D;
-            t_get = Resources.Load(Constants.FILE_GDTB_GET, typeof(Texture2D)) as Texture2D;
-            t_refresh = Resources.Load(Constants.FILE_GDTB_REFRESH, typeof(Texture2D)) as Texture2D;
-            t_settings = Resources.Load(Constants.FILE_GDTB_SETTINGS, typeof(Texture2D)) as Texture2D;
-            t_nuke = Resources.Load(Constants.FILE_GDTB_REMOVEALL, typeof(Texture2D)) as Texture2D;
-            t_edit = Resources.Load(Constants.FILE_GDTB_EDIT, typeof(Texture2D)) as Texture2D;
-            t_remove = Resources.Load(Constants.FILE_GDTB_REMOVE, typeof(Texture2D)) as Texture2D;
+            style_buttonText = skin_custom.GetStyle("GDTB_EPEditor_buttonText");
         }
 
 

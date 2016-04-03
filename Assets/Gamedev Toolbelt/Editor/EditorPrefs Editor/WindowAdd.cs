@@ -28,7 +28,7 @@ namespace GDTB.EditorPrefsEditor
 
         //============================ Editor GUI =============================
         private GUISkin skin_custom, skin_default;
-        private GUIStyle style_boldLabel, style_customGrid;
+        private GUIStyle style_boldLabel, style_customGrid, style_buttonText;
         private Texture2D t_add;
 
         public static void Init()
@@ -46,6 +46,7 @@ namespace GDTB.EditorPrefsEditor
             skin_custom = Resources.Load(Constants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
             style_boldLabel = skin_custom.GetStyle("GDTB_EPEditor_key");
             style_customGrid = skin_custom.GetStyle("GDTB_EPEditor_selectionGrid");
+            style_buttonText = skin_custom.GetStyle("GDTB_EPEditor_buttonText");
         }
 
         public void OnGUI()
@@ -269,7 +270,14 @@ namespace GDTB.EditorPrefsEditor
                     }
                 }
             }
-            DrawingUtils.DrawButtonTexture(addRect, DrawingUtils.Texture_Add);
+            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
+            {
+                DrawingUtils.DrawTextureButton(addRect, DrawingUtils.Texture_Add);
+            }
+            else
+            {
+                DrawingUtils.DrawTextButton(addRect, addContent.text, style_buttonText);
+            }
         }
 
 

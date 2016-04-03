@@ -20,15 +20,15 @@ namespace GDTB.EditorPrefsEditor
         private Texture2D t_add, t_get, t_refresh, t_settings, t_nuke, t_edit, t_remove;
 
         // ========================= Editor layouting =========================
-        private const int IconSize = 16;
+        private const int IconSize = Constants.ICON_SIZE;
         private const int ButtonWidth = 60;
         private const int ButtonHeight = 18;
 
         private int _offset = 5;
 
-        private int width_type, w_prefs, w_buttons;
+        private int width_type, width_prefs, width_buttons;
         private int width_typeLabel;
-        private float _heightIndex = 0;
+        private float idx_height = 0;
         private Vector2 _scrollPosition = new Vector2(Screen.width - 5, Screen.height);
         private Rect rect_scrollView, rect_scroll, _typeRect, _keyValueRect, _buttonsRect;
 
@@ -49,7 +49,7 @@ namespace GDTB.EditorPrefsEditor
             }
             window.width_typeLabel = (int)window.style_type.CalcSize(new GUIContent("String")).x; // Not with the other layouting sizes because it only needs to be done once.
             window.UpdateLayoutingSizes();
-            window.InitButtonTextures();
+            //window.InitButtonTextures();
 
             PrefOps.RefreshPrefs();
 
@@ -117,16 +117,16 @@ namespace GDTB.EditorPrefsEditor
         /// Draw preferences.
         private void DrawPrefs()
         {
-            rect_scrollView.height = _heightIndex - _offset;
+            rect_scrollView.height = idx_height - _offset;
             rect_scroll.width += IconSize;
             _scrollPosition = GUI.BeginScrollView(rect_scroll, _scrollPosition, rect_scrollView);
-            _heightIndex = _offset;
+            idx_height = _offset;
             for (var i = 0; i < Prefs.Count; i++)
             {
                 var key = new GUIContent(Prefs[i].Key);
                 var val = new GUIContent(Prefs[i].Value);
-                var keyHeight = style_key.CalcHeight(key, w_prefs);
-                var valHeight = style_value.CalcHeight(val, w_prefs);
+                var keyHeight = style_key.CalcHeight(key, width_prefs);
+                var valHeight = style_value.CalcHeight(val, width_prefs);
 
                 var prefBGHeight = keyHeight + valHeight + Constants.LINE_HEIGHT + _offset;
                 prefBGHeight = prefBGHeight < IconSize * 2.5f ? IconSize * 2.5f : prefBGHeight;
@@ -135,15 +135,15 @@ namespace GDTB.EditorPrefsEditor
                     prefBGHeight += 4;
                 }
 
-                _keyValueRect = new Rect(_offset, _heightIndex, w_prefs, prefBGHeight);
+                _keyValueRect = new Rect(_offset, idx_height, width_prefs, prefBGHeight);
                 _typeRect = new Rect(-2, _keyValueRect.y, width_type, prefBGHeight);
-                _buttonsRect = new Rect(w_prefs + (_offset * 2), _keyValueRect.y, w_buttons, prefBGHeight);
+                _buttonsRect = new Rect(width_prefs + (_offset * 2), _keyValueRect.y, width_buttons, prefBGHeight);
 
                 var prefBGRect = _keyValueRect;
-                prefBGRect.height = prefBGHeight - _offset;
+                prefBGRect.height = prefBGHeight + 1;
                 prefBGRect.width = position.width - (IconSize * 2) + 2;
 
-                _heightIndex += (int)prefBGHeight + _offset;
+                idx_height += (int)prefBGHeight + _offset;
 
                 DrawPrefBG(prefBGRect);
                 DrawType(_typeRect, Prefs[i]);
@@ -157,10 +157,7 @@ namespace GDTB.EditorPrefsEditor
         /// Draw the rectangle that separates the prefs visually.
         private void DrawPrefBG(Rect aRect)
         {
-            EditorGUI.DrawRect(new Rect(aRect.x,    aRect.y,    2,    aRect.height), Preferences.Color_Secondary);
-            EditorGUI.DrawRect(new Rect(aRect.x + aRect.width - 2,      aRect.y,    2,    aRect.height), Preferences.Color_Secondary);
-            EditorGUI.DrawRect(new Rect(aRect.x,    aRect.y,    aRect.width,    2), Preferences.Color_Secondary);
-            EditorGUI.DrawRect(new Rect(aRect.x,    aRect.y + aRect.height - 2,    aRect.width,    2), Preferences.Color_Secondary);
+            DrawingUtils.DrawBoundingRect(aRect);
         }
 
 
@@ -223,6 +220,7 @@ namespace GDTB.EditorPrefsEditor
             {
                 WindowEdit.Init(aPref);
             }
+            DrawingUtils.DrawButtonTexture(editRect, DrawingUtils.Texture_Edit);
 
             if (GUI.Button(removeRect, removeContent))
             {
@@ -246,6 +244,7 @@ namespace GDTB.EditorPrefsEditor
                     NewEditorPrefs.DeleteKey(aPref.Key);
                 }
             }
+            DrawingUtils.DrawButtonTexture(removeRect, DrawingUtils.Texture_Remove);
         }
 
 
@@ -278,24 +277,24 @@ namespace GDTB.EditorPrefsEditor
         private void Button_Edit_icon(Rect aRect, out Rect anEditRect, out GUIContent anEditContent)
         {
             anEditRect = aRect;
-            anEditRect.x = position.width - (IconSize * 3) + 2;
+            anEditRect.x = position.width - (IconSize * 3) + 1;
             anEditRect.y += _offset;
             anEditRect.width = IconSize;
             anEditRect.height = IconSize;
 
-            anEditContent = new GUIContent(t_edit, "Edit this EditorPref");
+            anEditContent = new GUIContent("", "Edit this EditorPref");
         }
 
         /// Create rect and content for icon Remove button.
         private void Button_Remove_icon(Rect aRect, out Rect aRemoveRect, out GUIContent aRemoveContent)
         {
             aRemoveRect = aRect;
-            aRemoveRect.x = position.width - (IconSize * 3) + 2;
+            aRemoveRect.x = position.width - (IconSize * 3) + 1;
             aRemoveRect.y += IconSize +  _offset + 2;
             aRemoveRect.width = IconSize;
             aRemoveRect.height = IconSize;
 
-            aRemoveContent = new GUIContent(t_remove, "Remove this EditorPref");
+            aRemoveContent = new GUIContent("", "Remove this EditorPref");
         }
         #endregion
 
@@ -303,7 +302,7 @@ namespace GDTB.EditorPrefsEditor
         /// Draw a white line separating scrollview and lower buttons.
         private void DrawSeparator()
         {
-            var separator = new Rect(0, position.height - (IconSize * 2), position.width, 1);
+            var separator = new Rect(0, position.height - (_offset * 7), position.width, 1);
             EditorGUI.DrawRect(separator, Preferences.Color_Secondary);
         }
 
@@ -327,7 +326,6 @@ namespace GDTB.EditorPrefsEditor
                     break;
                 case ButtonsDisplayFormat.COOL_ICONS:
                 default:
-                    GUI.skin = skin_custom;
                     Button_Add_icon(out addRect, out addContent);
                     Button_Get_icon(out getRect, out getContent);
                     Button_Refresh_icon(out refreshRect, out refreshContent);
@@ -341,17 +339,29 @@ namespace GDTB.EditorPrefsEditor
             {
                 WindowAdd.Init();
             }
+            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
+            {
+                DrawingUtils.DrawButtonTexture(addRect, DrawingUtils.Texture_Add);
+            }
 
             // Get already existing pref.
             if (GUI.Button(getRect, getContent))
             {
                 EditorPrefsEditor.WindowGet.Init();
             }
+            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
+            {
+                DrawingUtils.DrawButtonTexture(getRect, DrawingUtils.Texture_Get);
+            }
 
             // Refresh list of prefs.
             if (GUI.Button(refreshRect, refreshContent))
             {
                 PrefOps.RefreshPrefs();
+            }
+            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
+            {
+                DrawingUtils.DrawButtonTexture(refreshRect, DrawingUtils.Texture_Refresh);
             }
 
             // Open settings.
@@ -363,6 +373,11 @@ namespace GDTB.EditorPrefsEditor
                 var method = type.GetMethod("ShowPreferencesWindow", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
                 method.Invoke(null, null);
             }
+            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
+            {
+                DrawingUtils.DrawButtonTexture(settingsRect, DrawingUtils.Texture_Settings);
+            }
+
 
             // Nuke prefs.
             if (GUI.Button(nukeRect, nukeContent))
@@ -386,6 +401,10 @@ namespace GDTB.EditorPrefsEditor
                 {
                     NewEditorPrefs.DeleteAll();
                 }
+            }
+            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
+            {
+                DrawingUtils.DrawButtonTexture(nukeRect, DrawingUtils.Texture_Nuke);
             }
         }
 
@@ -429,39 +448,40 @@ namespace GDTB.EditorPrefsEditor
         /// Draw icon Add.
         private void Button_Add_icon(out Rect aRect, out GUIContent aContent)
         {
-            aRect = new Rect((position.width / 2 - IconSize * 2.5f - 10), position.height - (IconSize * 1.5f), IconSize, IconSize);
-            aContent = new GUIContent(t_add, "Add a new key");
+            aRect = new Rect((position.width / 2 - IconSize * 2.5f - 10), position.height - (IconSize * 1.4f), IconSize, IconSize);
+            aContent = new GUIContent("", "Add a new key");
         }
 
         /// Draw icon Get.
         private void Button_Get_icon(out Rect aRect, out GUIContent aContent)
         {
-            aRect = new Rect((position.width / 2 - IconSize * 1.5f - 5), position.height - (IconSize * 1.5f), IconSize, IconSize);
-            aContent = new GUIContent(t_get, "Add existing key");
+            aRect = new Rect((position.width / 2 - IconSize * 1.5f - 5), position.height - (IconSize * 1.4f), IconSize, IconSize);
+            aContent = new GUIContent("", "Add existing key");
         }
         /// Draw icon Refresh.
         private void Button_Refresh_icon(out Rect aRect, out GUIContent aContent)
         {
-            aRect = new Rect((position.width / 2 - IconSize/2), position.height - (IconSize * 1.5f), IconSize, IconSize);
-            aContent = new GUIContent(t_refresh, "Refresh list");
+            aRect = new Rect((position.width / 2 - IconSize/2), position.height - (IconSize * 1.4f), IconSize, IconSize);
+            aContent = new GUIContent("", "Refresh list");
         }
 
         /// Draw icon Settings.
         private void Button_Settings_icon(out Rect aRect, out GUIContent aContent)
         {
-            aRect = new Rect((position.width / 2 + IconSize * 0.5f + 5), position.height - (IconSize * 1.5f), IconSize, IconSize);
-            aContent = new GUIContent(t_settings, "Open Settings");
+            aRect = new Rect((position.width / 2 + IconSize * 0.5f + 5), position.height - (IconSize * 1.4f), IconSize, IconSize);
+            aContent = new GUIContent("", "Open Settings");
         }
 
         /// Draw icon Nuke.
         private void Button_Nuke_icon(out Rect aRect, out GUIContent aContent)
         {
-            aRect = new Rect((position.width / 2 + IconSize * 1.5f + 10), position.height - (IconSize * 1.5f), IconSize, IconSize);
-            aContent = new GUIContent(t_nuke, "Delete ALL prefs from EditorPrefs");
+            aRect = new Rect((position.width / 2 + IconSize * 1.5f + 10), position.height - (IconSize * 1.4f), IconSize, IconSize);
+            aContent = new GUIContent("", "Delete ALL prefs from EditorPrefs");
         }
         #endregion
 
 
+        /// Calculate the correct size of GUI elements based on preferences.
         private void UpdateLayoutingSizes()
         {
             var width = position.width - IconSize;
@@ -474,13 +494,13 @@ namespace GDTB.EditorPrefsEditor
             // Same for buttons size
             if(Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
             {
-                w_buttons = (IconSize * 2) + 5;
+                width_buttons = (IconSize * 2) + 5;
             }
             else
             {
-                w_buttons = ButtonWidth + _offset * 3 - 2;
+                width_buttons = ButtonWidth + _offset * 3 - 2;
             }
-            w_prefs = (int)width - width_type - w_buttons - (_offset * 2);
+            width_prefs = (int)width - width_type - width_buttons - (_offset * 2);
         }
 
 

@@ -10,7 +10,7 @@ namespace GDTB.EditorPrefsEditor
         }
 
         // ========================= Editor layouting =========================
-        private const int IconSize = 16;
+        private const int IconSize = Constants.ICON_SIZE;
         private const int ButtonWidth = 60;
         private const int ButtonHeight = 18;
 
@@ -39,7 +39,7 @@ namespace GDTB.EditorPrefsEditor
             window.minSize = new Vector2(275, 209);
             window.titleContent = new GUIContent("Edit EditorPref");
             window.InitInputValues(aPref);
-            window.InitButtonTextures();
+            //window.InitButtonTextures();
 
             window.ShowUtility();
         }
@@ -194,6 +194,7 @@ namespace GDTB.EditorPrefsEditor
                 }
                 EditorWindow.GetWindow(typeof(WindowEdit)).Close();
             }
+            DrawingUtils.DrawButtonTexture(editRect, DrawingUtils.Texture_Remove);
         }
 
 

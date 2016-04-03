@@ -16,7 +16,7 @@ namespace GDTB.EditorPrefsEditor
         private Texture2D t_get;
 
         // ========================= Editor layouting =========================
-        private const int IconSize = 16;
+        private const int IconSize = Constants.ICON_SIZE;
         private const int ButtonWidth = 60;
         private const int ButtonHeight = 18;
 
@@ -36,7 +36,7 @@ namespace GDTB.EditorPrefsEditor
             WindowGet window = (WindowGet)EditorWindow.GetWindow(typeof(WindowGet));
             window.minSize = new Vector2(275, 154);
             window.titleContent = new GUIContent("Get EditorPref");
-            window.InitButtonTextures();
+            //window.InitButtonTextures();
 
             window.ShowUtility();
         }
@@ -179,6 +179,7 @@ namespace GDTB.EditorPrefsEditor
                     }
                 }
             }
+            DrawingUtils.DrawButtonTexture(getRect, DrawingUtils.Texture_Get);
         }
 
 
@@ -196,7 +197,7 @@ namespace GDTB.EditorPrefsEditor
         {
             GUI.skin = skin_custom;
             aRect = new Rect((Screen.width / 2) - IconSize/2, 126, IconSize, IconSize);
-            aContent = new GUIContent(t_get, "Add existing key");
+            aContent = new GUIContent("", "Add existing key");
         }
 
 

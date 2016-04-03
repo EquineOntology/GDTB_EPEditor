@@ -10,7 +10,7 @@ namespace GDTB.EditorPrefsEditor
         }
 
         // ========================= Editor layouting =========================
-        private const int IconSize = 16;
+        private const int IconSize = Constants.ICON_SIZE;
         private const int ButtonWidth = 60;
         private const int ButtonHeight = 18;
 
@@ -269,6 +269,7 @@ namespace GDTB.EditorPrefsEditor
                     }
                 }
             }
+            DrawingUtils.DrawButtonTexture(addRect, DrawingUtils.Texture_Add);
         }
 
 

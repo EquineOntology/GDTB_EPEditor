@@ -6,7 +6,6 @@ namespace GDTB.EditorPrefsEditor
     public class Preferences
     {
         #region fields
-
         // Buttons displayed as normal buttons or smaller icons.
         private const string PREFS_EPEDITOR_BUTTONS_DISPLAY = "GDTB_EPEditor_ButtonDisplay";
         private static ButtonsDisplayFormat _buttonsDisplay = ButtonsDisplayFormat.COOL_ICONS;
@@ -25,6 +24,34 @@ namespace GDTB.EditorPrefsEditor
         public static bool ShowConfirmationDialogs
         {
             get { return _confirmationDialogs; }
+        }
+
+
+        // Color of URGENT tasks.
+        private const string PREFS_EPEDITOR_COLOR_PRIMARY = "GDTB_EPEditor_Primary";
+        private static Color _primary = new Color(56, 56, 56, 1);
+        private static Color _primary_default = new Color(56, 56, 56, 1);
+        public static Color Color_Primary
+        {
+            get { return _primary; }
+        }
+
+        // Color of NORMAL tasks
+        private const string PREFS_EPEDITOR_COLOR_SECONDARY = "GDTB_EPEditor_Secondary";
+        private static Color _secondary = new Color(55, 222, 179, 1);
+        private static Color _secondary_default = new Color(55, 222, 179, 1);
+        public static Color Color_Secondary
+        {
+            get { return _secondary; }
+        }
+
+        // Color of MINOR tasks
+        private const string PREFS_EPEDITOR_COLOR_TERTIARY = "GDTB_EPEditor_Tertiary";
+        private static Color _tertiary = new Color(164, 230, 200, 1);
+        private static Color _tertiary_default = new Color(164, 230, 200, 1);
+        public static Color Color_Tertiary
+        {
+            get { return _tertiary; }
         }
 
 
@@ -53,11 +80,12 @@ namespace GDTB.EditorPrefsEditor
             _buttonsDisplay = (ButtonsDisplayFormat)EditorGUILayout.Popup("Button style", System.Convert.ToInt16(_buttonsDisplay), _buttonsFormatsString);
             _confirmationDialogs = EditorGUILayout.Toggle("Show confirmation dialogs", _confirmationDialogs);
             EditorGUILayout.Separator();
-
+            _primary = EditorGUILayout.ColorField("Primary color", _primary);
+            _secondary = EditorGUILayout.ColorField("Secondary color", _secondary);
+            _tertiary = EditorGUILayout.ColorField("Tertiary color", _tertiary);
+            EditorGUILayout.Separator();
             _newShortcut = DrawShortcutSelector();
-
             GUILayout.Space(20);
-
             DrawResetButton();
             EditorGUILayout.EndVertical();
 
@@ -75,7 +103,17 @@ namespace GDTB.EditorPrefsEditor
         {
             EditorPrefs.SetInt(PREFS_EPEDITOR_BUTTONS_DISPLAY, System.Convert.ToInt16(_buttonsDisplay));
             EditorPrefs.SetBool(PREFS_EPEDITOR_CONFIRMATION_DIALOGS, _confirmationDialogs);
+            SetColorPrefs();
             SetShortcutPrefs();
+        }
+
+
+        /// Set the value of a Color preference.
+        private static void SetColorPrefs()
+        {
+            EditorPrefs.SetString(PREFS_EPEDITOR_COLOR_PRIMARY, RGBA.ColorToString(_primary));
+            EditorPrefs.SetString(PREFS_EPEDITOR_COLOR_SECONDARY, RGBA.ColorToString(_secondary));
+            EditorPrefs.SetString(PREFS_EPEDITOR_COLOR_TERTIARY, RGBA.ColorToString(_tertiary));
         }
 
 
@@ -97,6 +135,9 @@ namespace GDTB.EditorPrefsEditor
         {
             _buttonsDisplay = (ButtonsDisplayFormat)EditorPrefs.GetInt(PREFS_EPEDITOR_BUTTONS_DISPLAY, _buttonsDisplay_default); // Buttons display.
             _confirmationDialogs = GetPrefValue(PREFS_EPEDITOR_CONFIRMATION_DIALOGS, _confirmationDialogs_default);
+            _primary = GetPrefValue(PREFS_EPEDITOR_COLOR_PRIMARY, _primary_default); // PRIMARY color.
+            _secondary = GetPrefValue(PREFS_EPEDITOR_COLOR_SECONDARY, _secondary_default); // SECONDARY color.
+            _tertiary = GetPrefValue(PREFS_EPEDITOR_COLOR_TERTIARY, _tertiary_default); // TERTIARY color.
             _shortcut = GetPrefValue(PREFS_EPEDITOR_SHORTCUT, _shortcut_default); // Shortcut.
             ParseShortcutValues();
         }
@@ -132,6 +173,24 @@ namespace GDTB.EditorPrefsEditor
             else
             {
                 val = EditorPrefs.GetString(aKey, aDefault);
+            }
+
+            return val;
+        }
+
+
+        /// Get the value of a Color preference.
+        private static Color GetPrefValue(string aKey, Color aDefault)
+        {
+            Color val;
+            if (!EditorPrefs.HasKey(aKey))
+            {
+                EditorPrefs.SetString(aKey, RGBA.ColorToString(aDefault));
+                val = aDefault;
+            }
+            else
+            {
+                val = RGBA.StringToColor(EditorPrefs.GetString(aKey, RGBA.ColorToString(aDefault)));
             }
 
             return val;
@@ -224,6 +283,9 @@ namespace GDTB.EditorPrefsEditor
         private static void ResetPrefsToDefault()
         {
             _buttonsDisplay = (ButtonsDisplayFormat)_buttonsDisplay_default;
+            _primary = new Color(_primary_default.r / 255, _primary_default.g / 255, _primary_default.b / 255, _primary_default.a);
+            _secondary = new Color(_secondary_default.r / 255, _secondary_default.g / 255, _secondary_default.b / 255, _secondary_default.a);
+            _tertiary = new Color(_tertiary_default.r / 255, _tertiary_default.g / 255, _tertiary_default.b / 255, _tertiary_default.a);
             _shortcut = _shortcut_default;
 
             SetPrefValues();

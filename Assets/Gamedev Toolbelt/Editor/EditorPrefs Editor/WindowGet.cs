@@ -10,6 +10,10 @@ namespace GDTB.EditorPrefsEditor
             get { return Instance != null; }
         }
 
+        private const int IconSize = 16;
+        private const int ButtonWidth = 60;
+        private const int ButtonHeight = 18;
+
         private string _key = "";
         private int _type = 0;
         private string[] _prefTypes = { "Bool", "Int", "Float", "String" };
@@ -19,13 +23,13 @@ namespace GDTB.EditorPrefsEditor
         private float _floatValue = 0.0f;
         private string _stringValue = "";
 
-        private GUISkin _skin;
+        private GUISkin _customSkin, _defaultSkin;
         private GUIStyle _boldStyle, _gridStyle;
 
         public static void Init()
         {
             WindowGet window = (WindowGet)EditorWindow.GetWindow(typeof(WindowGet));
-            window.minSize = new Vector2(275, 162);
+            window.minSize = new Vector2(275, 154);
             window.titleContent = new GUIContent("Get EditorPref");
             window.ShowUtility();
         }
@@ -33,17 +37,23 @@ namespace GDTB.EditorPrefsEditor
         public void OnEnable()
         {
             Instance = this;
-            _skin = Resources.Load(Constants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
-            _boldStyle = _skin.GetStyle("GDTB_EPEditor_key");
-            _gridStyle = _skin.GetStyle("GDTB_EPEditor_selectionGrid");
+            _customSkin = Resources.Load(Constants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
+            _boldStyle = _customSkin.GetStyle("GDTB_EPEditor_key");
+            _gridStyle = _customSkin.GetStyle("GDTB_EPEditor_selectionGrid");
         }
 
         public void OnGUI()
         {
+            if (_defaultSkin == null)
+            {
+                _defaultSkin = GUI.skin;
+            }
+            GUI.skin = _customSkin;
+
             DrawBG();
-            DrawTypePopup();
+            DrawType();
             DrawKeyField();
-            DrawButton();
+            DrawGet();
         }
 
 
@@ -66,24 +76,45 @@ namespace GDTB.EditorPrefsEditor
 
 
         /// Draw type popup.
-        private void DrawTypePopup()
+        private void DrawType()
         {
             var labelRect = new Rect(10, 71, position.width - 20, 16);
             EditorGUI.LabelField(labelRect, "Type:", _boldStyle);
 
             var typeRect = new Rect(10, 90, position.width - 20, 20);
-            _type = GUI.SelectionGrid(typeRect, _type, _prefTypes, _prefTypes.Length, _gridStyle);
+            if(Preferences.ButtonsDisplay == ButtonsDisplayFormat.REGULAR_BUTTONS)
+            {
+                GUI.skin = _defaultSkin;
+                _type = GUI.SelectionGrid(typeRect, _type, _prefTypes, _prefTypes.Length);
+            }
+            else
+            {
+                GUI.skin = _customSkin;
+                _type = GUI.SelectionGrid(typeRect, _type, _prefTypes, _prefTypes.Length, _gridStyle);
+            }
+
         }
 
 
-        /// Draw "Add pref" button.
-        private void DrawButton()
+        /// Draw Get button based on preferences.
+        private void DrawGet()
         {
-            GUI.skin = _skin;
+            Rect getRect;
+            GUIContent getContent;
+            switch (Preferences.ButtonsDisplay)
+            {
+                case ButtonsDisplayFormat.REGULAR_BUTTONS:
+                    GUI.skin = _defaultSkin;
+                    CreateGetButton_Default(out getRect, out getContent);
+                    break;
+                case ButtonsDisplayFormat.COOL_ICONS:
+                default:
+                    GUI.skin = _customSkin;
+                    CreateGetButton_Icon(out getRect, out getContent);
+                    break;
+            }
 
-            var buttonRect = new Rect((Screen.width / 2) - 60, 126, 120, 20);
-
-            if (GUI.Button(buttonRect, "Get EditorPref"))
+            if (GUI.Button(getRect, getContent))
             {
                 if (_key == "")
                 {
@@ -127,6 +158,11 @@ namespace GDTB.EditorPrefsEditor
                                     break;
                             }
                             AddEditorPref();
+                            
+                            if (WindowMain.IsOpen)
+                            {
+                                EditorWindow.GetWindow(typeof(WindowMain)).Repaint();
+                            }
                             EditorWindow.GetWindow(typeof(WindowGet)).Close();
                         }
                         else
@@ -138,6 +174,26 @@ namespace GDTB.EditorPrefsEditor
             }
         }
 
+
+        /// Create rect and content for default Get.
+        private void CreateGetButton_Default(out Rect aRect, out GUIContent aContent)
+        {
+            GUI.skin = _defaultSkin;
+            aRect = new Rect((Screen.width / 2) - ButtonWidth/2, 126, ButtonWidth, ButtonHeight);
+            aContent = new GUIContent("Get key", "Add existing key");
+        }
+
+
+        /// Create rect and content for icon Get.
+        private void CreateGetButton_Icon(out Rect aRect, out GUIContent aContent)
+        {
+            GUI.skin = _customSkin;
+            aRect = new Rect((Screen.width / 2) - IconSize/2, 126, IconSize, IconSize);
+            aContent = new GUIContent(Resources.Load(Constants.FILE_GDTB_GET, typeof(Texture2D)) as Texture2D, "Add existing key");
+        }
+
+
+        /// Add EditorPref to list.
         private void AddEditorPref()
         {
             switch (_type)

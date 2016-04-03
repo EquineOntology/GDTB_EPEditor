@@ -7,6 +7,7 @@
         public const string FILE_GDTB_GET = "GUI/epeditor_GET";
         public const string FILE_GDTB_REFRESH = "GUI/epeditor_REFRESH";
         public const string FILE_GDTB_REMOVE = "GUI/epeditor_REMOVE";
+        public const string FILE_GDTB_SETTINGS = "GUI/epeditor_SETTINGS";
 
         public const string FILE_GUISKIN = "GUI/epeditor_skin";
         public static UnityEngine.Color COLOR_UI_BG = new UnityEngine.Color(162.0f/255.0f, 222.0f/255.0f, 208.0f/255.0f); //flatuicolorpicker.com/green - Aqua Island.

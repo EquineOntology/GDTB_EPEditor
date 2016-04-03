@@ -50,6 +50,7 @@ namespace GDTB.EditorPrefsEditor
         public void OnEnable()
         {
             Instance = this;
+            Preferences.GetAllPrefValues();
             LoadSkin();
             LoadStyles();
         }

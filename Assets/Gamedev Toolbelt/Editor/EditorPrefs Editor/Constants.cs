@@ -11,8 +11,8 @@
         public const string FILE_GDTB_SETTINGS = "GUI/epeditor_SETTINGS";
 
         public const string FILE_GUISKIN = "GUI/epeditor_skin";
-        public static UnityEngine.Color COLOR_UI_BG = new UnityEngine.Color(162.0f/255.0f, 222.0f/255.0f, 208.0f/255.0f); //flatuicolorpicker.com/green - Aqua Island.
-        public static UnityEngine.Color COLOR_UI_ACCENT = new UnityEngine.Color(1.0f/255.0f, 152.0f/255.0f, 117.0f/255.0f); //flatuicolorpicker.com/green - Green Haze.
+        public static UnityEngine.Color COLOR_UI_BG = new UnityEngine.Color(56.0f / 255.0f, 56.0f / 255.0f, 56.0f / 255.0f);
+        public static UnityEngine.Color COLOR_UI_ACCENT = new UnityEngine.Color(165.0f / 255.0f, 230.0f / 255.0f, 201.0f / 255.0f);
         public const int CHAR_HEIGHT = 11;
         public const float VERTICAL_SPACING = 1.5f;
         public const float LINE_HEIGHT = CHAR_HEIGHT * VERTICAL_SPACING;

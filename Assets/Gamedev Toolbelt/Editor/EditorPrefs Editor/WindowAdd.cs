@@ -62,7 +62,7 @@ namespace GDTB.EditorPrefsEditor
         /// Draw the background texture.
         private void DrawBG()
         {
-            EditorGUI.DrawRect(new Rect(0,0, position.width, position.height), Constants.COLOR_UI_ACCENT);
+            EditorGUI.DrawRect(new Rect(0,0, position.width, position.height), Constants.COLOR_UI_BG);
         }
 
 

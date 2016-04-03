@@ -36,7 +36,14 @@ namespace GDTB.EditorPrefsEditor
             // Get existing open window or if none, make a new one.
             var window = (WindowMain)EditorWindow.GetWindow(typeof(WindowMain));
             window.titleContent = new GUIContent("EditorPrefs");
-            window.minSize = new Vector2(251f, 150f);
+            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
+            {
+                window.minSize = new Vector2(221f, 150f);
+            }
+            else
+            {
+                window.minSize = new Vector2(321f, 150f);
+            }
             window._typeLabelWidth = (int)window._typeStyle.CalcSize(new GUIContent("String")).x; // Not with the other layouting sizes because it only needs to be done once.
             window.UpdateLayoutingSizes();
 
@@ -89,7 +96,7 @@ namespace GDTB.EditorPrefsEditor
         /// Draw the background texture.
         private void DrawBG()
         {
-            EditorGUI.DrawRect(new Rect(0,0, position.width, position.height), Constants.COLOR_UI_ACCENT);
+            EditorGUI.DrawRect(new Rect(0,0, position.width, position.height), Constants.COLOR_UI_BG);
         }
 
 

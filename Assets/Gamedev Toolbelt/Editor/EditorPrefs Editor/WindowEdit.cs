@@ -248,7 +248,7 @@ namespace GDTB.EditorPrefsEditor
         /// Remove textures from memory when not needed anymore.
         private void OnDestroy()
         {
-            Destroy(t_edit);
+            Resources.UnloadUnusedAssets();
         }
     }
 }

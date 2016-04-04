@@ -23,10 +23,21 @@ namespace GDTB.EditorPrefsEditor
 
 
         /// Draw "fake" text button based on preferences.
-        public static void DrawTextButton(Rect aRect, string aString, GUIStyle aStyle)
+        public static void DrawTextButton(Rect aRect, string aText, GUIStyle aStyle)
         {
             EditorGUI.DrawRect(aRect, Preferences.Color_Primary);
-            GUI.Label(new Rect(aRect.x, aRect.y - 1, aRect.width, aRect.height), aString, aStyle);
+            GUI.Label(new Rect(aRect.x, aRect.y - 1, aRect.width, aRect.height), aText, aStyle);
+            DrawBoundingRect(aRect);
+        }
+
+
+        /// Draw "fake" text button in the pressed state.
+        public static void DrawPressedTextButton(Rect aRect, string aText, GUIStyle aStyle)
+        {
+            EditorGUI.DrawRect(aRect, Preferences.Color_Secondary);
+            aStyle.normal.textColor = Preferences.Color_Primary;
+            //aStyle.onNormal.textColor = Preferences.Color_Primary;
+            GUI.Label(new Rect(aRect.x, aRect.y - 1, aRect.width, aRect.height), aText, aStyle);
             DrawBoundingRect(aRect);
         }
 
@@ -38,6 +49,29 @@ namespace GDTB.EditorPrefsEditor
             EditorGUI.DrawRect(new Rect(aRect.x + aRect.width - Constants.BUTTON_BORDER_THICKNESS, aRect.y, Constants.BUTTON_BORDER_THICKNESS, aRect.height), Preferences.Color_Secondary);
             EditorGUI.DrawRect(new Rect(aRect.x, aRect.y, aRect.width, Constants.BUTTON_BORDER_THICKNESS), Preferences.Color_Secondary);
             EditorGUI.DrawRect(new Rect(aRect.x, aRect.y + aRect.height - Constants.BUTTON_BORDER_THICKNESS, aRect.width, Constants.BUTTON_BORDER_THICKNESS), Preferences.Color_Secondary);
+        }
+
+
+        /// Draw custom selectionGrid.
+        public static void DrawSelectionGrid(Rect aRect, string[] anElementArray, int aSelectedIndex, float anHorizontalSize, float aSpace, GUIStyle aNormalStyle, GUIStyle aPressedStyle)
+        {
+            var x = aRect.x;
+            for (var i = 0; i < anElementArray.Length; i++)
+            {
+                var gridRect = aRect;
+                x = i == 0 ? x : x + anHorizontalSize + aSpace; // Add parameters to horizontal pos., but not for the first rect.
+                gridRect.x = x;
+                gridRect.width = anHorizontalSize;
+
+                if (i != aSelectedIndex)
+                {
+                    DrawTextButton(gridRect, anElementArray[i], aNormalStyle);
+                }
+                else
+                {
+                    DrawPressedTextButton(gridRect, anElementArray[i], aPressedStyle);
+                }
+            }
         }
     }
 }

@@ -13,7 +13,6 @@ namespace GDTB.EditorPrefsEditor
         // =========================== Editor GUI =============================
         private GUISkin skin_custom, skin_default;
         private GUIStyle style_bold, style_customGrid, style_buttonText;
-        private Texture2D t_get;
 
         // ========================= Editor layouting =========================
         private const int IconSize = Constants.ICON_SIZE;
@@ -22,8 +21,8 @@ namespace GDTB.EditorPrefsEditor
 
         // ========================= Class functionality =========================
         private string _key = "";
-        private int _type = 0;
-        private string[] _prefTypes = { "Bool", "Int", "Float", "String" };
+        private int idx_prefType = 0;
+        private string[] arr_prefTypes = { "Bool", "Int", "Float", "String" };
 
         private bool val_bool = false;
         private int val_int = 0;
@@ -87,7 +86,8 @@ namespace GDTB.EditorPrefsEditor
             EditorGUI.LabelField(labelRect, "Type:", style_bold);
 
             var typeRect = new Rect(10, 90, position.width - 20, 20);
-            _type = GUI.SelectionGrid(typeRect, _type, _prefTypes, _prefTypes.Length, style_customGrid);
+            idx_prefType = GUI.SelectionGrid(typeRect, idx_prefType, arr_prefTypes, arr_prefTypes.Length, style_customGrid);
+            DrawingUtils.DrawSelectionGrid(typeRect, arr_prefTypes, idx_prefType, 60, 5, style_buttonText, style_customGrid);
 
         }
 
@@ -122,7 +122,7 @@ namespace GDTB.EditorPrefsEditor
                     var canExecute = false;
                     if (Preferences.ShowConfirmationDialogs == true)
                     {
-                        if (EditorUtility.DisplayDialog("Get editor preference?", "Are you sure you want to get this key from EditorPrefs?\nIf it's not found, we'll tell you and no key will be added to the interface, no worries.", "Add key", "Cancel"))
+                        if (EditorUtility.DisplayDialog("Get editor preference?", "Are you sure you want to get this key from EditorPrefs?\nIf the key is not found, we'll tell you.\nIf the type is wrong, a default key will be added.", "Add key", "Cancel"))
                         {
                             canExecute = true;
                         }
@@ -138,22 +138,25 @@ namespace GDTB.EditorPrefsEditor
                         // Check that pref was added correctly.
                         if (NewEditorPrefs.HasKey(_key))
                         {
-                            switch (_type)
+                            switch (idx_prefType)
                             {
                                 case 0:
-                                    val_bool = NewEditorPrefs.GetBool(_key, false);
+                                    val_bool = NewEditorPrefs.GetBool(_key);
+                                    PrefOps.GetPref(_key, PrefType.BOOL);
                                     break;
                                 case 1:
-                                    val_int = NewEditorPrefs.GetInt(_key, 0);
+                                    val_int = NewEditorPrefs.GetInt(_key);
+                                    PrefOps.GetPref(_key, PrefType.INT);
                                     break;
                                 case 2:
-                                    val_float = NewEditorPrefs.GetFloat(_key, 0.0f);
+                                    val_float = NewEditorPrefs.GetFloat(_key);
+                                    PrefOps.GetPref(_key, PrefType.FLOAT);
                                     break;
                                 case 3:
-                                    val_string = NewEditorPrefs.GetString(_key, "");
+                                    val_string = NewEditorPrefs.GetString(_key);
+                                    PrefOps.GetPref(_key, PrefType.STRING);
                                     break;
                             }
-                            AddEditorPref();
 
                             if (WindowMain.IsOpen)
                             {
@@ -200,7 +203,7 @@ namespace GDTB.EditorPrefsEditor
         /// Add EditorPref to list.
         private void AddEditorPref()
         {
-            switch (_type)
+            switch (idx_prefType)
             {
                 case 0:
                     PrefOps.AddPref(_key, val_bool);
@@ -223,9 +226,6 @@ namespace GDTB.EditorPrefsEditor
         {
             style_bold = skin_custom.GetStyle("GDTB_EPEditor_key");
             style_customGrid = skin_custom.GetStyle("GDTB_EPEditor_selectionGrid");
-            style_customGrid.normal.textColor = Preferences.Color_Secondary;
-            style_customGrid.onFocused.textColor = Preferences.Color_Primary;
-            style_customGrid.onActive.textColor = Preferences.Color_Primary;
             style_buttonText = skin_custom.GetStyle("GDTB_EPEditor_buttonText");
         }
 

@@ -16,39 +16,37 @@ namespace GDTB.EditorPrefsEditor
         /// Draw "fake" texture button for a button based on preferences.
         public static void DrawTextureButton(Rect aRect, Texture2D aTexture)
         {
-            EditorGUI.DrawRect(aRect, Preferences.Color_Primary);
-            GUI.DrawTexture(new Rect(aRect.x + 2, aRect.y + 2, Constants.BUTTON_TEXTURE_SIZE, Constants.BUTTON_TEXTURE_SIZE), aTexture);
             DrawBoundingRect(aRect);
+            var bgRect = new Rect(aRect.x + Constants.BUTTON_BORDER_THICKNESS, aRect.y + Constants.BUTTON_BORDER_THICKNESS, aRect.width - Constants.BUTTON_BORDER_THICKNESS * 2, aRect.height - Constants.BUTTON_BORDER_THICKNESS * 2);
+            EditorGUI.DrawRect(bgRect, Preferences.Color_Primary);
+            GUI.DrawTexture(new Rect(aRect.x + 2, aRect.y + 2, Constants.BUTTON_TEXTURE_SIZE, Constants.BUTTON_TEXTURE_SIZE), aTexture);
         }
 
 
         /// Draw "fake" text button based on preferences.
         public static void DrawTextButton(Rect aRect, string aText, GUIStyle aStyle)
         {
-            EditorGUI.DrawRect(aRect, Preferences.Color_Primary);
-            GUI.Label(new Rect(aRect.x, aRect.y - 1, aRect.width, aRect.height), aText, aStyle);
             DrawBoundingRect(aRect);
+            var bgRect = new Rect(aRect.x + Constants.BUTTON_BORDER_THICKNESS, aRect.y + Constants.BUTTON_BORDER_THICKNESS, aRect.width - Constants.BUTTON_BORDER_THICKNESS * 2, aRect.height - Constants.BUTTON_BORDER_THICKNESS * 2);
+            EditorGUI.DrawRect(bgRect, Preferences.Color_Primary);
+            GUI.Label(new Rect(bgRect.x, bgRect.y - 1, bgRect.width, bgRect.height), aText, aStyle);
+            aStyle.normal.textColor = Preferences.Color_Tertiary;
         }
 
 
         /// Draw "fake" text button in the pressed state.
         public static void DrawPressedTextButton(Rect aRect, string aText, GUIStyle aStyle)
         {
-            EditorGUI.DrawRect(aRect, Preferences.Color_Secondary);
-            aStyle.normal.textColor = Preferences.Color_Primary;
-            //aStyle.onNormal.textColor = Preferences.Color_Primary;
-            GUI.Label(new Rect(aRect.x, aRect.y - 1, aRect.width, aRect.height), aText, aStyle);
             DrawBoundingRect(aRect);
+            aStyle.normal.textColor = Preferences.Color_Primary;
+            GUI.Label(new Rect(aRect.x, aRect.y - 1, aRect.width, aRect.height), aText, aStyle);
         }
 
 
         /// Draw borders of a rect.
         public static void DrawBoundingRect(Rect aRect)
         {
-            EditorGUI.DrawRect(new Rect(aRect.x, aRect.y, Constants.BUTTON_BORDER_THICKNESS, aRect.height), Preferences.Color_Secondary);
-            EditorGUI.DrawRect(new Rect(aRect.x + aRect.width - Constants.BUTTON_BORDER_THICKNESS, aRect.y, Constants.BUTTON_BORDER_THICKNESS, aRect.height), Preferences.Color_Secondary);
-            EditorGUI.DrawRect(new Rect(aRect.x, aRect.y, aRect.width, Constants.BUTTON_BORDER_THICKNESS), Preferences.Color_Secondary);
-            EditorGUI.DrawRect(new Rect(aRect.x, aRect.y + aRect.height - Constants.BUTTON_BORDER_THICKNESS, aRect.width, Constants.BUTTON_BORDER_THICKNESS), Preferences.Color_Secondary);
+            EditorGUI.DrawRect(aRect, Preferences.Color_Secondary);
         }
 
 

@@ -19,6 +19,10 @@ namespace GDTB.EditorPrefsEditor
         private const int ButtonWidth = 60;
         private const int ButtonHeight = 18;
 
+        private Rect rect_get;
+        private Rect rect_key_label, rect_key;
+        private Rect rect_type_label, rect_type;
+
         // ========================= Class functionality =========================
         private string _key = "";
         private int idx_prefType = 0;
@@ -71,23 +75,23 @@ namespace GDTB.EditorPrefsEditor
         /// Draw key input field.
         private void DrawKeyField()
         {
-            var labelRect = new Rect(10, 10, position.width - 20, 16);
-            EditorGUI.LabelField(labelRect, "Key:", style_bold);
+            rect_key_label = new Rect(10, 10, position.width - 20, 16);
+            EditorGUI.LabelField(rect_key_label, "Key:", style_bold);
 
-            var keyRect = new Rect(10, 29, position.width - 20, 32);
-            _key = EditorGUI.TextField(keyRect, _key);
+            rect_key = new Rect(10, 29, position.width - 20, 32);
+            _key = EditorGUI.TextField(rect_key, _key);
         }
 
 
         /// Draw type popup.
         private void DrawType()
         {
-            var labelRect = new Rect(10, 71, position.width - 20, 16);
-            EditorGUI.LabelField(labelRect, "Type:", style_bold);
+            rect_type_label = new Rect(10, 71, position.width - 20, 16);
+            EditorGUI.LabelField(rect_type_label, "Type:", style_bold);
 
-            var typeRect = new Rect(10, 90, position.width - 20, 20);
-            idx_prefType = GUI.SelectionGrid(typeRect, idx_prefType, arr_prefTypes, arr_prefTypes.Length, style_customGrid);
-            DrawingUtils.DrawSelectionGrid(typeRect, arr_prefTypes, idx_prefType, 60, 5, style_buttonText, style_customGrid);
+            rect_type = new Rect(10, 90, position.width - 20, 20);
+            idx_prefType = GUI.SelectionGrid(rect_type, idx_prefType, arr_prefTypes, arr_prefTypes.Length, style_customGrid);
+            DrawingUtils.DrawSelectionGrid(rect_type, arr_prefTypes, idx_prefType, 60, 5, style_buttonText, style_customGrid);
 
         }
 
@@ -95,22 +99,19 @@ namespace GDTB.EditorPrefsEditor
         /// Draw Get button based on preferences.
         private void DrawGet()
         {
-            Rect getRect;
             GUIContent getContent;
             switch (Preferences.ButtonsDisplay)
             {
                 case ButtonsDisplayFormat.REGULAR_BUTTONS:
-                    GUI.skin = skin_default;
-                    Button_Get_default(out getRect, out getContent);
+                    Button_Get_default(out rect_get, out getContent);
                     break;
                 case ButtonsDisplayFormat.COOL_ICONS:
                 default:
-                    GUI.skin = skin_custom;
-                    Button_Get_icon(out getRect, out getContent);
+                    Button_Get_icon(out rect_get, out getContent);
                     break;
             }
 
-            if (GUI.Button(getRect, getContent))
+            if (GUI.Button(rect_get, getContent))
             {
                 if (_key == "")
                 {
@@ -173,11 +174,11 @@ namespace GDTB.EditorPrefsEditor
             }
             if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
             {
-                DrawingUtils.DrawTextureButton(getRect, DrawingUtils.Texture_Get);
+                DrawingUtils.DrawTextureButton(rect_get, DrawingUtils.Texture_Get);
             }
             else
             {
-                DrawingUtils.DrawTextButton(getRect, getContent.text, style_buttonText);
+                DrawingUtils.DrawTextButton(rect_get, getContent.text, style_buttonText);
             }
         }
 
@@ -185,7 +186,6 @@ namespace GDTB.EditorPrefsEditor
         /// Create rect and content for default Get.
         private void Button_Get_default(out Rect aRect, out GUIContent aContent)
         {
-            GUI.skin = skin_default;
             aRect = new Rect((Screen.width / 2) - ButtonWidth/2, 126, ButtonWidth, ButtonHeight);
             aContent = new GUIContent("Get key", "Add existing key");
         }
@@ -194,7 +194,6 @@ namespace GDTB.EditorPrefsEditor
         /// Create rect and content for icon Get.
         private void Button_Get_icon(out Rect aRect, out GUIContent aContent)
         {
-            GUI.skin = skin_custom;
             aRect = new Rect((Screen.width / 2) - IconSize/2, 126, IconSize, IconSize);
             aContent = new GUIContent("", "Add existing key");
         }
@@ -222,11 +221,15 @@ namespace GDTB.EditorPrefsEditor
 
 
         /// Load styles and apply preferences to them.
-        private void LoadStyles()
+        public void LoadStyles()
         {
             style_bold = skin_custom.GetStyle("GDTB_EPEditor_key");
+            style_bold.normal.textColor = Preferences.Color_Secondary;
+            style_bold.active.textColor = Preferences.Color_Secondary;
             style_customGrid = skin_custom.GetStyle("GDTB_EPEditor_selectionGrid");
             style_buttonText = skin_custom.GetStyle("GDTB_EPEditor_buttonText");
+            style_buttonText.active.textColor = Preferences.Color_Tertiary;
+            style_buttonText.normal.textColor = Preferences.Color_Tertiary;
         }
 
 

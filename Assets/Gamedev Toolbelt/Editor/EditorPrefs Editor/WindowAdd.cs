@@ -14,9 +14,14 @@ namespace GDTB.EditorPrefsEditor
         private const int ButtonWidth = 60;
         private const int ButtonHeight = 18;
 
+        private Rect rect_key_label, rect_key;
+        private Rect rect_type_label, rect_type;
+        private Rect rect_value_label;
+        private Rect rect_add;
+
         // ======================= Class functionality ========================
         private string _key = "";
-        private int _type = 0;
+        private int idx_prefType = 0;
         private string[] arr_prefTypes = { "Bool", "Int", "Float", "String" };
 
         private bool val_bool = false;
@@ -28,15 +33,13 @@ namespace GDTB.EditorPrefsEditor
 
         //============================ Editor GUI =============================
         private GUISkin skin_custom, skin_default;
-        private GUIStyle style_boldLabel, style_customGrid, style_buttonText;
-        private Texture2D t_add;
+        private GUIStyle style_bold, style_customGrid, style_buttonText;
 
         public static void Init()
         {
             WindowAdd window = (WindowAdd)EditorWindow.GetWindow(typeof(WindowAdd));
             window.minSize = new Vector2(275, 209);
             window.titleContent = new GUIContent("Add EditorPref");
-            window.InitButtonTextures();
             window.ShowUtility();
         }
 
@@ -44,9 +47,7 @@ namespace GDTB.EditorPrefsEditor
         {
             Instance = this;
             skin_custom = Resources.Load(Constants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
-            style_boldLabel = skin_custom.GetStyle("GDTB_EPEditor_key");
-            style_customGrid = skin_custom.GetStyle("GDTB_EPEditor_selectionGrid");
-            style_buttonText = skin_custom.GetStyle("GDTB_EPEditor_buttonText");
+            LoadStyles();
         }
 
         public void OnGUI()
@@ -75,54 +76,38 @@ namespace GDTB.EditorPrefsEditor
         /// Draw key input field.
         private void DrawKeyField()
         {
-            var labelRect = new Rect(10, 10, position.width - 20, 16);
-            EditorGUI.LabelField(labelRect, "Key:", style_boldLabel);
+            rect_key_label = new Rect(10, 10, position.width - 20, 16);
+            EditorGUI.LabelField(rect_key_label, "Key:", style_bold);
 
-            var keyRect = new Rect(10, 29, position.width - 20, 32);
-            _key = EditorGUI.TextField(keyRect, _key);
+            rect_key = new Rect(10, 29, position.width - 20, 32);
+            _key = EditorGUI.TextField(rect_key, _key);
         }
 
 
         /// Draw type popup.
         private void DrawType()
         {
-            var labelRect = new Rect(10, 71, Mathf.Clamp(position.width - 20, 80, 500), 16);
-            EditorGUI.LabelField(labelRect, "Type:", style_boldLabel);
+            rect_type_label = new Rect(10, 71, Mathf.Clamp(position.width - 20, 80, 500), 16);
+            EditorGUI.LabelField(rect_type_label, "Type:", style_bold);
 
-            var typeRect = new Rect(10, 90, position.width - 20, 20);
-            if(Preferences.ButtonsDisplay == ButtonsDisplayFormat.REGULAR_BUTTONS)
-            {
-                GUI.skin = skin_default;
-                _type = GUI.SelectionGrid(typeRect, _type, arr_prefTypes, arr_prefTypes.Length);
-            }
-            else
-            {
-                GUI.skin = skin_custom;
-                _type = GUI.SelectionGrid(typeRect, _type, arr_prefTypes, arr_prefTypes.Length, style_customGrid);
-            }
+            rect_type = new Rect(10, 90, position.width - 20, 20);
+            idx_prefType = GUI.SelectionGrid(rect_type, idx_prefType, arr_prefTypes, arr_prefTypes.Length, style_customGrid);
+            DrawingUtils.DrawSelectionGrid(rect_type, arr_prefTypes, idx_prefType, 60, 5, style_buttonText, style_customGrid);
         }
 
 
         /// Draw value input field.
         private void DrawValueField()
         {
-            var labelRect = new Rect(10, 118, Mathf.Clamp(position.width - 20, 80, 500), 16);
-            EditorGUI.LabelField(labelRect, "Value:", style_boldLabel);
+            rect_value_label = new Rect(10, 118, Mathf.Clamp(position.width - 20, 80, 500), 16);
+            EditorGUI.LabelField(rect_value_label, "Value:", style_bold);
 
-            switch (_type)
+            switch (idx_prefType)
             {
                 case 0:
                     var boolRect = new Rect(10, 137, 130, 20);
-                    if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.REGULAR_BUTTONS)
-                    {
-                        GUI.skin = skin_default;
-                        idx_bool = GUI.SelectionGrid(boolRect, idx_bool, arr_boolValues, arr_boolValues.Length);
-                    }
-                    else
-                    {
-                        GUI.skin = skin_custom;
-                        idx_bool = GUI.SelectionGrid(boolRect, idx_bool, arr_boolValues, arr_boolValues.Length, style_customGrid);
-                    }
+                    idx_bool = GUI.SelectionGrid(boolRect, idx_bool, arr_boolValues, arr_boolValues.Length, style_customGrid);
+                    DrawingUtils.DrawSelectionGrid(boolRect, arr_boolValues, idx_bool, 60, 5, style_buttonText, style_customGrid);
                     val_bool = idx_bool == 0 ? false : true;
                     break;
                 case 1:
@@ -145,21 +130,19 @@ namespace GDTB.EditorPrefsEditor
         private void DrawAddButton()
         {
             Pref currentPref = null;
-
-            Rect addRect;
             GUIContent addContent;
 
             switch (Preferences.ButtonsDisplay)
             {
                 case ButtonsDisplayFormat.REGULAR_BUTTONS:
-                    Button_Add_default(out addRect, out addContent);
+                    Button_Add_default(out rect_add, out addContent);
                     break;
                 case ButtonsDisplayFormat.COOL_ICONS:
                 default:
-                    Button_Add_icon(out addRect, out addContent);
+                    Button_Add_icon(out rect_add, out addContent);
                     break;
             }
-            if (GUI.Button(addRect, addContent))
+            if (GUI.Button(rect_add, addContent))
             {
                 if (_key == "")
                 {
@@ -251,7 +234,7 @@ namespace GDTB.EditorPrefsEditor
                     // Actually do the thing.
                     if (canExecute == true)
                     {
-                        switch (_type)
+                        switch (idx_prefType)
                         {
                             case 0:
                                 NewEditorPrefs.SetBool(_key, val_bool);
@@ -272,11 +255,11 @@ namespace GDTB.EditorPrefsEditor
             }
             if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
             {
-                DrawingUtils.DrawTextureButton(addRect, DrawingUtils.Texture_Add);
+                DrawingUtils.DrawTextureButton(rect_add, DrawingUtils.Texture_Add);
             }
             else
             {
-                DrawingUtils.DrawTextButton(addRect, addContent.text, style_buttonText);
+                DrawingUtils.DrawTextButton(rect_add, addContent.text, style_buttonText);
             }
         }
 
@@ -293,14 +276,20 @@ namespace GDTB.EditorPrefsEditor
         private void Button_Add_icon(out Rect aRect, out GUIContent aContent)
         {
             aRect = new Rect(Mathf.Clamp((Screen.width / 2) - IconSize/2, 0, position.width), 179, IconSize, IconSize);
-            aContent = new GUIContent(t_add, "Add this new EditorPref");
+            aContent = new GUIContent("", "Add this new EditorPref");
         }
 
 
-        /// Initialize textures (so that they're not instantiated every frame in OnGUI).
-        private void InitButtonTextures()
+        /// Load custom styles.
+        public void LoadStyles()
         {
-            t_add = Resources.Load(Constants.FILE_GDTB_ADD, typeof(Texture2D)) as Texture2D;
+            style_bold = skin_custom.GetStyle("GDTB_EPEditor_key");
+            style_bold.normal.textColor = Preferences.Color_Secondary;
+            style_bold.active.textColor = Preferences.Color_Secondary;
+            style_customGrid = skin_custom.GetStyle("GDTB_EPEditor_selectionGrid");
+            style_buttonText = skin_custom.GetStyle("GDTB_EPEditor_buttonText");
+            style_buttonText.active.textColor = Preferences.Color_Tertiary;
+            style_buttonText.normal.textColor = Preferences.Color_Tertiary;
         }
 
 

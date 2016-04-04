@@ -49,8 +49,6 @@ namespace GDTB.EditorPrefsEditor
             }
             window.width_typeLabel = (int)window.style_type.CalcSize(new GUIContent("String")).x; // Not with the other layouting sizes because it only needs to be done once.
             window.UpdateLayoutingSizes();
-            //window.InitButtonTextures();
-
             PrefOps.RefreshPrefs();
 
             //window.DebugPrefs();
@@ -128,7 +126,7 @@ namespace GDTB.EditorPrefsEditor
                 var keyHeight = style_key.CalcHeight(key, width_prefs);
                 var valHeight = style_value.CalcHeight(val, width_prefs);
 
-                var prefBGHeight = keyHeight + valHeight + Constants.LINE_HEIGHT + _offset;
+                var prefBGHeight = keyHeight + valHeight + Constants.LINE_HEIGHT + _offset * 2 + 4;
                 prefBGHeight = prefBGHeight < IconSize * 2.5f ? IconSize * 2.5f : prefBGHeight;
                 if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.REGULAR_BUTTONS)
                 {
@@ -157,7 +155,8 @@ namespace GDTB.EditorPrefsEditor
         /// Draw the rectangle that separates the prefs visually.
         private void DrawPrefBG(Rect aRect)
         {
-            DrawingUtils.DrawBoundingRect(aRect);
+            EditorGUI.DrawRect(aRect, Preferences.Color_Secondary);
+            EditorGUI.DrawRect(new Rect(aRect.x + Constants.BUTTON_BORDER_THICKNESS, aRect.y + Constants.BUTTON_BORDER_THICKNESS, aRect.width - Constants.BUTTON_BORDER_THICKNESS * 2, aRect.height - Constants.BUTTON_BORDER_THICKNESS * 2), Preferences.Color_Primary);
         }
 
 
@@ -520,13 +519,10 @@ namespace GDTB.EditorPrefsEditor
         private void UpdateLayoutingSizes()
         {
             var width = position.width - IconSize;
-
-            rect_scroll = new Rect(_offset, _offset, width - (_offset * 2), position.height - IconSize - _offset * 4);
-
+            rect_scroll = new Rect(_offset, _offset, width - (_offset * 2), position.height - IconSize - _offset * 3);
             rect_scrollView = rect_scroll;
-
             width_type = width_typeLabel + (_offset * 2);
-            // Same for buttons size
+
             if(Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
             {
                 width_buttons = (IconSize * 2) + 5;
@@ -547,12 +543,20 @@ namespace GDTB.EditorPrefsEditor
 
 
         /// Assign the GUI Styles
-        private void LoadStyles()
+        public void LoadStyles()
         {
             style_type = skin_custom.GetStyle("GDTB_EPEditor_type");
+            style_type.normal.textColor = Preferences.Color_Tertiary;
+            style_type.active.textColor = Preferences.Color_Tertiary;
             style_key = skin_custom.GetStyle("GDTB_EPEditor_key");
+            style_key.normal.textColor = Preferences.Color_Secondary;
+            style_key.active.textColor = Preferences.Color_Secondary;
             style_value = skin_custom.GetStyle("GDTB_EPEditor_value");
+            style_value.normal.textColor = Preferences.Color_Tertiary;
+            style_value.active.textColor = Preferences.Color_Tertiary;
             style_buttonText = skin_custom.GetStyle("GDTB_EPEditor_buttonText");
+            style_buttonText.active.textColor = Preferences.Color_Tertiary;
+            style_buttonText.normal.textColor = Preferences.Color_Tertiary;
         }
 
 

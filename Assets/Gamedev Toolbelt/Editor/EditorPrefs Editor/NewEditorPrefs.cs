@@ -18,14 +18,9 @@ public static class NewEditorPrefs
         }
     }
 
-    public static bool GetBool(string aKey, bool aDefaultValue)
+    public static bool GetBool(string aKey, bool aDefaultValue = false)
     {
         return EditorPrefs.GetBool(aKey, aDefaultValue);
-    }
-
-    public static bool GetBool(string aKey)
-    {
-        return EditorPrefs.GetBool(aKey);
     }
     #endregion
 
@@ -45,14 +40,9 @@ public static class NewEditorPrefs
         }
     }
 
-    public static int GetInt(string aKey, int aDefaultValue)
+    public static int GetInt(string aKey, int aDefaultValue = 0)
     {
         return EditorPrefs.GetInt(aKey, aDefaultValue);
-    }
-
-    public static int GetInt(string aKey)
-    {
-        return EditorPrefs.GetInt(aKey);
     }
     #endregion
 
@@ -72,14 +62,9 @@ public static class NewEditorPrefs
         }
     }
 
-    public static float GetFloat(string aKey, float aDefaultValue)
+    public static float GetFloat(string aKey, float aDefaultValue = 0.0f)
     {
         return EditorPrefs.GetFloat(aKey, aDefaultValue);
-    }
-
-    public static float GetFloat(string aKey)
-    {
-        return EditorPrefs.GetFloat(aKey);
     }
     #endregion
 
@@ -99,13 +84,9 @@ public static class NewEditorPrefs
         }
     }
 
-    public static string GetString(string aKey, string aDefaultValue)
+    public static string GetString(string aKey, string aDefaultValue = "")
     {
         return EditorPrefs.GetString(aKey, aDefaultValue);
-    }
-    public static string GetString(string aKey)
-    {
-        return EditorPrefs.GetString(aKey);
     }
     #endregion
 

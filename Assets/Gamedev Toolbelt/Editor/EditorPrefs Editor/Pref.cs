@@ -1,7 +1,7 @@
 namespace GDTB.EditorPrefsEditor
 {
     [System.Serializable]
-    public class Pref: System.Object
+    public class Pref
     {
         public PrefType Type;
         public string Key;

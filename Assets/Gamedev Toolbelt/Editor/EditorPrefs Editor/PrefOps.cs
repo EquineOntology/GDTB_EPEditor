@@ -39,6 +39,29 @@ namespace GDTB.EditorPrefsEditor
             EditorWindow.GetWindow(typeof(WindowMain)).Repaint();
         }
 
+        public static void GetPref (string aKey, PrefType aType)
+        {
+            string val = "";
+            switch(aType)
+            {
+                case PrefType.BOOL:
+                    val = EditorPrefs.GetBool(aKey).ToString();
+                    break;
+                case PrefType.INT:
+                    val = EditorPrefs.GetInt(aKey).ToString();
+                    break;
+                case PrefType.FLOAT:
+                    val = EditorPrefs.GetFloat(aKey).ToString();
+                    break;
+                case PrefType.STRING:
+                    val = EditorPrefs.GetString(aKey);
+                    break;
+            }
+            WindowMain.Prefs.Add(new Pref(aType, aKey, val));
+            IO.WritePrefsToFile();
+            EditorWindow.GetWindow(typeof(WindowMain)).Repaint();
+        }
+
         public static void RemovePref(string aKey)
         {
             // Iterate backwards by index, a foreach will throw an InvalidOperationException.

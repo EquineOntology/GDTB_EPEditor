@@ -6,40 +6,42 @@ namespace GDTB.EditorPrefsEditor
 {
     public class WindowMain : EditorWindow
     {
-        public static List<Pref> Prefs = new List<Pref>();
-
         public static WindowMain Instance { get; private set; }
         public static bool IsOpen {
             get { return Instance != null; }
         }
 
-        private GUISkin _customSkin, _defaultSkin;
-        private GUIStyle _typeStyle, _keyStyle, _valueStyle;
+        // ======================= Class functionality ========================
+        public static List<Pref> Prefs = new List<Pref>();
+
+        //============================ Editor GUI =============================
+        private GUISkin skin_custom, _defaultSkin;
+        private GUIStyle style_type, style_key, style_value, style_buttonText;
+        private Texture2D t_add, t_get, t_refresh, t_settings, t_nuke, t_edit, t_remove;
 
         // ========================= Editor layouting =========================
-        private const int IconSize = 16;
+        private const int IconSize = Constants.ICON_SIZE;
         private const int ButtonWidth = 60;
         private const int ButtonHeight = 18;
 
         private int _offset = 5;
 
-        private int _typeWidth, _prefsWidth, _buttonsWidth;
-        private int _typeLabelWidth;
-        private float _heightIndex = 0;
+        private int width_type, width_prefs, width_buttons;
+        private int width_typeLabel;
+        private float idx_height = 0;
         private Vector2 _scrollPosition = new Vector2(Screen.width - 5, Screen.height);
-        private Rect _scrollViewRect, _scrollRect, _typeRect, _keyValueRect, _buttonsRect;
+        private Rect rect_scrollView, rect_scroll, _typeRect, _keyValueRect, _buttonsRect;
 
-        // ====================================================================
+
         [MenuItem("Window/Gamedev Toolbelt/EditorPrefs Editor %q")]
         public static void Init()
         {
             // Get existing open window or if none, make a new one.
             var window = (WindowMain)EditorWindow.GetWindow(typeof(WindowMain));
             window.titleContent = new GUIContent("EditorPrefs");
-            window.minSize = new Vector2(251f, 150f);
-            window._typeLabelWidth = (int)window._typeStyle.CalcSize(new GUIContent("String")).x; // Not with the other layouting sizes because it only needs to be done once.
+            window.SetMinSize();
+            window.width_typeLabel = (int)window.style_type.CalcSize(new GUIContent("String")).x; // Not with the other layouting sizes because it only needs to be done once.
             window.UpdateLayoutingSizes();
-
             PrefOps.RefreshPrefs();
 
             //window.DebugPrefs();
@@ -63,7 +65,7 @@ namespace GDTB.EditorPrefsEditor
             {
                 _defaultSkin = GUI.skin;
             }
-            GUI.skin = _customSkin;
+            GUI.skin = skin_custom;
 
             // If the list is clean (for instance because we just recompiled) load Prefs again.
             if (Prefs.Count == 0)
@@ -89,7 +91,7 @@ namespace GDTB.EditorPrefsEditor
         /// Draw the background texture.
         private void DrawBG()
         {
-            EditorGUI.DrawRect(new Rect(0,0, position.width, position.height), Constants.COLOR_UI_ACCENT);
+            EditorGUI.DrawRect(new Rect(0,0, position.width, position.height), Preferences.Color_Primary);
         }
 
 
@@ -106,33 +108,33 @@ namespace GDTB.EditorPrefsEditor
         /// Draw preferences.
         private void DrawPrefs()
         {
-            _scrollViewRect.height = _heightIndex - _offset;
-            _scrollRect.width += IconSize;
-            _scrollPosition = GUI.BeginScrollView(_scrollRect, _scrollPosition, _scrollViewRect);
-            _heightIndex = _offset;
+            rect_scrollView.height = idx_height - _offset;
+            rect_scroll.width += IconSize;
+            _scrollPosition = GUI.BeginScrollView(rect_scroll, _scrollPosition, rect_scrollView);
+            idx_height = _offset;
             for (var i = 0; i < Prefs.Count; i++)
             {
                 var key = new GUIContent(Prefs[i].Key);
                 var val = new GUIContent(Prefs[i].Value);
-                var keyHeight = _keyStyle.CalcHeight(key, _prefsWidth);
-                var valHeight = _valueStyle.CalcHeight(val, _prefsWidth);
+                var keyHeight = style_key.CalcHeight(key, width_prefs);
+                var valHeight = style_value.CalcHeight(val, width_prefs);
 
-                var prefBGHeight = keyHeight + valHeight + Constants.LINE_HEIGHT + _offset;
+                var prefBGHeight = keyHeight + valHeight + Constants.LINE_HEIGHT + _offset * 2 + 4;
                 prefBGHeight = prefBGHeight < IconSize * 2.5f ? IconSize * 2.5f : prefBGHeight;
-                if (Preferences.ButtonsDisplay.ToString() == "REGULAR_BUTTONS")
+                if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.REGULAR_BUTTONS)
                 {
                     prefBGHeight += 4;
                 }
 
-                _keyValueRect = new Rect(_offset, _heightIndex, _prefsWidth, prefBGHeight);
-                _typeRect = new Rect(-2, _keyValueRect.y, _typeWidth, prefBGHeight);
-                _buttonsRect = new Rect(_prefsWidth + (_offset * 2), _keyValueRect.y, _buttonsWidth, prefBGHeight);
+                _keyValueRect = new Rect(_offset, idx_height, width_prefs, prefBGHeight);
+                _typeRect = new Rect(-2, _keyValueRect.y, width_type, prefBGHeight);
+                _buttonsRect = new Rect(width_prefs + (_offset * 2), _keyValueRect.y, width_buttons, prefBGHeight);
 
                 var prefBGRect = _keyValueRect;
                 prefBGRect.height = prefBGHeight - _offset;
                 prefBGRect.width = position.width - (IconSize * 2) + 2;
 
-                _heightIndex += (int)prefBGHeight + _offset;
+                idx_height += prefBGRect.height + _offset;
 
                 DrawPrefBG(prefBGRect);
                 DrawType(_typeRect, Prefs[i]);
@@ -146,10 +148,8 @@ namespace GDTB.EditorPrefsEditor
         /// Draw the rectangle that separates the prefs visually.
         private void DrawPrefBG(Rect aRect)
         {
-            EditorGUI.DrawRect(new Rect(aRect.x,    aRect.y,    2,    aRect.height), Color.white);
-            EditorGUI.DrawRect(new Rect(aRect.x + aRect.width - 2,      aRect.y,    2,    aRect.height), Color.white);
-            EditorGUI.DrawRect(new Rect(aRect.x,    aRect.y,    aRect.width,    2),Color.white);
-            EditorGUI.DrawRect(new Rect(aRect.x,    aRect.y + aRect.height - 2,    aRect.width,    2), Color.white);
+            EditorGUI.DrawRect(aRect, Preferences.Color_Secondary);
+            EditorGUI.DrawRect(new Rect(aRect.x + Constants.BUTTON_BORDER_THICKNESS, aRect.y + Constants.BUTTON_BORDER_THICKNESS, aRect.width - Constants.BUTTON_BORDER_THICKNESS * 2, aRect.height - Constants.BUTTON_BORDER_THICKNESS * 2), Preferences.Color_Primary);
         }
 
 
@@ -160,13 +160,13 @@ namespace GDTB.EditorPrefsEditor
             typeRect.width -= _offset;
             typeRect.height -= (IconSize / 2 + _offset);
 
-            var newX = (int)typeRect.x + IconSize;
+            var newX = (int)typeRect.x + IconSize - _offset + 1;
             var newY = (int)typeRect.y + _offset;
             typeRect.position = new Vector2(newX, newY);
 
             var type = aPref.Type.ToString().ToLower();
             type = type.Substring(0, 1).ToUpper() + type.Substring(1);
-            EditorGUI.LabelField(typeRect, type, _typeStyle);
+            EditorGUI.LabelField(typeRect, type, style_type);
         }
 
 
@@ -174,17 +174,17 @@ namespace GDTB.EditorPrefsEditor
         {
             // Key.
             var keyRect = aRect;
-            keyRect.x = _typeWidth + IconSize / 2;
+            keyRect.x = width_type + IconSize / 2;
             keyRect.y += _offset;
             keyRect.height = aHeight;
-            EditorGUI.LabelField(keyRect, aPref.Key, _keyStyle);
+            EditorGUI.LabelField(keyRect, aPref.Key, style_key);
 
             // Value.
             var valueRect = aRect;
-            valueRect.x = _typeWidth + IconSize / 2;
+            valueRect.x = width_type + IconSize / 2;
             valueRect.y = aRect.y + aHeight + (_offset * 1.5f);
 
-            EditorGUI.LabelField(valueRect, aPref.Value, _valueStyle);
+            EditorGUI.LabelField(valueRect, aPref.Value, style_value);
         }
 
 
@@ -198,19 +198,27 @@ namespace GDTB.EditorPrefsEditor
             {
                 case ButtonsDisplayFormat.REGULAR_BUTTONS:
                     GUI.skin = _defaultSkin;
-                    CreateEditButton_Default(aRect, out editRect, out editContent);
-                    CreateRemoveButton_Default(aRect, out removeRect, out removeContent);
+                    Button_Edit_default(aRect, out editRect, out editContent);
+                    Button_Remove_default(aRect, out removeRect, out removeContent);
                     break;
                 default:
-                    GUI.skin = _customSkin;
-                    CreateEditButton_Icon(aRect, out editRect, out editContent);
-                    CreateRemoveButton_Icon(aRect, out removeRect, out removeContent);
+                    GUI.skin = skin_custom;
+                    Button_Edit_icon(aRect, out editRect, out editContent);
+                    Button_Remove_icon(aRect, out removeRect, out removeContent);
                     break;
             }
 
             if (GUI.Button(editRect, editContent))
             {
                 WindowEdit.Init(aPref);
+            }
+            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
+            {
+                DrawingUtils.DrawTextureButton(editRect, DrawingUtils.Texture_Edit);
+            }
+            else
+            {
+                DrawingUtils.DrawTextButton(editRect, editContent.text, style_buttonText);
             }
 
             if (GUI.Button(removeRect, removeContent))
@@ -235,11 +243,19 @@ namespace GDTB.EditorPrefsEditor
                     NewEditorPrefs.DeleteKey(aPref.Key);
                 }
             }
+            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
+            {
+                DrawingUtils.DrawTextureButton(removeRect, DrawingUtils.Texture_Remove);
+            }
+            else
+            {
+                DrawingUtils.DrawTextButton(removeRect, removeContent.text, style_buttonText);
+            }
         }
 
 
         /// Create rect and content for normal Edit button.
-        private void CreateEditButton_Default(Rect aRect, out Rect anEditRect, out GUIContent anEditContent)
+        private void Button_Edit_default(Rect aRect, out Rect anEditRect, out GUIContent anEditContent)
         {
             anEditRect = aRect;
             anEditRect.x = position.width - ButtonWidth - IconSize * 2 + 2;
@@ -250,9 +266,8 @@ namespace GDTB.EditorPrefsEditor
             anEditContent = new GUIContent("Edit", "Edit this pref");
         }
 
-
         /// Create rect and content for normal Remove button.
-        private void CreateRemoveButton_Default(Rect aRect, out Rect aRemoveRect, out GUIContent aRemoveContent)
+        private void Button_Remove_default(Rect aRect, out Rect aRemoveRect, out GUIContent aRemoveContent)
         {
             aRemoveRect = aRect;
             aRemoveRect.x = position.width - ButtonWidth - IconSize * 2 + 2;
@@ -265,28 +280,27 @@ namespace GDTB.EditorPrefsEditor
 
 
         /// Create rect and content for icon Edit button.
-        private void CreateEditButton_Icon(Rect aRect, out Rect anEditRect, out GUIContent anEditContent)
+        private void Button_Edit_icon(Rect aRect, out Rect anEditRect, out GUIContent anEditContent)
         {
             anEditRect = aRect;
-            anEditRect.x = position.width - (IconSize * 3) + 2;
+            anEditRect.x = position.width - (IconSize * 3) + 1;
             anEditRect.y += _offset;
             anEditRect.width = IconSize;
             anEditRect.height = IconSize;
 
-            anEditContent = new GUIContent(Resources.Load(Constants.FILE_GDTB_EDIT, typeof(Texture2D)) as Texture2D, "Edit this EditorPref");
+            anEditContent = new GUIContent("", "Edit this EditorPref");
         }
 
-
         /// Create rect and content for icon Remove button.
-        private void CreateRemoveButton_Icon(Rect aRect, out Rect aRemoveRect, out GUIContent aRemoveContent)
+        private void Button_Remove_icon(Rect aRect, out Rect aRemoveRect, out GUIContent aRemoveContent)
         {
             aRemoveRect = aRect;
-            aRemoveRect.x = position.width - (IconSize * 3) + 2;
+            aRemoveRect.x = position.width - (IconSize * 3) + 1;
             aRemoveRect.y += IconSize +  _offset + 2;
             aRemoveRect.width = IconSize;
             aRemoveRect.height = IconSize;
 
-            aRemoveContent = new GUIContent(Resources.Load(Constants.FILE_GDTB_REMOVE, typeof(Texture2D)) as Texture2D, "Remove this EditorPref");
+            aRemoveContent = new GUIContent("", "Remove this EditorPref");
         }
         #endregion
 
@@ -294,13 +308,13 @@ namespace GDTB.EditorPrefsEditor
         /// Draw a white line separating scrollview and lower buttons.
         private void DrawSeparator()
         {
-            var separator = new Rect(0, position.height - (IconSize * 2), position.width, 1);
-            EditorGUI.DrawRect(separator, Color.white);
+            var separator = new Rect(0, position.height - (_offset * 7), position.width, 1);
+            EditorGUI.DrawRect(separator, Preferences.Color_Secondary);
         }
 
 
-        #region A-G-R buttons
-        /// Draw Add, Get and Refresh based on preferences.
+        #region bottom buttons
+        /// Draw Add, Get, Refresh, Settings, Nuke, based on preferences.
         private void DrawBottomButtons()
         {
             Rect addRect, getRect, refreshRect, settingsRect, nukeRect;
@@ -310,20 +324,19 @@ namespace GDTB.EditorPrefsEditor
             {
                 case ButtonsDisplayFormat.REGULAR_BUTTONS:
                     GUI.skin = _defaultSkin;
-                    CreateAddButton_Default(out addRect, out addContent);
-                    CreateGetButton_Default(out getRect, out getContent);
-                    CreateRefreshButton_Default(out refreshRect, out refreshContent);
-                    CreateSettingsButton_Default(out settingsRect, out settingsContent);
-                    CreateNukeButton_Default(out nukeRect, out nukeContent);
+                    Button_Add_default(out addRect, out addContent);
+                    Button_Get_default(out getRect, out getContent);
+                    Button_Refresh_default(out refreshRect, out refreshContent);
+                    Button_Settings_default(out settingsRect, out settingsContent);
+                    Button_Nuke_default(out nukeRect, out nukeContent);
                     break;
                 case ButtonsDisplayFormat.COOL_ICONS:
                 default:
-                    GUI.skin = _customSkin;
-                    CreateAddButton_Icon(out addRect, out addContent);
-                    CreateGetButton_Icon(out getRect, out getContent);
-                    CreateRefreshButton_Icon(out refreshRect, out refreshContent);
-                    CreateSettingsButton_Icon(out settingsRect, out settingsContent);
-                    CreateNukeButton_Icon(out nukeRect, out nukeContent);
+                    Button_Add_icon(out addRect, out addContent);
+                    Button_Get_icon(out getRect, out getContent);
+                    Button_Refresh_icon(out refreshRect, out refreshContent);
+                    Button_Settings_icon(out settingsRect, out settingsContent);
+                    Button_Nuke_icon(out nukeRect, out nukeContent);
                     break;
             }
 
@@ -332,11 +345,27 @@ namespace GDTB.EditorPrefsEditor
             {
                 WindowAdd.Init();
             }
+            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
+            {
+                DrawingUtils.DrawTextureButton(addRect, DrawingUtils.Texture_Add);
+            }
+            else
+            {
+                DrawingUtils.DrawTextButton(addRect, addContent.text, style_buttonText);
+            }
 
             // Get already existing pref.
             if (GUI.Button(getRect, getContent))
             {
                 EditorPrefsEditor.WindowGet.Init();
+            }
+            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
+            {
+                DrawingUtils.DrawTextureButton(getRect, DrawingUtils.Texture_Get);
+            }
+            else
+            {
+                DrawingUtils.DrawTextButton(getRect, getContent.text, style_buttonText);
             }
 
             // Refresh list of prefs.
@@ -344,16 +373,34 @@ namespace GDTB.EditorPrefsEditor
             {
                 PrefOps.RefreshPrefs();
             }
+            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
+            {
+                DrawingUtils.DrawTextureButton(refreshRect, DrawingUtils.Texture_Refresh);
+            }
+            else
+            {
+                DrawingUtils.DrawTextButton(refreshRect, refreshContent.text, style_buttonText);
+            }
 
             // Open settings.
             if (GUI.Button(settingsRect, settingsContent))
             {
                 // Unfortunately EditorApplication.ExecuteMenuItem(...) doesn't work, so we have to rely on a bit of reflection.
-                var asm = System.Reflection.Assembly.GetAssembly(typeof(EditorWindow));
-                var T = asm.GetType("UnityEditor.PreferencesWindow");
-                var M = T.GetMethod("ShowPreferencesWindow", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-                M.Invoke(null, null);
+                var assembly = System.Reflection.Assembly.GetAssembly(typeof(EditorWindow));
+                var type = assembly.GetType("UnityEditor.PreferencesWindow");
+                var method = type.GetMethod("ShowPreferencesWindow", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+                method.Invoke(null, null);
             }
+
+            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
+            {
+                DrawingUtils.DrawTextureButton(settingsRect, DrawingUtils.Texture_Settings);
+            }
+            else
+            {
+                DrawingUtils.DrawTextButton(settingsRect, settingsContent.text, style_buttonText);
+            }
+
 
             // Nuke prefs.
             if (GUI.Button(nukeRect, nukeContent))
@@ -378,116 +425,155 @@ namespace GDTB.EditorPrefsEditor
                     NewEditorPrefs.DeleteAll();
                 }
             }
+            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
+            {
+                DrawingUtils.DrawTextureButton(nukeRect, DrawingUtils.Texture_Nuke);
+            }
+            else
+            {
+                DrawingUtils.DrawTextButton(nukeRect, nukeContent.text, style_buttonText);
+            }
         }
 
 
         /// Draw default Add.
-        private void CreateAddButton_Default(out Rect aRect, out GUIContent aContent)
+        private void Button_Add_default(out Rect aRect, out GUIContent aContent)
         {
-            aRect = new Rect((position.width / 2 - ButtonWidth * 2.5f - 8), position.height - (ButtonHeight * 1.5f), ButtonWidth, ButtonHeight);
+            aRect = new Rect((position.width / 2 - ButtonWidth * 2.5f - 8), position.height - (ButtonHeight * 1.4f), ButtonWidth, ButtonHeight);
             aContent = new GUIContent("Add", "Add a new key");
         }
 
-        /// Draw icon Add.
-        private void CreateAddButton_Icon(out Rect aRect, out GUIContent aContent)
-        {
-            aRect = new Rect((position.width / 2 - IconSize * 2.5f - 10), position.height - (IconSize * 1.5f), IconSize, IconSize);
-            aContent = new GUIContent(Resources.Load(Constants.FILE_GDTB_ADD, typeof(Texture2D)) as Texture2D, "Add a new key");
-        }
-
         /// Draw default Get.
-        private void CreateGetButton_Default(out Rect aRect, out GUIContent aContent)
+        private void Button_Get_default(out Rect aRect, out GUIContent aContent)
         {
-            aRect = new Rect((position.width / 2 - ButtonWidth * 1.5f - 4), position.height - (ButtonHeight * 1.5f), ButtonWidth, ButtonHeight);
+            aRect = new Rect((position.width / 2 - ButtonWidth * 1.5f - 4), position.height - (ButtonHeight * 1.4f), ButtonWidth, ButtonHeight);
             aContent = new GUIContent("Get", "Add existing key");
         }
 
-        /// Draw icon Get.
-        private void CreateGetButton_Icon(out Rect aRect, out GUIContent aContent)
-        {
-            aRect = new Rect((position.width / 2 - IconSize * 1.5f - 5), position.height - (IconSize * 1.5f), IconSize, IconSize);
-            aContent = new GUIContent(Resources.Load(Constants.FILE_GDTB_GET, typeof(Texture2D)) as Texture2D, "Add existing key");
-        }
-
         /// Draw default Refresh.
-        private void CreateRefreshButton_Default(out Rect aRect, out GUIContent aContent)
+        private void Button_Refresh_default(out Rect aRect, out GUIContent aContent)
         {
-            aRect = new Rect((position.width / 2 - ButtonWidth/2), position.height - (ButtonHeight * 1.5f), ButtonWidth, ButtonHeight);
+            aRect = new Rect((position.width / 2 - ButtonWidth/2), position.height - (ButtonHeight * 1.4f), ButtonWidth, ButtonHeight);
             aContent = new GUIContent("Refresh", "Refresh list");
         }
 
-        /// Draw icon Refresh.
-        private void CreateRefreshButton_Icon(out Rect aRect, out GUIContent aContent)
+        /// Draw default Settings.
+        private void Button_Settings_default(out Rect aRect, out GUIContent aContent)
         {
-            aRect = new Rect((position.width / 2 - IconSize/2), position.height - (IconSize * 1.5f), IconSize, IconSize);
-            aContent = new GUIContent(Resources.Load(Constants.FILE_GDTB_REFRESH, typeof(Texture2D)) as Texture2D, "Refresh list");
-        }
-
-        /// Draw default Refresh.
-        private void CreateSettingsButton_Default(out Rect aRect, out GUIContent aContent)
-        {
-            aRect = new Rect((position.width / 2 + ButtonWidth *0.5f  + 4), position.height - (ButtonHeight * 1.5f), ButtonWidth, ButtonHeight);
+            aRect = new Rect((position.width / 2 + ButtonWidth *0.5f  + 4), position.height - (ButtonHeight * 1.4f), ButtonWidth, ButtonHeight);
             aContent = new GUIContent("Settings", "Open Settings");
         }
 
-        /// Draw icon Refresh.
-        private void CreateSettingsButton_Icon(out Rect aRect, out GUIContent aContent)
-        {
-            aRect = new Rect((position.width / 2 + IconSize * 0.5f + 5), position.height - (IconSize * 1.5f), IconSize, IconSize);
-            aContent = new GUIContent(Resources.Load(Constants.FILE_GDTB_SETTINGS, typeof(Texture2D)) as Texture2D, "Open Settings");
-        }
-
         /// Draw default Nuke.
-        private void CreateNukeButton_Default(out Rect aRect, out GUIContent aContent)
+        private void Button_Nuke_default(out Rect aRect, out GUIContent aContent)
         {
-            aRect = new Rect((position.width / 2 + ButtonWidth * 1.5f + 8), position.height - (ButtonHeight * 1.5f), ButtonWidth, ButtonHeight);
+            aRect = new Rect((position.width / 2 + ButtonWidth * 1.5f + 8), position.height - (ButtonHeight * 1.4f), ButtonWidth, ButtonHeight);
             aContent = new GUIContent("Nuke all", "Delete ALL prefs from EditorPrefs");
         }
 
-        /// Draw icon Nuke.
-        private void CreateNukeButton_Icon(out Rect aRect, out GUIContent aContent)
+
+        /// Draw icon Add.
+        private void Button_Add_icon(out Rect aRect, out GUIContent aContent)
         {
-            aRect = new Rect((position.width / 2 + IconSize * 1.5f + 10), position.height - (IconSize * 1.5f), IconSize, IconSize);
-            aContent = new GUIContent(Resources.Load(Constants.FILE_GDTB_REMOVEALL, typeof(Texture2D)) as Texture2D, "Delete ALL prefs from EditorPrefs");
+            aRect = new Rect((position.width / 2 - IconSize * 2.5f - 10), position.height - (IconSize * 1.4f), IconSize, IconSize);
+            aContent = new GUIContent("", "Add a new key");
+        }
+
+        /// Draw icon Get.
+        private void Button_Get_icon(out Rect aRect, out GUIContent aContent)
+        {
+            aRect = new Rect((position.width / 2 - IconSize * 1.5f - 5), position.height - (IconSize * 1.4f), IconSize, IconSize);
+            aContent = new GUIContent("", "Add existing key");
+        }
+        /// Draw icon Refresh.
+        private void Button_Refresh_icon(out Rect aRect, out GUIContent aContent)
+        {
+            aRect = new Rect((position.width / 2 - IconSize/2), position.height - (IconSize * 1.4f), IconSize, IconSize);
+            aContent = new GUIContent("", "Refresh list");
+        }
+
+        /// Draw icon Settings.
+        private void Button_Settings_icon(out Rect aRect, out GUIContent aContent)
+        {
+            aRect = new Rect((position.width / 2 + IconSize * 0.5f + 5), position.height - (IconSize * 1.4f), IconSize, IconSize);
+            aContent = new GUIContent("", "Open Settings");
+        }
+
+        /// Draw icon Nuke.
+        private void Button_Nuke_icon(out Rect aRect, out GUIContent aContent)
+        {
+            aRect = new Rect((position.width / 2 + IconSize * 1.5f + 10), position.height - (IconSize * 1.4f), IconSize, IconSize);
+            aContent = new GUIContent("", "Delete ALL prefs from EditorPrefs");
         }
         #endregion
 
 
+        /// Calculate the correct size of GUI elements based on preferences.
         private void UpdateLayoutingSizes()
         {
             var width = position.width - IconSize;
+            rect_scroll = new Rect(_offset, _offset, width - (_offset * 2), position.height - IconSize - _offset * 3);
+            rect_scrollView = rect_scroll;
+            width_type = width_typeLabel + (_offset * 2);
 
-            _scrollRect = new Rect(_offset, _offset, width - (_offset * 2), position.height - IconSize - _offset * 4);
-
-            _scrollViewRect = _scrollRect;
-
-            _typeWidth = _typeLabelWidth + (_offset * 2);
-            // Same for buttons size
-            if(Preferences.ButtonsDisplay.ToString() == "COOL_ICONS")
+            if(Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
             {
-                _buttonsWidth = (IconSize * 2) + 5;
+                width_buttons = (IconSize * 2) + 5;
             }
             else
             {
-                _buttonsWidth = ButtonWidth + _offset * 3 - 2;
+                width_buttons = ButtonWidth + _offset * 4;
             }
-            _prefsWidth = (int)width - _typeWidth - _buttonsWidth - (_offset * 2);
+            width_prefs = (int)width - width_type - width_buttons - (_offset * 2);
         }
 
 
         /// Load the EPEditor skin.
         private void LoadSkin()
         {
-            _customSkin = Resources.Load(Constants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
+            skin_custom = Resources.Load(Constants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
         }
 
 
         /// Assign the GUI Styles
-        private void LoadStyles()
+        public void LoadStyles()
         {
-            _typeStyle = _customSkin.GetStyle("GDTB_EPEditor_type");
-            _keyStyle = _customSkin.GetStyle("GDTB_EPEditor_key");
-            _valueStyle = _customSkin.GetStyle("GDTB_EPEditor_value");
+            style_type = skin_custom.GetStyle("GDTB_EPEditor_type");
+            style_type.normal.textColor = Preferences.Color_Tertiary;
+            style_type.active.textColor = Preferences.Color_Tertiary;
+            style_key = skin_custom.GetStyle("GDTB_EPEditor_key");
+            style_key.normal.textColor = Preferences.Color_Secondary;
+            style_key.active.textColor = Preferences.Color_Secondary;
+            style_value = skin_custom.GetStyle("GDTB_EPEditor_value");
+            style_value.normal.textColor = Preferences.Color_Tertiary;
+            style_value.active.textColor = Preferences.Color_Tertiary;
+            style_buttonText = skin_custom.GetStyle("GDTB_EPEditor_buttonText");
+            style_buttonText.active.textColor = Preferences.Color_Tertiary;
+            style_buttonText.normal.textColor = Preferences.Color_Tertiary;
+        }
+
+
+        /// Set the minSize of the window based on preferences.
+        public void SetMinSize()
+        {
+            var window = GetWindow(typeof(WindowMain)) as WindowMain;
+            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
+            {
+                window.minSize = new Vector2(221f, 150f);
+            }
+            else
+            {
+                window.minSize = new Vector2(321f, 150f);
+            }
+
+            width_typeLabel = (int)style_type.CalcSize(new GUIContent("String")).x;
+        }
+
+
+        /// Remove textures from memory when not needed anymore.
+        private void OnDestroy()
+        {
+            Resources.UnloadUnusedAssets();
         }
 
 

@@ -6,11 +6,11 @@ namespace GDTB.EditorPrefsEditor
     public class Preferences
     {
         #region fields
-
         // Buttons displayed as normal buttons or smaller icons.
         private const string PREFS_EPEDITOR_BUTTONS_DISPLAY = "GDTB_EPEditor_ButtonDisplay";
         private static ButtonsDisplayFormat _buttonsDisplay = ButtonsDisplayFormat.COOL_ICONS;
         private static int _buttonsDisplay_default = 1;
+        private static ButtonsDisplayFormat _oldDisplayFormat;
         public static ButtonsDisplayFormat ButtonsDisplay
         {
             get { return _buttonsDisplay; }
@@ -25,6 +25,39 @@ namespace GDTB.EditorPrefsEditor
         public static bool ShowConfirmationDialogs
         {
             get { return _confirmationDialogs; }
+        }
+
+
+        // Color of URGENT tasks.
+        private const string PREFS_EPEDITOR_COLOR_PRIMARY = "GDTB_EPEditor_Primary";
+        private static Color _primary = new Color(56, 56, 56, 1);
+        private static Color _primary_default = new Color(56, 56, 56, 1);
+        private static Color _oldPrimary;
+        public static Color Color_Primary
+        {
+            get { return _primary; }
+        }
+
+        // Color of NORMAL tasks
+        private const string PREFS_EPEDITOR_COLOR_SECONDARY = "GDTB_EPEditor_Secondary";
+        private static Color _secondary = new Color(55, 222, 179, 1);
+        private static Color _secondary_default = new Color(55, 222, 179, 1);
+        private static Color _oldSecondary;
+        public static Color Color_Secondary
+        {
+            get { return _secondary; }
+        }
+
+        // Color of MINOR tasks
+        private const string PREFS_EPEDITOR_COLOR_TERTIARY = "GDTB_EPEditor_Tertiary";
+        //private static Color _tertiary = new Color(164, 230, 200, 1);
+        private static Color _tertiary = new Color(255, 255, 255, 1);
+        //private static Color _tertiary_default = new Color(164, 230, 200, 1);
+        private static Color _tertiary_default = new Color(255, 255, 255, 1);
+        private static Color _oldTertiary;
+        public static Color Color_Tertiary
+        {
+            get { return _tertiary; }
         }
 
 
@@ -53,19 +86,50 @@ namespace GDTB.EditorPrefsEditor
             _buttonsDisplay = (ButtonsDisplayFormat)EditorGUILayout.Popup("Button style", System.Convert.ToInt16(_buttonsDisplay), _buttonsFormatsString);
             _confirmationDialogs = EditorGUILayout.Toggle("Show confirmation dialogs", _confirmationDialogs);
             EditorGUILayout.Separator();
-
+            _primary = EditorGUILayout.ColorField("Primary color", _primary);
+            _secondary = EditorGUILayout.ColorField("Secondary color", _secondary);
+            _tertiary = EditorGUILayout.ColorField("Tertiary color", _tertiary);
+            EditorGUILayout.Separator();
             _newShortcut = DrawShortcutSelector();
-
             GUILayout.Space(20);
-
             DrawResetButton();
             EditorGUILayout.EndVertical();
 
             if (GUI.changed)
             {
+                // Reload skins if colors changed.
+                if (_primary != _oldPrimary || _secondary != _oldSecondary || _tertiary != _oldTertiary)
+                {
+                    _oldPrimary = _primary;
+                    _oldSecondary = _secondary;
+                    _oldTertiary = _tertiary;
+                    ReloadSkins();
+                }
+
+                // If buttons display changed we want to open and close the window, so that the new minsize is applied.
+                var shouldReopenWindowMain = false;
+                if (_buttonsDisplay != _oldDisplayFormat)
+                {
+                    _oldDisplayFormat = _buttonsDisplay;
+                    shouldReopenWindowMain = true;
+                }
+
                 SetPrefValues();
                 GetAllPrefValues();
                 RepaintOpenWindows();
+
+                // We need to set and get prefs before the change will be noticed by the window.
+                if (shouldReopenWindowMain)
+                {
+                    if (WindowMain.IsOpen)
+                    {
+                        EditorWindow.GetWindow(typeof(WindowMain)).Close();
+                        var window = EditorWindow.GetWindow(typeof(WindowMain)) as WindowMain;
+                        window.SetMinSize();
+                        window.Show();
+
+                    }
+                }
             }
         }
 
@@ -75,7 +139,17 @@ namespace GDTB.EditorPrefsEditor
         {
             EditorPrefs.SetInt(PREFS_EPEDITOR_BUTTONS_DISPLAY, System.Convert.ToInt16(_buttonsDisplay));
             EditorPrefs.SetBool(PREFS_EPEDITOR_CONFIRMATION_DIALOGS, _confirmationDialogs);
+            SetColorPrefs();
             SetShortcutPrefs();
+        }
+
+
+        /// Set the value of a Color preference.
+        private static void SetColorPrefs()
+        {
+            EditorPrefs.SetString(PREFS_EPEDITOR_COLOR_PRIMARY, RGBA.ColorToString(_primary));
+            EditorPrefs.SetString(PREFS_EPEDITOR_COLOR_SECONDARY, RGBA.ColorToString(_secondary));
+            EditorPrefs.SetString(PREFS_EPEDITOR_COLOR_TERTIARY, RGBA.ColorToString(_tertiary));
         }
 
 
@@ -96,7 +170,14 @@ namespace GDTB.EditorPrefsEditor
         public static void GetAllPrefValues()
         {
             _buttonsDisplay = (ButtonsDisplayFormat)EditorPrefs.GetInt(PREFS_EPEDITOR_BUTTONS_DISPLAY, _buttonsDisplay_default); // Buttons display.
+            _oldDisplayFormat = _buttonsDisplay;
             _confirmationDialogs = GetPrefValue(PREFS_EPEDITOR_CONFIRMATION_DIALOGS, _confirmationDialogs_default);
+            _primary = GetPrefValue(PREFS_EPEDITOR_COLOR_PRIMARY, _primary_default); // PRIMARY color.
+            _oldPrimary = _primary;
+            _secondary = GetPrefValue(PREFS_EPEDITOR_COLOR_SECONDARY, _secondary_default); // SECONDARY color.
+            _oldSecondary = _secondary;
+            _tertiary = GetPrefValue(PREFS_EPEDITOR_COLOR_TERTIARY, _tertiary_default); // TERTIARY color.
+            _oldTertiary = _tertiary;
             _shortcut = GetPrefValue(PREFS_EPEDITOR_SHORTCUT, _shortcut_default); // Shortcut.
             ParseShortcutValues();
         }
@@ -132,6 +213,24 @@ namespace GDTB.EditorPrefsEditor
             else
             {
                 val = EditorPrefs.GetString(aKey, aDefault);
+            }
+
+            return val;
+        }
+
+
+        /// Get the value of a Color preference.
+        private static Color GetPrefValue(string aKey, Color aDefault)
+        {
+            Color val;
+            if (!EditorPrefs.HasKey(aKey))
+            {
+                EditorPrefs.SetString(aKey, RGBA.ColorToString(aDefault));
+                val = aDefault;
+            }
+            else
+            {
+                val = RGBA.StringToColor(EditorPrefs.GetString(aKey, RGBA.ColorToString(aDefault)));
             }
 
             return val;
@@ -224,8 +323,11 @@ namespace GDTB.EditorPrefsEditor
         private static void ResetPrefsToDefault()
         {
             _buttonsDisplay = (ButtonsDisplayFormat)_buttonsDisplay_default;
+            _primary = new Color(_primary_default.r / 255, _primary_default.g / 255, _primary_default.b / 255, _primary_default.a);
+            _secondary = new Color(_secondary_default.r / 255, _secondary_default.g / 255, _secondary_default.b / 255, _secondary_default.a);
+            _tertiary = new Color(_tertiary_default.r / 255, _tertiary_default.g / 255, _tertiary_default.b / 255, _tertiary_default.a);
             _shortcut = _shortcut_default;
-
+            ReloadSkins();
             SetPrefValues();
             GetAllPrefValues();
         }
@@ -249,6 +351,32 @@ namespace GDTB.EditorPrefsEditor
             if (WindowGet.IsOpen)
             {
                 EditorWindow.GetWindow(typeof(WindowGet)).Repaint();
+            }
+        }
+
+
+        /// Reload skins of open windows.
+        private static void ReloadSkins()
+        {
+            if (WindowMain.IsOpen)
+            {
+                var window = EditorWindow.GetWindow(typeof(WindowMain)) as WindowMain;
+                window.LoadStyles();
+            }
+            if (WindowAdd.IsOpen)
+            {
+                var window = EditorWindow.GetWindow(typeof(WindowAdd)) as WindowMain;
+                window.LoadStyles();
+            }
+            if (WindowEdit.IsOpen)
+            {
+                var window = EditorWindow.GetWindow(typeof(WindowEdit)) as WindowMain;
+                window.LoadStyles();
+            }
+            if (WindowGet.IsOpen)
+            {
+                var window = EditorWindow.GetWindow(typeof(WindowGet)) as WindowMain;
+                window.LoadStyles();
             }
         }
     }

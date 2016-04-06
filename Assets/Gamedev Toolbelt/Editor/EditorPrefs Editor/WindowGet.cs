@@ -10,45 +10,53 @@ namespace GDTB.EditorPrefsEditor
             get { return Instance != null; }
         }
 
-        private const int IconSize = 16;
+        // =========================== Editor GUI =============================
+        private GUISkin skin_custom, skin_default;
+        private GUIStyle style_bold, style_customGrid, style_buttonText;
+
+        // ========================= Editor layouting =========================
+        private const int IconSize = Constants.ICON_SIZE;
         private const int ButtonWidth = 60;
         private const int ButtonHeight = 18;
 
+        private Rect rect_get;
+        private Rect rect_key_label, rect_key;
+        private Rect rect_type_label, rect_type;
+
+        // ========================= Class functionality =========================
         private string _key = "";
-        private int _type = 0;
-        private string[] _prefTypes = { "Bool", "Int", "Float", "String" };
+        private int idx_prefType = 0;
+        private string[] arr_prefTypes = { "Bool", "Int", "Float", "String" };
 
-        private bool _boolValue = false;
-        private int _intValue = 0;
-        private float _floatValue = 0.0f;
-        private string _stringValue = "";
+        private bool val_bool = false;
+        private int val_int = 0;
+        private float val_float = 0.0f;
+        private string val_string = "";
 
-        private GUISkin _customSkin, _defaultSkin;
-        private GUIStyle _boldStyle, _gridStyle;
 
         public static void Init()
         {
             WindowGet window = (WindowGet)EditorWindow.GetWindow(typeof(WindowGet));
             window.minSize = new Vector2(275, 154);
             window.titleContent = new GUIContent("Get EditorPref");
+
             window.ShowUtility();
         }
 
         public void OnEnable()
         {
             Instance = this;
-            _customSkin = Resources.Load(Constants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
-            _boldStyle = _customSkin.GetStyle("GDTB_EPEditor_key");
-            _gridStyle = _customSkin.GetStyle("GDTB_EPEditor_selectionGrid");
+            skin_custom = Resources.Load(Constants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
+            LoadStyles();
         }
 
         public void OnGUI()
         {
-            if (_defaultSkin == null)
+            if (skin_default == null)
             {
-                _defaultSkin = GUI.skin;
+                skin_default = GUI.skin;
             }
-            GUI.skin = _customSkin;
+            GUI.skin = skin_custom;
 
             DrawBG();
             DrawType();
@@ -60,38 +68,30 @@ namespace GDTB.EditorPrefsEditor
         /// Draw the background texture.
         private void DrawBG()
         {
-            EditorGUI.DrawRect(new Rect(0,0, position.width, position.height), Constants.COLOR_UI_ACCENT);
+            EditorGUI.DrawRect(new Rect(0,0, position.width, position.height), Preferences.Color_Primary);
         }
 
 
         /// Draw key input field.
         private void DrawKeyField()
         {
-            var labelRect = new Rect(10, 10, position.width - 20, 16);
-            EditorGUI.LabelField(labelRect, "Key:", _boldStyle);
+            rect_key_label = new Rect(10, 10, position.width - 20, 16);
+            EditorGUI.LabelField(rect_key_label, "Key:", style_bold);
 
-            var keyRect = new Rect(10, 29, position.width - 20, 32);
-            _key = EditorGUI.TextField(keyRect, _key);
+            rect_key = new Rect(10, 29, position.width - 20, 32);
+            _key = EditorGUI.TextField(rect_key, _key);
         }
 
 
         /// Draw type popup.
         private void DrawType()
         {
-            var labelRect = new Rect(10, 71, position.width - 20, 16);
-            EditorGUI.LabelField(labelRect, "Type:", _boldStyle);
+            rect_type_label = new Rect(10, 71, position.width - 20, 16);
+            EditorGUI.LabelField(rect_type_label, "Type:", style_bold);
 
-            var typeRect = new Rect(10, 90, position.width - 20, 20);
-            if(Preferences.ButtonsDisplay == ButtonsDisplayFormat.REGULAR_BUTTONS)
-            {
-                GUI.skin = _defaultSkin;
-                _type = GUI.SelectionGrid(typeRect, _type, _prefTypes, _prefTypes.Length);
-            }
-            else
-            {
-                GUI.skin = _customSkin;
-                _type = GUI.SelectionGrid(typeRect, _type, _prefTypes, _prefTypes.Length, _gridStyle);
-            }
+            rect_type = new Rect(10, 90, position.width - 20, 20);
+            idx_prefType = GUI.SelectionGrid(rect_type, idx_prefType, arr_prefTypes, arr_prefTypes.Length, style_customGrid);
+            DrawingUtils.DrawSelectionGrid(rect_type, arr_prefTypes, idx_prefType, 60, 5, style_buttonText, style_customGrid);
 
         }
 
@@ -99,22 +99,19 @@ namespace GDTB.EditorPrefsEditor
         /// Draw Get button based on preferences.
         private void DrawGet()
         {
-            Rect getRect;
             GUIContent getContent;
             switch (Preferences.ButtonsDisplay)
             {
                 case ButtonsDisplayFormat.REGULAR_BUTTONS:
-                    GUI.skin = _defaultSkin;
-                    CreateGetButton_Default(out getRect, out getContent);
+                    Button_Get_default(out rect_get, out getContent);
                     break;
                 case ButtonsDisplayFormat.COOL_ICONS:
                 default:
-                    GUI.skin = _customSkin;
-                    CreateGetButton_Icon(out getRect, out getContent);
+                    Button_Get_icon(out rect_get, out getContent);
                     break;
             }
 
-            if (GUI.Button(getRect, getContent))
+            if (GUI.Button(rect_get, getContent))
             {
                 if (_key == "")
                 {
@@ -126,7 +123,7 @@ namespace GDTB.EditorPrefsEditor
                     var canExecute = false;
                     if (Preferences.ShowConfirmationDialogs == true)
                     {
-                        if (EditorUtility.DisplayDialog("Get editor preference?", "Are you sure you want to get this key from EditorPrefs?\nIf it's not found, we'll tell you and no key will be added to the interface, no worries.", "Add key", "Cancel"))
+                        if (EditorUtility.DisplayDialog("Get editor preference?", "Are you sure you want to get this key from EditorPrefs?\nIf the key is not found, we'll tell you.\nIf the type is wrong, a default key will be added.", "Add key", "Cancel"))
                         {
                             canExecute = true;
                         }
@@ -142,23 +139,26 @@ namespace GDTB.EditorPrefsEditor
                         // Check that pref was added correctly.
                         if (NewEditorPrefs.HasKey(_key))
                         {
-                            switch (_type)
+                            switch (idx_prefType)
                             {
                                 case 0:
-                                    _boolValue = NewEditorPrefs.GetBool(_key, false);
+                                    val_bool = NewEditorPrefs.GetBool(_key);
+                                    PrefOps.GetPref(_key, PrefType.BOOL);
                                     break;
                                 case 1:
-                                    _intValue = NewEditorPrefs.GetInt(_key, 0);
+                                    val_int = NewEditorPrefs.GetInt(_key);
+                                    PrefOps.GetPref(_key, PrefType.INT);
                                     break;
                                 case 2:
-                                    _floatValue = NewEditorPrefs.GetFloat(_key, 0.0f);
+                                    val_float = NewEditorPrefs.GetFloat(_key);
+                                    PrefOps.GetPref(_key, PrefType.FLOAT);
                                     break;
                                 case 3:
-                                    _stringValue = NewEditorPrefs.GetString(_key, "");
+                                    val_string = NewEditorPrefs.GetString(_key);
+                                    PrefOps.GetPref(_key, PrefType.STRING);
                                     break;
                             }
-                            AddEditorPref();
-                            
+
                             if (WindowMain.IsOpen)
                             {
                                 EditorWindow.GetWindow(typeof(WindowMain)).Repaint();
@@ -172,45 +172,71 @@ namespace GDTB.EditorPrefsEditor
                     }
                 }
             }
+            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
+            {
+                DrawingUtils.DrawTextureButton(rect_get, DrawingUtils.Texture_Get);
+            }
+            else
+            {
+                DrawingUtils.DrawTextButton(rect_get, getContent.text, style_buttonText);
+            }
         }
 
 
         /// Create rect and content for default Get.
-        private void CreateGetButton_Default(out Rect aRect, out GUIContent aContent)
+        private void Button_Get_default(out Rect aRect, out GUIContent aContent)
         {
-            GUI.skin = _defaultSkin;
             aRect = new Rect((Screen.width / 2) - ButtonWidth/2, 126, ButtonWidth, ButtonHeight);
             aContent = new GUIContent("Get key", "Add existing key");
         }
 
 
         /// Create rect and content for icon Get.
-        private void CreateGetButton_Icon(out Rect aRect, out GUIContent aContent)
+        private void Button_Get_icon(out Rect aRect, out GUIContent aContent)
         {
-            GUI.skin = _customSkin;
             aRect = new Rect((Screen.width / 2) - IconSize/2, 126, IconSize, IconSize);
-            aContent = new GUIContent(Resources.Load(Constants.FILE_GDTB_GET, typeof(Texture2D)) as Texture2D, "Add existing key");
+            aContent = new GUIContent("", "Add existing key");
         }
 
 
         /// Add EditorPref to list.
         private void AddEditorPref()
         {
-            switch (_type)
+            switch (idx_prefType)
             {
                 case 0:
-                    PrefOps.AddPref(_key, _boolValue);
+                    PrefOps.AddPref(_key, val_bool);
                     break;
                 case 1:
-                    PrefOps.AddPref(_key, _intValue);
+                    PrefOps.AddPref(_key, val_int);
                     break;
                 case 2:
-                    PrefOps.AddPref(_key, _floatValue);
+                    PrefOps.AddPref(_key, val_float);
                     break;
                 case 3:
-                    PrefOps.AddPref(_key, _stringValue);
+                    PrefOps.AddPref(_key, val_string);
                     break;
             }
+        }
+
+
+        /// Load styles and apply preferences to them.
+        public void LoadStyles()
+        {
+            style_bold = skin_custom.GetStyle("GDTB_EPEditor_key");
+            style_bold.normal.textColor = Preferences.Color_Secondary;
+            style_bold.active.textColor = Preferences.Color_Secondary;
+            style_customGrid = skin_custom.GetStyle("GDTB_EPEditor_selectionGrid");
+            style_buttonText = skin_custom.GetStyle("GDTB_EPEditor_buttonText");
+            style_buttonText.active.textColor = Preferences.Color_Tertiary;
+            style_buttonText.normal.textColor = Preferences.Color_Tertiary;
+        }
+
+
+        /// Remove textures from memory when not needed anymore.
+        private void OnDestroy()
+        {
+            Resources.UnloadUnusedAssets();
         }
     }
 }

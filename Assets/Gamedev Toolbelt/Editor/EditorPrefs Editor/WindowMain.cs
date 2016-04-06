@@ -39,14 +39,7 @@ namespace GDTB.EditorPrefsEditor
             // Get existing open window or if none, make a new one.
             var window = (WindowMain)EditorWindow.GetWindow(typeof(WindowMain));
             window.titleContent = new GUIContent("EditorPrefs");
-            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
-            {
-                window.minSize = new Vector2(221f, 150f);
-            }
-            else
-            {
-                window.minSize = new Vector2(321f, 150f);
-            }
+            window.SetMinSize();
             window.width_typeLabel = (int)window.style_type.CalcSize(new GUIContent("String")).x; // Not with the other layouting sizes because it only needs to be done once.
             window.UpdateLayoutingSizes();
             PrefOps.RefreshPrefs();
@@ -557,6 +550,23 @@ namespace GDTB.EditorPrefsEditor
             style_buttonText = skin_custom.GetStyle("GDTB_EPEditor_buttonText");
             style_buttonText.active.textColor = Preferences.Color_Tertiary;
             style_buttonText.normal.textColor = Preferences.Color_Tertiary;
+        }
+
+
+        /// Set the minSize of the window based on preferences.
+        public void SetMinSize()
+        {
+            var window = GetWindow(typeof(WindowMain)) as WindowMain;
+            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
+            {
+                window.minSize = new Vector2(221f, 150f);
+            }
+            else
+            {
+                window.minSize = new Vector2(321f, 150f);
+            }
+
+            width_typeLabel = (int)style_type.CalcSize(new GUIContent("String")).x;
         }
 
 

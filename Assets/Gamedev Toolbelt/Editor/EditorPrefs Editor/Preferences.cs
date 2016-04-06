@@ -10,6 +10,7 @@ namespace GDTB.EditorPrefsEditor
         private const string PREFS_EPEDITOR_BUTTONS_DISPLAY = "GDTB_EPEditor_ButtonDisplay";
         private static ButtonsDisplayFormat _buttonsDisplay = ButtonsDisplayFormat.COOL_ICONS;
         private static int _buttonsDisplay_default = 1;
+        private static ButtonsDisplayFormat _oldDisplayFormat;
         public static ButtonsDisplayFormat ButtonsDisplay
         {
             get { return _buttonsDisplay; }
@@ -104,9 +105,31 @@ namespace GDTB.EditorPrefsEditor
                     _oldTertiary = _tertiary;
                     ReloadSkins();
                 }
+
+                // If buttons display changed we want to open and close the window, so that the new minsize is applied.
+                var shouldReopenWindowMain = false;
+                if (_buttonsDisplay != _oldDisplayFormat)
+                {
+                    _oldDisplayFormat = _buttonsDisplay;
+                    shouldReopenWindowMain = true;
+                }
+
                 SetPrefValues();
                 GetAllPrefValues();
                 RepaintOpenWindows();
+
+                // We need to set and get prefs before the change will be noticed by the window.
+                if (shouldReopenWindowMain)
+                {
+                    if (WindowMain.IsOpen)
+                    {
+                        EditorWindow.GetWindow(typeof(WindowMain)).Close();
+                        var window = EditorWindow.GetWindow(typeof(WindowMain)) as WindowMain;
+                        window.SetMinSize();
+                        window.Show();
+
+                    }
+                }
             }
         }
 
@@ -147,6 +170,7 @@ namespace GDTB.EditorPrefsEditor
         public static void GetAllPrefValues()
         {
             _buttonsDisplay = (ButtonsDisplayFormat)EditorPrefs.GetInt(PREFS_EPEDITOR_BUTTONS_DISPLAY, _buttonsDisplay_default); // Buttons display.
+            _oldDisplayFormat = _buttonsDisplay;
             _confirmationDialogs = GetPrefValue(PREFS_EPEDITOR_CONFIRMATION_DIALOGS, _confirmationDialogs_default);
             _primary = GetPrefValue(PREFS_EPEDITOR_COLOR_PRIMARY, _primary_default); // PRIMARY color.
             _oldPrimary = _primary;

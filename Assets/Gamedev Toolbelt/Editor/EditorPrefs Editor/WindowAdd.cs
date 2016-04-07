@@ -40,6 +40,8 @@ namespace GDTB.EditorPrefsEditor
             WindowAdd window = (WindowAdd)EditorWindow.GetWindow(typeof(WindowAdd));
             window.minSize = new Vector2(275, 209);
             window.titleContent = new GUIContent("Add EditorPref");
+            window.CloseOtherWindows();
+
             window.ShowUtility();
         }
 
@@ -290,6 +292,20 @@ namespace GDTB.EditorPrefsEditor
             style_buttonText = skin_custom.GetStyle("GDTB_EPEditor_buttonText");
             style_buttonText.active.textColor = Preferences.Color_Tertiary;
             style_buttonText.normal.textColor = Preferences.Color_Tertiary;
+        }
+
+
+        /// Close other sub-windows when this one is opened.
+        private void CloseOtherWindows()
+        {
+            if (WindowEdit.IsOpen)
+            {
+                EditorWindow.GetWindow(typeof(WindowEdit)).Close();
+            }
+            if (WindowGet.IsOpen)
+            {
+                EditorWindow.GetWindow(typeof(WindowGet)).Close();
+            }
         }
 
 

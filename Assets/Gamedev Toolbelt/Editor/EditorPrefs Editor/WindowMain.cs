@@ -385,6 +385,7 @@ namespace GDTB.EditorPrefsEditor
             // Open settings.
             if (GUI.Button(settingsRect, settingsContent))
             {
+                CloseOtherWindows();
                 // Unfortunately EditorApplication.ExecuteMenuItem(...) doesn't work, so we have to rely on a bit of reflection.
                 var assembly = System.Reflection.Assembly.GetAssembly(typeof(EditorWindow));
                 var type = assembly.GetType("UnityEditor.PreferencesWindow");
@@ -574,6 +575,24 @@ namespace GDTB.EditorPrefsEditor
         private void OnDestroy()
         {
             Resources.UnloadUnusedAssets();
+        }
+
+
+        /// Close sub-windows when opening prefs.
+        private void CloseOtherWindows()
+        {
+            if (WindowAdd.IsOpen)
+            {
+                EditorWindow.GetWindow(typeof(WindowAdd)).Close();
+            }
+            if (WindowGet.IsOpen)
+            {
+                EditorWindow.GetWindow(typeof(WindowGet)).Close();
+            }
+            if (WindowEdit.IsOpen)
+            {
+                EditorWindow.GetWindow(typeof(WindowEdit)).Close();
+            }
         }
 
 

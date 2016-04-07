@@ -83,15 +83,19 @@ namespace GDTB.EditorPrefsEditor
             GetAllPrefValues();
 
             EditorGUILayout.BeginVertical();
+            EditorGUILayout.LabelField("General Settings", EditorStyles.boldLabel);
             _buttonsDisplay = (ButtonsDisplayFormat)EditorGUILayout.Popup("Button style", System.Convert.ToInt16(_buttonsDisplay), _buttonsFormatsString);
             _confirmationDialogs = EditorGUILayout.Toggle("Show confirmation dialogs", _confirmationDialogs);
-            EditorGUILayout.Separator();
+            _newShortcut = DrawShortcutSelector();
+            GUILayout.Space(20);
+            EditorGUILayout.LabelField("UI colors", EditorStyles.boldLabel);
             _primary = EditorGUILayout.ColorField("Primary color", _primary);
             _secondary = EditorGUILayout.ColorField("Secondary color", _secondary);
             _tertiary = EditorGUILayout.ColorField("Tertiary color", _tertiary);
             EditorGUILayout.Separator();
-            _newShortcut = DrawShortcutSelector();
+            DrawNewcolorsButton();
             GUILayout.Space(20);
+            EditorGUILayout.LabelField("Reset preferences", EditorStyles.boldLabel);
             DrawResetButton();
             EditorGUILayout.EndVertical();
 
@@ -103,7 +107,6 @@ namespace GDTB.EditorPrefsEditor
                     _oldPrimary = _primary;
                     _oldSecondary = _secondary;
                     _oldTertiary = _tertiary;
-                    ReloadSkins();
                 }
 
                 // If buttons display changed we want to open and close the window, so that the new minsize is applied.
@@ -116,7 +119,6 @@ namespace GDTB.EditorPrefsEditor
 
                 SetPrefValues();
                 GetAllPrefValues();
-                RepaintOpenWindows();
 
                 // We need to set and get prefs before the change will be noticed by the window.
                 if (shouldReopenWindowMain)
@@ -140,7 +142,7 @@ namespace GDTB.EditorPrefsEditor
             EditorPrefs.SetInt(PREFS_EPEDITOR_BUTTONS_DISPLAY, System.Convert.ToInt16(_buttonsDisplay));
             EditorPrefs.SetBool(PREFS_EPEDITOR_CONFIRMATION_DIALOGS, _confirmationDialogs);
             SetColorPrefs();
-            SetShortcutPrefs();
+            SetShortcutPref();
         }
 
 
@@ -154,9 +156,16 @@ namespace GDTB.EditorPrefsEditor
 
 
         /// Set the value of the shortcut preference.
-        private static void SetShortcutPrefs()
+        private static void SetShortcutPref(bool forceUpdate = false)
         {
-            if (_newShortcut != _shortcut)
+            if(forceUpdate == true)
+            {
+                EditorPrefs.SetString(PREFS_EPEDITOR_SHORTCUT, _shortcut);
+                var formattedShortcut = _shortcut.Replace("|", "");
+                IO.OverwriteShortcut(formattedShortcut);
+                _newShortcut = _shortcut;
+            }
+            else if (_newShortcut != _shortcut)
             {
                 _shortcut = _newShortcut;
                 EditorPrefs.SetString(PREFS_EPEDITOR_SHORTCUT, _shortcut);
@@ -179,6 +188,7 @@ namespace GDTB.EditorPrefsEditor
             _tertiary = GetPrefValue(PREFS_EPEDITOR_COLOR_TERTIARY, _tertiary_default); // TERTIARY color.
             _oldTertiary = _tertiary;
             _shortcut = GetPrefValue(PREFS_EPEDITOR_SHORTCUT, _shortcut_default); // Shortcut.
+            _newShortcut = _shortcut;
             ParseShortcutValues();
         }
 
@@ -250,8 +260,8 @@ namespace GDTB.EditorPrefsEditor
             GUILayout.Space(20);
             _modifierKeys[0] = GUILayout.Toggle(_modifierKeys[0], platformKey, EditorStyles.miniButton, GUILayout.Width(50));
             _modifierKeys[1] = GUILayout.Toggle(_modifierKeys[1], "ALT", EditorStyles.miniButton, GUILayout.Width(40));
-            _modifierKeys[2] = GUILayout.Toggle(_modifierKeys[2], "SHIFT", EditorStyles.miniButton, GUILayout.Width(60));
-            _mainShortcutKeyIndex = EditorGUILayout.Popup(_mainShortcutKeyIndex, _shortcutKeys, GUILayout.Width(60));
+            _modifierKeys[2] = GUILayout.Toggle(_modifierKeys[2], "SHIFT", EditorStyles.miniButton, GUILayout.Width(50));
+            _mainShortcutKeyIndex = EditorGUILayout.Popup(_mainShortcutKeyIndex, _shortcutKeys, GUILayout.Width(55));
             GUILayout.EndHorizontal();
 
             // Generate shortcut string.
@@ -305,6 +315,21 @@ namespace GDTB.EditorPrefsEditor
         }
 
 
+        /// Draw update button.
+        private static void DrawNewcolorsButton()
+        {
+            EditorGUILayout.BeginHorizontal();
+            EditorGUILayout.Space();
+            if (GUILayout.Button("Apply new colors", GUILayout.Width(120)))
+            {
+                ReloadSkins();
+                RepaintOpenWindows();
+            }
+            EditorGUILayout.Space();
+            EditorGUILayout.EndHorizontal();
+        }
+
+
         /// Draw reset button.
         private static void DrawResetButton()
         {
@@ -312,7 +337,25 @@ namespace GDTB.EditorPrefsEditor
             EditorGUILayout.Space();
             if (GUILayout.Button("Reset preferences", GUILayout.Width(120)))
             {
-                ResetPrefsToDefault();
+                // Get confirmation through dialog (or not if the user doesn't want to).
+                var canExecute = false;
+                if (ShowConfirmationDialogs == true)
+                {
+                    if (EditorUtility.DisplayDialog("Reset preferences?", "Are you sure you want to reset preferences to their default values?", "Reset", "Cancel"))
+                    {
+                        canExecute = true;
+                    }
+                }
+                else
+                {
+                    canExecute = true;
+                }
+
+                // Actually do the thing.
+                if (canExecute == true)
+                {
+                    ResetPrefsToDefault();
+                }
             }
             EditorGUILayout.Space();
             EditorGUILayout.EndHorizontal();
@@ -327,6 +370,7 @@ namespace GDTB.EditorPrefsEditor
             _secondary = new Color(_secondary_default.r / 255, _secondary_default.g / 255, _secondary_default.b / 255, _secondary_default.a);
             _tertiary = new Color(_tertiary_default.r / 255, _tertiary_default.g / 255, _tertiary_default.b / 255, _tertiary_default.a);
             _shortcut = _shortcut_default;
+            SetShortcutPref(true);
             ReloadSkins();
             SetPrefValues();
             GetAllPrefValues();

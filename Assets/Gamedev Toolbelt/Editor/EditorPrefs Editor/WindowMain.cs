@@ -560,11 +560,11 @@ namespace GDTB.EditorPrefsEditor
             var window = GetWindow(typeof(WindowMain)) as WindowMain;
             if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
             {
-                window.minSize = new Vector2(221f, 150f);
+                window.minSize = new Vector2(222f, 150f);
             }
             else
             {
-                window.minSize = new Vector2(321f, 150f);
+                window.minSize = new Vector2(322f, 150f);
             }
 
             width_typeLabel = (int)style_type.CalcSize(new GUIContent("String")).x;

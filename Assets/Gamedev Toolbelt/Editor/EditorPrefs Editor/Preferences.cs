@@ -30,8 +30,8 @@ namespace GDTB.EditorPrefsEditor
         #region Colors
         // Style of icons (light or dark).
         private const string PREFS_EPEDITOR_ICON_STYLE = "GDTB_EPEditor_IconStyle";
-        private static IconStyle _iconStyle = IconStyle.DARK;
-        private static int _iconStyle_default = 0;
+        private static IconStyle _iconStyle = IconStyle.LIGHT;
+        private static int _iconStyle_default = 1;
         private static IconStyle _oldIconStyle;
         public static IconStyle IconStyle
         {
@@ -210,6 +210,7 @@ namespace GDTB.EditorPrefsEditor
         {
             _iconStyle = (IconStyle)EditorPrefs.GetInt(PREFS_EPEDITOR_ICON_STYLE, _iconStyle_default); // Icon style.
             _oldIconStyle = _iconStyle;
+            DrawingUtils.LoadTextures(_iconStyle);
         }
 
         /// Load color preferences.

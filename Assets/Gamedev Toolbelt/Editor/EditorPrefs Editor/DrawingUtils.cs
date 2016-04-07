@@ -13,6 +13,9 @@ namespace GDTB.EditorPrefsEditor
         public static Texture2D Texture_Edit = Resources.Load(Constants.FILE_GDTB_EDIT_DARK, typeof(Texture2D)) as Texture2D;
         public static Texture2D Texture_Remove = Resources.Load(Constants.FILE_GDTB_REMOVE_DARK, typeof(Texture2D)) as Texture2D;
 
+        public static IconStyle CurrentIconStyle = IconStyle.LIGHT;
+
+
         /// Draw "fake" texture button for a button based on preferences.
         public static void DrawTextureButton(Rect aRect, Texture2D aTexture)
         {
@@ -91,6 +94,7 @@ namespace GDTB.EditorPrefsEditor
                 Texture_Nuke = Resources.Load(Constants.FILE_GDTB_REMOVEALL_DARK, typeof(Texture2D)) as Texture2D;
                 Texture_Edit = Resources.Load(Constants.FILE_GDTB_EDIT_DARK, typeof(Texture2D)) as Texture2D;
                 Texture_Remove = Resources.Load(Constants.FILE_GDTB_REMOVE_DARK, typeof(Texture2D)) as Texture2D;
+                CurrentIconStyle = IconStyle.DARK;
             }
             else
             {
@@ -101,6 +105,7 @@ namespace GDTB.EditorPrefsEditor
                 Texture_Nuke = Resources.Load(Constants.FILE_GDTB_REMOVEALL_LIGHT, typeof(Texture2D)) as Texture2D;
                 Texture_Edit = Resources.Load(Constants.FILE_GDTB_EDIT_LIGHT, typeof(Texture2D)) as Texture2D;
                 Texture_Remove = Resources.Load(Constants.FILE_GDTB_REMOVE_LIGHT, typeof(Texture2D)) as Texture2D;
+                CurrentIconStyle = IconStyle.LIGHT;
             }
         }
     }

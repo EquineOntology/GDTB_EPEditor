@@ -38,7 +38,6 @@ namespace GDTB.EditorPrefsEditor
         {
             // Get existing open window or if none, make a new one.
             var window = (WindowMain)EditorWindow.GetWindow(typeof(WindowMain));
-            window.titleContent = new GUIContent("EditorPrefs");
             window.SetMinSize();
             window.width_typeLabel = (int)window.style_type.CalcSize(new GUIContent("String")).x; // Not with the other layouting sizes because it only needs to be done once.
             window.UpdateLayoutingSizes();
@@ -51,6 +50,7 @@ namespace GDTB.EditorPrefsEditor
 
         public void OnEnable()
         {
+            titleContent = new GUIContent("EditorPrefs Editor");
             Instance = this;
             Preferences.GetAllPrefValues();
             LoadSkin();

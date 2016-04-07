@@ -2,13 +2,21 @@
 {
     public static class Constants
     {
-        public const string FILE_GDTB_EDIT = "GUI/epeditor_EDIT_light";
-        public const string FILE_GDTB_ADD = "GUI/epeditor_ADD_light";
-        public const string FILE_GDTB_GET = "GUI/epeditor_GET_light";
-        public const string FILE_GDTB_REFRESH = "GUI/epeditor_REFRESH_light";
-        public const string FILE_GDTB_REMOVE = "GUI/epeditor_REMOVE_light";
-        public const string FILE_GDTB_REMOVEALL = "GUI/epeditor_REMOVEALL_light";
-        public const string FILE_GDTB_SETTINGS = "GUI/epeditor_SETTINGS_light";
+        public const string FILE_GDTB_EDIT_DARK = "GUI/epeditor_EDIT_dark";
+        public const string FILE_GDTB_ADD_DARK = "GUI/epeditor_ADD_dark";
+        public const string FILE_GDTB_GET_DARK = "GUI/epeditor_GET_dark";
+        public const string FILE_GDTB_REFRESH_DARK = "GUI/epeditor_REFRESH_dark";
+        public const string FILE_GDTB_REMOVE_DARK = "GUI/epeditor_REMOVE_dark";
+        public const string FILE_GDTB_REMOVEALL_DARK = "GUI/epeditor_REMOVEALL_dark";
+        public const string FILE_GDTB_SETTINGS_DARK = "GUI/epeditor_SETTINGS_dark";
+
+        public const string FILE_GDTB_EDIT_LIGHT = "GUI/epeditor_EDIT_light";
+        public const string FILE_GDTB_ADD_LIGHT = "GUI/epeditor_ADD_light";
+        public const string FILE_GDTB_GET_LIGHT = "GUI/epeditor_GET_light";
+        public const string FILE_GDTB_REFRESH_LIGHT = "GUI/epeditor_REFRESH_light";
+        public const string FILE_GDTB_REMOVE_LIGHT = "GUI/epeditor_REMOVE_light";
+        public const string FILE_GDTB_REMOVEALL_LIGHT = "GUI/epeditor_REMOVEALL_light";
+        public const string FILE_GDTB_SETTINGS_LIGHT = "GUI/epeditor_SETTINGS_light";
 
         public const string FILE_GUISKIN = "GUI/epeditor_skin";
 

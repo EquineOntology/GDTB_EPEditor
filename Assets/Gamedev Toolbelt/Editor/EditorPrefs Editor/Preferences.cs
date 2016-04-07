@@ -15,8 +15,8 @@ namespace GDTB.EditorPrefsEditor
         {
             get { return _buttonsDisplay; }
         }
-        private static string[] _buttonsFormatsString = { "Cool icons", "Regular buttons" };
 
+        private static string[] arr_buttonStyle = { "Cool icons", "Regular buttons" };
 
         // Confirmation dialogs
         private const string PREFS_EPEDITOR_CONFIRMATION_DIALOGS = "GDTB_EPEditor_ConfirmationDialogs";
@@ -28,13 +28,23 @@ namespace GDTB.EditorPrefsEditor
         }
 
         #region Colors
+        // Style of icons (light or dark).
+        private const string PREFS_EPEDITOR_ICON_STYLE = "GDTB_EPEditor_IconStyle";
+        private static IconStyle _iconStyle = IconStyle.DARK;
+        private static int _iconStyle_default = 0;
+        private static IconStyle _oldIconStyle;
+        public static IconStyle IconStyle
+        {
+            get { return _iconStyle; }
+        }
+        private static string[] arr_iconStyle = { "Dark", "Light" };
+
         // Primary color.
         private const string PREFS_EPEDITOR_COLOR_PRIMARY = "GDTB_EPEditor_Primary";
         private static Color _primary = new Color(56, 56, 56, 1);
         private static Color _primary_dark = new Color(56, 56, 56, 1);
-        private static Color _primary_light = new Color(251, 249, 243, 1);
+        private static Color _primary_light = new Color(222, 222, 222, 1);//231, 231, 222, 1);
         private static Color _primary_default = new Color(56, 56, 56, 1);
-        private static Color _oldPrimary;
         public static Color Color_Primary
         {
             get { return _primary; }
@@ -44,10 +54,8 @@ namespace GDTB.EditorPrefsEditor
         private const string PREFS_EPEDITOR_COLOR_SECONDARY = "GDTB_EPEditor_Secondary";
         private static Color _secondary = new Color(55, 222, 179, 1);
         private static Color _secondary_dark = new Color(55, 222, 179, 1);
-        private static Color _secondary_light = new Color(91, 188, 201, 1);
-
+        private static Color _secondary_light = new Color(0, 148, 130, 1);
         private static Color _secondary_default = new Color(55, 222, 179, 1);
-        private static Color _oldSecondary;
         public static Color Color_Secondary
         {
             get { return _secondary; }
@@ -55,12 +63,10 @@ namespace GDTB.EditorPrefsEditor
 
         // Tertiary color.
         private const string PREFS_EPEDITOR_COLOR_TERTIARY = "GDTB_EPEditor_Tertiary";
-        //private static Color _tertiary = new Color(164, 230, 200, 1);
         private static Color _tertiary = new Color(255, 255, 255, 1);
         private static Color _tertiary_dark = new Color(164, 230, 200, 1);
-        private static Color _tertiary_light = new Color(9, 41, 48, 1);
-        private static Color _tertiary_default = new Color(255, 255, 255, 1);
-        private static Color _oldTertiary;
+        private static Color _tertiary_light = new Color(56, 56, 56, 1);
+        private static Color _tertiary_default = new Color(164, 230, 200, 1);
         public static Color Color_Tertiary
         {
             get { return _tertiary; }
@@ -90,17 +96,18 @@ namespace GDTB.EditorPrefsEditor
 
             EditorGUILayout.BeginVertical();
             EditorGUILayout.LabelField("General Settings", EditorStyles.boldLabel);
-            _buttonsDisplay = (ButtonsDisplayFormat)EditorGUILayout.Popup("Button style", System.Convert.ToInt16(_buttonsDisplay), _buttonsFormatsString);
+            _buttonsDisplay = (ButtonsDisplayFormat)EditorGUILayout.Popup("Button style", (int)_buttonsDisplay, arr_buttonStyle);
             _confirmationDialogs = EditorGUILayout.Toggle("Show confirmation dialogs", _confirmationDialogs);
             _newShortcut = DrawShortcutSelector();
             GUILayout.Space(20);
-            EditorGUILayout.LabelField("UI colors", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("UI", EditorStyles.boldLabel);
+            _iconStyle = (IconStyle)EditorGUILayout.Popup("Icon style", (int)_iconStyle, arr_iconStyle);
+            EditorGUILayout.Separator();
             _primary = EditorGUILayout.ColorField("Primary color", _primary);
             _secondary = EditorGUILayout.ColorField("Secondary color", _secondary);
             _tertiary = EditorGUILayout.ColorField("Tertiary color", _tertiary);
-
             EditorGUILayout.Separator();
-            DrawNewcolorsButton();
+            DrawThemeButtons();
             GUILayout.Space(20);
             EditorGUILayout.LabelField("Reset preferences", EditorStyles.boldLabel);
             DrawResetButton();
@@ -108,19 +115,12 @@ namespace GDTB.EditorPrefsEditor
 
             if (GUI.changed)
             {
-                // Reload skins if colors changed.
-                if (_primary != _oldPrimary || _secondary != _oldSecondary || _tertiary != _oldTertiary)
-                {
-                    _oldPrimary = _primary;
-                    _oldSecondary = _secondary;
-                    _oldTertiary = _tertiary;
-                }
-
                 // If buttons display changed we want to open and close the window, so that the new minsize is applied.
                 var shouldReopenWindowMain = false;
-                if (_buttonsDisplay != _oldDisplayFormat)
+                if (_buttonsDisplay != _oldDisplayFormat || _iconStyle != _oldIconStyle)
                 {
                     _oldDisplayFormat = _buttonsDisplay;
+                    _oldIconStyle = _iconStyle;
                     shouldReopenWindowMain = true;
                 }
 
@@ -146,10 +146,19 @@ namespace GDTB.EditorPrefsEditor
         /// Set the value of all preferences.
         private static void SetPrefValues()
         {
-            EditorPrefs.SetInt(PREFS_EPEDITOR_BUTTONS_DISPLAY, System.Convert.ToInt16(_buttonsDisplay));
+            EditorPrefs.SetInt(PREFS_EPEDITOR_BUTTONS_DISPLAY, (int)_buttonsDisplay);
+            SetIconStyle();
             EditorPrefs.SetBool(PREFS_EPEDITOR_CONFIRMATION_DIALOGS, _confirmationDialogs);
             SetColorPrefs();
             SetShortcutPref();
+        }
+
+
+        /// Set the value of IconStyle.
+        private static void SetIconStyle()
+        {
+            EditorPrefs.SetInt(PREFS_EPEDITOR_ICON_STYLE, (int)_iconStyle);
+            DrawingUtils.LoadTextures(_iconStyle);
         }
 
 
@@ -187,16 +196,28 @@ namespace GDTB.EditorPrefsEditor
         {
             _buttonsDisplay = (ButtonsDisplayFormat)EditorPrefs.GetInt(PREFS_EPEDITOR_BUTTONS_DISPLAY, _buttonsDisplay_default); // Buttons display.
             _oldDisplayFormat = _buttonsDisplay;
+            GetIconStyle();
             _confirmationDialogs = GetPrefValue(PREFS_EPEDITOR_CONFIRMATION_DIALOGS, _confirmationDialogs_default);
-            _primary = GetPrefValue(PREFS_EPEDITOR_COLOR_PRIMARY, _primary_default); // PRIMARY color.
-            _oldPrimary = _primary;
-            _secondary = GetPrefValue(PREFS_EPEDITOR_COLOR_SECONDARY, _secondary_default); // SECONDARY color.
-            _oldSecondary = _secondary;
-            _tertiary = GetPrefValue(PREFS_EPEDITOR_COLOR_TERTIARY, _tertiary_default); // TERTIARY color.
-            _oldTertiary = _tertiary;
+            GetColorPrefs();
             _shortcut = GetPrefValue(PREFS_EPEDITOR_SHORTCUT, _shortcut_default); // Shortcut.
             _newShortcut = _shortcut;
             ParseShortcutValues();
+        }
+
+
+        /// Get IconStyle.
+        private static void GetIconStyle()
+        {
+            _iconStyle = (IconStyle)EditorPrefs.GetInt(PREFS_EPEDITOR_ICON_STYLE, _iconStyle_default); // Icon style.
+            _oldIconStyle = _iconStyle;
+        }
+
+        /// Load color preferences.
+        private static void GetColorPrefs()
+        {
+            _primary = GetPrefValue(PREFS_EPEDITOR_COLOR_PRIMARY, _primary_default); // PRIMARY color.
+            _secondary = GetPrefValue(PREFS_EPEDITOR_COLOR_SECONDARY, _secondary_default); // SECONDARY color.
+            _tertiary = GetPrefValue(PREFS_EPEDITOR_COLOR_TERTIARY, _tertiary_default); // TERTIARY color.
         }
 
 
@@ -323,14 +344,76 @@ namespace GDTB.EditorPrefsEditor
 
 
         /// Draw update button.
-        private static void DrawNewcolorsButton()
+        private static void DrawThemeButtons()
         {
             EditorGUILayout.BeginHorizontal();
             EditorGUILayout.Space();
-            if (GUILayout.Button("Apply new colors", GUILayout.Width(120)))
+            if (GUILayout.Button("Apply new colors"))
             {
                 ReloadSkins();
                 RepaintOpenWindows();
+            }
+            if (GUILayout.Button("Load dark theme"))
+            {
+                // Get confirmation through dialog (or not if the user doesn't want to).
+                var canExecute = false;
+                if (ShowConfirmationDialogs == true)
+                {
+                    if (EditorUtility.DisplayDialog("Change to dark theme?", "Are you sure you want to change the color scheme to the dark (default) theme?", "Change color scheme", "Cancel"))
+                    {
+                        canExecute = true;
+                    }
+                }
+                else
+                {
+                    canExecute = true;
+                }
+
+                // Actually do the thing.
+                if (canExecute == true)
+                {
+                    _primary = new Color(_primary_dark.r / 255.0f, _primary_dark.g / 255.0f, _primary_dark.b / 255.0f, 1.0f);
+                    _secondary = new Color(_secondary_dark.r / 255.0f, _secondary_dark.g / 255.0f, _secondary_dark.b / 255.0f, 1.0f);
+                    _tertiary = new Color(_tertiary_dark.r / 255.0f, _tertiary_dark.g / 255.0f, _tertiary_dark.b / 255.0f, 1.0f);
+                    SetColorPrefs();
+                    GetColorPrefs();
+                    _iconStyle = IconStyle.LIGHT;
+                    SetIconStyle();
+                    GetIconStyle();
+                    ReloadSkins();
+                    RepaintOpenWindows();
+                }
+            }
+            if (GUILayout.Button("Load light theme"))
+            {
+                // Get confirmation through dialog (or not if the user doesn't want to).
+                var canExecute = false;
+                if (ShowConfirmationDialogs == true)
+                {
+                    if (EditorUtility.DisplayDialog("Change to light theme?", "Are you sure you want to change the color scheme to the light theme?", "Change color scheme", "Cancel"))
+                    {
+                        canExecute = true;
+                    }
+                }
+                else
+                {
+                    canExecute = true;
+                }
+
+                // Actually do the thing.
+                if (canExecute == true)
+                {
+                    _primary = new Color(_primary_light.r / 255.0f, _primary_light.g / 255.0f, _primary_light.b / 255.0f, 1.0f);
+                    _secondary = new Color(_secondary_light.r / 255.0f, _secondary_light.g / 255.0f, _secondary_light.b / 255.0f, 1.0f);
+                    _tertiary = new Color(_tertiary_light.r / 255.0f, _tertiary_light.g / 255.0f, _tertiary_light.b / 255.0f, 1.0f);
+                    SetColorPrefs();
+                    GetColorPrefs();
+                    _iconStyle = IconStyle.DARK;
+                    SetIconStyle();
+                    GetIconStyle();
+                    ReloadSkins();
+                    RepaintOpenWindows();
+                }
             }
             EditorGUILayout.Space();
             EditorGUILayout.EndHorizontal();
@@ -373,6 +456,7 @@ namespace GDTB.EditorPrefsEditor
         private static void ResetPrefsToDefault()
         {
             _buttonsDisplay = (ButtonsDisplayFormat)_buttonsDisplay_default;
+            _iconStyle = (IconStyle)_iconStyle_default;
             _primary = new Color(_primary_default.r / 255, _primary_default.g / 255, _primary_default.b / 255, _primary_default.a);
             _secondary = new Color(_secondary_default.r / 255, _secondary_default.g / 255, _secondary_default.b / 255, _secondary_default.a);
             _tertiary = new Color(_tertiary_default.r / 255, _tertiary_default.g / 255, _tertiary_default.b / 255, _tertiary_default.a);
@@ -437,5 +521,12 @@ namespace GDTB.EditorPrefsEditor
     {
         COOL_ICONS,
         REGULAR_BUTTONS
+    }
+
+
+    public enum IconStyle
+    {
+        DARK,
+        LIGHT
     }
 }

@@ -29,7 +29,7 @@ namespace GDTB.EditorPrefsEditor
         private int width_type, width_prefs, width_buttons;
         private int width_typeLabel;
         private float idx_height = 0;
-        private Vector2 _scrollPosition = new Vector2(Screen.width - 5, Screen.height);
+        private Vector2 _scrollPosition = new Vector2(0.0f, 0.0f);
         private Rect rect_scrollView, rect_scroll, _typeRect, _keyValueRect, _buttonsRect;
 
 
@@ -513,7 +513,7 @@ namespace GDTB.EditorPrefsEditor
         private void UpdateLayoutingSizes()
         {
             var width = position.width - IconSize;
-            rect_scroll = new Rect(_offset, _offset, width - (_offset * 2), position.height - IconSize - _offset * 3);
+            rect_scroll = new Rect(_offset, _offset, width - (_offset * 2), position.height - IconSize - _offset * 4);
             rect_scrollView = rect_scroll;
             width_type = width_typeLabel + (_offset * 2);
 

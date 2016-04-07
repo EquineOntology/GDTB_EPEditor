@@ -27,10 +27,12 @@ namespace GDTB.EditorPrefsEditor
             get { return _confirmationDialogs; }
         }
 
-
-        // Color of URGENT tasks.
+        #region Colors
+        // Primary color.
         private const string PREFS_EPEDITOR_COLOR_PRIMARY = "GDTB_EPEditor_Primary";
         private static Color _primary = new Color(56, 56, 56, 1);
+        private static Color _primary_dark = new Color(56, 56, 56, 1);
+        private static Color _primary_light = new Color(251, 249, 243, 1);
         private static Color _primary_default = new Color(56, 56, 56, 1);
         private static Color _oldPrimary;
         public static Color Color_Primary
@@ -38,9 +40,12 @@ namespace GDTB.EditorPrefsEditor
             get { return _primary; }
         }
 
-        // Color of NORMAL tasks
+        // Secondary color.
         private const string PREFS_EPEDITOR_COLOR_SECONDARY = "GDTB_EPEditor_Secondary";
         private static Color _secondary = new Color(55, 222, 179, 1);
+        private static Color _secondary_dark = new Color(55, 222, 179, 1);
+        private static Color _secondary_light = new Color(91, 188, 201, 1);
+
         private static Color _secondary_default = new Color(55, 222, 179, 1);
         private static Color _oldSecondary;
         public static Color Color_Secondary
@@ -48,18 +53,19 @@ namespace GDTB.EditorPrefsEditor
             get { return _secondary; }
         }
 
-        // Color of MINOR tasks
+        // Tertiary color.
         private const string PREFS_EPEDITOR_COLOR_TERTIARY = "GDTB_EPEditor_Tertiary";
         //private static Color _tertiary = new Color(164, 230, 200, 1);
         private static Color _tertiary = new Color(255, 255, 255, 1);
-        //private static Color _tertiary_default = new Color(164, 230, 200, 1);
+        private static Color _tertiary_dark = new Color(164, 230, 200, 1);
+        private static Color _tertiary_light = new Color(9, 41, 48, 1);
         private static Color _tertiary_default = new Color(255, 255, 255, 1);
         private static Color _oldTertiary;
         public static Color Color_Tertiary
         {
             get { return _tertiary; }
         }
-
+        #endregion
 
         // Custom shortcut
         private const string PREFS_EPEDITOR_SHORTCUT = "GDTB_EPEditor_Shortcut";
@@ -72,7 +78,7 @@ namespace GDTB.EditorPrefsEditor
         }
         private static bool[] _modifierKeys = new bool[] { false, false, false }; // Ctrl/Cmd, Alt, Shift.
         private static int _mainShortcutKeyIndex = 0;
-        // Want absolute control over values.
+        // Restrict options to what we're sure works.
         private static string[] _shortcutKeys = new string[] { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "LEFT", "RIGHT", "UP", "DOWN", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "HOME", "END", "PGUP", "PGDN" };
         #endregion fields
 
@@ -92,6 +98,7 @@ namespace GDTB.EditorPrefsEditor
             _primary = EditorGUILayout.ColorField("Primary color", _primary);
             _secondary = EditorGUILayout.ColorField("Secondary color", _secondary);
             _tertiary = EditorGUILayout.ColorField("Tertiary color", _tertiary);
+
             EditorGUILayout.Separator();
             DrawNewcolorsButton();
             GUILayout.Space(20);

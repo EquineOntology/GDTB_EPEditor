@@ -17,7 +17,6 @@ namespace GDTB.EditorPrefsEditor
         //============================ Editor GUI =============================
         private GUISkin skin_custom, _defaultSkin;
         private GUIStyle style_type, style_key, style_value, style_buttonText;
-        private Texture2D t_add, t_get, t_refresh, t_settings, t_nuke, t_edit, t_remove;
 
         // ========================= Editor layouting =========================
         private const int IconSize = Constants.ICON_SIZE;
@@ -551,6 +550,12 @@ namespace GDTB.EditorPrefsEditor
             style_buttonText = skin_custom.GetStyle("GDTB_EPEditor_buttonText");
             style_buttonText.active.textColor = Preferences.Color_Tertiary;
             style_buttonText.normal.textColor = Preferences.Color_Tertiary;
+
+            // Change scrollbar color.
+            var scrollbar = Resources.Load("GUI/epeditor_scrollbar", typeof(Texture2D)) as Texture2D;
+            scrollbar.SetPixel(0, 0, Preferences.Color_Secondary);
+            scrollbar.Apply();
+            skin_custom.verticalScrollbarThumb.normal.background = scrollbar;
         }
 
 

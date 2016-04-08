@@ -43,7 +43,7 @@ namespace GDTB.EditorPrefsEditor
         private const string PREFS_EPEDITOR_COLOR_PRIMARY = "GDTB_EPEditor_Primary";
         private static Color _primary = new Color(56, 56, 56, 1);
         private static Color _primary_dark = new Color(56, 56, 56, 1);
-        private static Color _primary_light = new Color(222, 222, 222, 1);//231, 231, 222, 1);
+        private static Color _primary_light = new Color(222, 222, 222, 1);
         private static Color _primary_default = new Color(56, 56, 56, 1);
         public static Color Color_Primary
         {

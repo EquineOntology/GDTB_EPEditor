@@ -29,7 +29,8 @@ namespace GDTB.EditorPrefsEditor
         private int width_typeLabel;
         private float idx_height = 0;
         private Vector2 _scrollPosition = new Vector2(0.0f, 0.0f);
-        private Rect rect_scrollView, rect_scroll, _typeRect, _keyValueRect, _buttonsRect;
+        private Rect rect_scrollView, rect_scrollArea, rect_type, rect_pref, rect_buttons;
+        private bool showingScrollbar = false;
 
 
         [MenuItem("Window/Gamedev Toolbelt/EditorPrefs Editor %q")]
@@ -108,37 +109,65 @@ namespace GDTB.EditorPrefsEditor
         private void DrawPrefs()
         {
             rect_scrollView.height = idx_height - _offset;
-            rect_scroll.width += IconSize;
-            _scrollPosition = GUI.BeginScrollView(rect_scroll, _scrollPosition, rect_scrollView);
+
+            //Diminish the width of scrollview and scroll area so that the scollbar is offset from the right edge of the window.
+            rect_scrollArea.width += IconSize - _offset;
+            rect_scrollView.width -= _offset;
+
+            // Change size of the scroll area so that it fills the window when there's no scrollbar.
+            if(showingScrollbar == false)
+            {
+                rect_scrollView.width += IconSize;
+            }
+
+            _scrollPosition = GUI.BeginScrollView(rect_scrollArea, _scrollPosition, rect_scrollView);
             idx_height = _offset;
             for (var i = 0; i < Prefs.Count; i++)
             {
                 var key = new GUIContent(Prefs[i].Key);
                 var val = new GUIContent(Prefs[i].Value);
-                var keyHeight = style_key.CalcHeight(key, width_prefs);
-                var valHeight = style_value.CalcHeight(val, width_prefs);
+                var height_key = style_key.CalcHeight(key, width_prefs);
+                var height_value = style_value.CalcHeight(val, width_prefs);
 
-                var prefBGHeight = keyHeight + valHeight + Constants.LINE_HEIGHT + _offset * 2 + 4;
+                var prefBGHeight = height_key + height_value + Constants.LINE_HEIGHT + _offset * 2 + 4;
                 prefBGHeight = prefBGHeight < IconSize * 2.5f ? IconSize * 2.5f : prefBGHeight;
                 if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.REGULAR_BUTTONS)
                 {
                     prefBGHeight += 4;
                 }
 
-                _keyValueRect = new Rect(_offset, idx_height, width_prefs, prefBGHeight);
-                _typeRect = new Rect(-2, _keyValueRect.y, width_type, prefBGHeight);
-                _buttonsRect = new Rect(width_prefs + (_offset * 2), _keyValueRect.y, width_buttons, prefBGHeight);
+                rect_pref = new Rect(_offset, idx_height, width_prefs, prefBGHeight);
+                rect_type = new Rect(-2, rect_pref.y, width_type, prefBGHeight);
+                rect_buttons = new Rect(width_type + width_prefs + IconSize, rect_pref.y, width_buttons, prefBGHeight);
 
-                var prefBGRect = _keyValueRect;
+
+                var prefBGRect = rect_pref;
                 prefBGRect.height = prefBGHeight - _offset;
-                prefBGRect.width = position.width - (IconSize * 2) + 2;
+
+                if (showingScrollbar == false)
+                {
+                    prefBGRect.width = position.width - _offset * 2;
+                }
+                else
+                {
+                    prefBGRect.width = width_type + width_prefs + width_buttons;
+                }
 
                 idx_height += prefBGRect.height + _offset;
 
                 DrawPrefBG(prefBGRect);
-                DrawType(_typeRect, Prefs[i]);
-                DrawKeyAndValue(_keyValueRect, Prefs[i], keyHeight);
-                DrawEditAndRemove(_buttonsRect, Prefs[i]);
+                DrawType(rect_type, Prefs[i]);
+                DrawKeyAndValue(rect_pref, Prefs[i], height_key);
+                DrawEditAndRemove(rect_buttons, Prefs[i]);
+            }
+
+            if(rect_scrollArea.height < rect_scrollView.height)
+            {
+                showingScrollbar = true;
+            }
+            else
+            {
+                showingScrollbar = false;
             }
             GUI.EndScrollView();
         }
@@ -193,15 +222,33 @@ namespace GDTB.EditorPrefsEditor
         {
             Rect editRect, removeRect;
             GUIContent editContent, removeContent;
+
+            if (showingScrollbar == true)
+            {
+                aRect.x -= _offset;
+            }
+            else
+            {
+                aRect.x = position.width - _offset * 2;
+                if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.REGULAR_BUTTONS)
+                {
+                    aRect.x -= ButtonWidth;
+                }
+                else
+                {
+                    aRect.x -= IconSize;
+                }
+            }
+
             switch (Preferences.ButtonsDisplay)
             {
                 case ButtonsDisplayFormat.REGULAR_BUTTONS:
-                    GUI.skin = _defaultSkin;
+                    //GUI.skin = _defaultSkin;
                     Button_Edit_default(aRect, out editRect, out editContent);
                     Button_Remove_default(aRect, out removeRect, out removeContent);
                     break;
                 default:
-                    GUI.skin = skin_custom;
+                    //GUI.skin = skin_custom;
                     Button_Edit_icon(aRect, out editRect, out editContent);
                     Button_Remove_icon(aRect, out removeRect, out removeContent);
                     break;
@@ -257,7 +304,6 @@ namespace GDTB.EditorPrefsEditor
         private void Button_Edit_default(Rect aRect, out Rect anEditRect, out GUIContent anEditContent)
         {
             anEditRect = aRect;
-            anEditRect.x = position.width - ButtonWidth - IconSize * 2 + 2;
             anEditRect.y += _offset;
             anEditRect.width = ButtonWidth;
             anEditRect.height = ButtonHeight;
@@ -269,7 +315,6 @@ namespace GDTB.EditorPrefsEditor
         private void Button_Remove_default(Rect aRect, out Rect aRemoveRect, out GUIContent aRemoveContent)
         {
             aRemoveRect = aRect;
-            aRemoveRect.x = position.width - ButtonWidth - IconSize * 2 + 2;
             aRemoveRect.y += ButtonHeight + _offset + 2;
             aRemoveRect.width = ButtonWidth;
             aRemoveRect.height = ButtonHeight;
@@ -282,11 +327,9 @@ namespace GDTB.EditorPrefsEditor
         private void Button_Edit_icon(Rect aRect, out Rect anEditRect, out GUIContent anEditContent)
         {
             anEditRect = aRect;
-            anEditRect.x = position.width - (IconSize * 3) + 1;
             anEditRect.y += _offset;
             anEditRect.width = IconSize;
             anEditRect.height = IconSize;
-
             anEditContent = new GUIContent("", "Edit this EditorPref");
         }
 
@@ -294,7 +337,6 @@ namespace GDTB.EditorPrefsEditor
         private void Button_Remove_icon(Rect aRect, out Rect aRemoveRect, out GUIContent aRemoveContent)
         {
             aRemoveRect = aRect;
-            aRemoveRect.x = position.width - (IconSize * 3) + 1;
             aRemoveRect.y += IconSize +  _offset + 2;
             aRemoveRect.width = IconSize;
             aRemoveRect.height = IconSize;
@@ -511,20 +553,26 @@ namespace GDTB.EditorPrefsEditor
         /// Calculate the correct size of GUI elements based on preferences.
         private void UpdateLayoutingSizes()
         {
-            var width = position.width - IconSize;
-            rect_scroll = new Rect(_offset, _offset, width - (_offset * 2), position.height - IconSize - _offset * 4);
-            rect_scrollView = rect_scroll;
+            var width = position.width - _offset * 2;
+            rect_scrollArea = new Rect(_offset, _offset, width - (_offset * 2), position.height - IconSize - _offset * 4);
+            rect_scrollView = rect_scrollArea;
             width_type = width_typeLabel + (_offset * 2);
 
-            if(Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
+            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
             {
-                width_buttons = (IconSize * 2) + 5;
+                if (showingScrollbar)
+                    width_buttons = IconSize + _offset * 3;
+                else
+                    width_buttons = IconSize + _offset;
             }
             else
             {
-                width_buttons = ButtonWidth + _offset * 4;
+                if (showingScrollbar)
+                    width_buttons = ButtonWidth + _offset * 3;
+                else
+                    width_buttons = ButtonWidth + _offset * 1;
             }
-            width_prefs = (int)width - width_type - width_buttons - (_offset * 2);
+            width_prefs = (int)width - width_type - width_buttons - _offset * 3;
         }
 
 

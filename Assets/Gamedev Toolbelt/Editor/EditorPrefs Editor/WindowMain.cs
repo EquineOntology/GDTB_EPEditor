@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
-namespace GDTB.EditorPrefsEditor
+namespace com.immortalyhydra.gdtb.epeditor
 {
     public class WindowMain : EditorWindow
     {
@@ -398,7 +398,7 @@ namespace GDTB.EditorPrefsEditor
             // Get already existing pref.
             if (GUI.Button(getRect, getContent))
             {
-                EditorPrefsEditor.WindowGet.Init();
+                WindowGet.Init();
             }
             if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
             {

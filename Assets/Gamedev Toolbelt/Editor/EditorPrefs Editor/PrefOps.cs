@@ -1,6 +1,6 @@
 ﻿using UnityEditor;
 
-namespace GDTB.EditorPrefsEditor
+namespace com.immortalyhydra.gdtb.epeditor
 {
     public static class PrefOps
     {

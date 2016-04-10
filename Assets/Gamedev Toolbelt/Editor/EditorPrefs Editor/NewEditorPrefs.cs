@@ -1,5 +1,5 @@
 using UnityEditor;
-using GDTB.EditorPrefsEditor;
+using com.immortalyhydra.gdtb.epeditor;
 
 public static class NewEditorPrefs
 {
@@ -7,7 +7,7 @@ public static class NewEditorPrefs
     public static void SetBool(string aKey, bool aValue)
     {
         EditorPrefs.SetBool(aKey, aValue);
-        var duplicate = checkDuplicate(aKey, PrefType.BOOL);
+        var duplicate = CheckDuplicate(aKey, PrefType.BOOL);
         if (duplicate != null)
         {
             duplicate.Value = aValue.ToString();
@@ -29,7 +29,7 @@ public static class NewEditorPrefs
     public static void SetInt(string aKey, int aValue)
     {
         EditorPrefs.SetInt(aKey, aValue);
-        var duplicate = checkDuplicate(aKey, PrefType.INT);
+        var duplicate = CheckDuplicate(aKey, PrefType.INT);
         if (duplicate != null)
         {
             duplicate.Value = aValue.ToString();
@@ -51,7 +51,7 @@ public static class NewEditorPrefs
     public static void SetFloat(string aKey, float aValue)
     {
         EditorPrefs.SetFloat(aKey, aValue);
-        var duplicate = checkDuplicate(aKey, PrefType.FLOAT);
+        var duplicate = CheckDuplicate(aKey, PrefType.FLOAT);
         if (duplicate != null)
         {
             duplicate.Value = aValue.ToString();
@@ -73,7 +73,7 @@ public static class NewEditorPrefs
     public static void SetString(string aKey, string aValue)
     {
         EditorPrefs.SetString(aKey, aValue);
-        var duplicate = checkDuplicate(aKey, PrefType.STRING);
+        var duplicate = CheckDuplicate(aKey, PrefType.STRING);
         if (duplicate != null)
         {
             duplicate.Value = aValue;
@@ -114,7 +114,7 @@ public static class NewEditorPrefs
 
 
     // Return true if a pref is found in WindowMain.Prefs with the same key and type.
-    private static Pref checkDuplicate (string aKey, PrefType aType)
+    private static Pref CheckDuplicate (string aKey, PrefType aType)
     {
         foreach(var pref in WindowMain.Prefs)
         {

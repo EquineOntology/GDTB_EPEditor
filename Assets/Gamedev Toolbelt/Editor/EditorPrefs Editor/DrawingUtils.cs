@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace GDTB.EditorPrefsEditor
+namespace com.immortalyhydra.gdtb.epeditor
 {
     public static class DrawingUtils
     {

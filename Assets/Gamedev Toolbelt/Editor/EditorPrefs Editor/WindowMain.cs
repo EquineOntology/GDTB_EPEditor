@@ -40,6 +40,7 @@ namespace com.immortalyhydra.gdtb.epeditor
             // Get existing open window or if none, make a new one.
             var window = (WindowMain)EditorWindow.GetWindow(typeof(WindowMain));
             window.SetMinSize(); // Window with icons and window with normal buttons need different minSizes.
+            window.LoadStyles();
             window.UpdateLayoutingSizes(); // Calculate a rough size for each major element group (type, pref, buttons).
             PrefOps.RefreshPrefs(); // Load stored prefs (if any).
 
@@ -593,6 +594,7 @@ namespace com.immortalyhydra.gdtb.epeditor
         /// Calculate the correct size of GUI elements based on preferences.
         private void UpdateLayoutingSizes()
         {
+            width_typeLabel = (int)style_type.CalcSize(new GUIContent("String")).x;
             var width = position.width - _offset * 2;
             rect_scrollArea = new Rect(_offset, _offset, width - (_offset * 2), position.height - IconSize - _offset * 4);
             rect_scrollView = rect_scrollArea;
@@ -652,8 +654,6 @@ namespace com.immortalyhydra.gdtb.epeditor
             {
                 window.minSize = new Vector2(322f, 150f);
             }
-
-            width_typeLabel = (int)style_type.CalcSize(new GUIContent("String")).x;
         }
 
 

@@ -5,22 +5,22 @@ namespace com.immortalyhydra.gdtb.epeditor
 {
     public static class DrawingUtils
     {
-        public static Texture2D Texture_Add = Resources.Load(Constants.FILE_ADD_DARK, typeof(Texture2D)) as Texture2D;
-        public static Texture2D Texture_Get = Resources.Load(Constants.FILE_GET_DARK, typeof(Texture2D)) as Texture2D;
-        public static Texture2D Texture_Refresh = Resources.Load(Constants.FILE_REFRESH_DARK, typeof(Texture2D)) as Texture2D;
-        public static Texture2D Texture_Settings = Resources.Load(Constants.FILE_SETTINGS_DARK, typeof(Texture2D)) as Texture2D;
-        public static Texture2D Texture_Nuke = Resources.Load(Constants.FILE_DELETEALL_DARK, typeof(Texture2D)) as Texture2D;
-        public static Texture2D Texture_Edit = Resources.Load(Constants.FILE_EDIT_DARK, typeof(Texture2D)) as Texture2D;
-        public static Texture2D Texture_Delete = Resources.Load(Constants.FILE_DELETE_DARK, typeof(Texture2D)) as Texture2D;
-        public static Texture2D Texture_Remove = Resources.Load(Constants.FILE_REMOVE_DARK, typeof(Texture2D)) as Texture2D;
+        public static Texture2D Texture_Add = Resources.Load(Constants.TEX_ADD_DARK, typeof(Texture2D)) as Texture2D;
+        public static Texture2D Texture_Get = Resources.Load(Constants.TEX_GET_DARK, typeof(Texture2D)) as Texture2D;
+        public static Texture2D Texture_Refresh = Resources.Load(Constants.TEX_REFRESH_DARK, typeof(Texture2D)) as Texture2D;
+        public static Texture2D Texture_Settings = Resources.Load(Constants.TEX_SETTINGS_DARK, typeof(Texture2D)) as Texture2D;
+        public static Texture2D Texture_Nuke = Resources.Load(Constants.TEX_DELETEALL_DARK, typeof(Texture2D)) as Texture2D;
+        public static Texture2D Texture_Edit = Resources.Load(Constants.TEX_EDIT_DARK, typeof(Texture2D)) as Texture2D;
+        public static Texture2D Texture_Delete = Resources.Load(Constants.TEX_DELETE_DARK, typeof(Texture2D)) as Texture2D;
+        public static Texture2D Texture_Remove = Resources.Load(Constants.TEX_REMOVE_DARK, typeof(Texture2D)) as Texture2D;
 
         public static IconStyle CurrentIconStyle = IconStyle.LIGHT;
 
 
-        /// Draw "fake" texture button for a button based on preferences.
+        /// Draw "fake" texture button.
         public static void DrawTextureButton(Rect aRect, Texture2D aTexture)
         {
-            DrawBoundingRect(aRect);
+            EditorGUI.DrawRect(aRect, Preferences.Color_Secondary);
             var bgRect = new Rect(aRect.x + Constants.BUTTON_BORDER_THICKNESS, aRect.y + Constants.BUTTON_BORDER_THICKNESS, aRect.width - Constants.BUTTON_BORDER_THICKNESS * 2, aRect.height - Constants.BUTTON_BORDER_THICKNESS * 2);
             EditorGUI.DrawRect(bgRect, Preferences.Color_Primary);
             GUI.DrawTexture(new Rect(aRect.x + 2, aRect.y + 2, Constants.BUTTON_TEXTURE_SIZE, Constants.BUTTON_TEXTURE_SIZE), aTexture);
@@ -30,7 +30,7 @@ namespace com.immortalyhydra.gdtb.epeditor
         /// Draw "fake" text button based on preferences.
         public static void DrawTextButton(Rect aRect, string aText, GUIStyle aStyle)
         {
-            DrawBoundingRect(aRect);
+            EditorGUI.DrawRect(aRect, Preferences.Color_Secondary);
             var bgRect = new Rect(aRect.x + Constants.BUTTON_BORDER_THICKNESS, aRect.y + Constants.BUTTON_BORDER_THICKNESS, aRect.width - Constants.BUTTON_BORDER_THICKNESS * 2, aRect.height - Constants.BUTTON_BORDER_THICKNESS * 2);
             EditorGUI.DrawRect(bgRect, Preferences.Color_Primary);
             GUI.Label(new Rect(bgRect.x, bgRect.y - 1, bgRect.width, bgRect.height), aText, aStyle);
@@ -41,16 +41,9 @@ namespace com.immortalyhydra.gdtb.epeditor
         /// Draw "fake" text button in the pressed state.
         public static void DrawPressedTextButton(Rect aRect, string aText, GUIStyle aStyle)
         {
-            DrawBoundingRect(aRect);
+            EditorGUI.DrawRect(aRect, Preferences.Color_Secondary);
             aStyle.normal.textColor = Preferences.Color_Primary;
             GUI.Label(new Rect(aRect.x, aRect.y - 1, aRect.width, aRect.height), aText, aStyle);
-        }
-
-
-        /// Draw borders of a rect.
-        public static void DrawBoundingRect(Rect aRect)
-        {
-            EditorGUI.DrawRect(aRect, Preferences.Color_Secondary);
         }
 
 
@@ -76,6 +69,8 @@ namespace com.immortalyhydra.gdtb.epeditor
             }
         }
 
+
+        /// Change button textures when they're changed in preferences.
         public static void LoadTextures(IconStyle aStyle)
         {
             Texture_Add = null;
@@ -88,26 +83,26 @@ namespace com.immortalyhydra.gdtb.epeditor
 
             if (aStyle == IconStyle.DARK)
             {
-                Texture_Add = Resources.Load(Constants.FILE_ADD_DARK, typeof(Texture2D)) as Texture2D;
-                Texture_Get = Resources.Load(Constants.FILE_GET_DARK, typeof(Texture2D)) as Texture2D;
-                Texture_Refresh = Resources.Load(Constants.FILE_REFRESH_DARK, typeof(Texture2D)) as Texture2D;
-                Texture_Settings = Resources.Load(Constants.FILE_SETTINGS_DARK, typeof(Texture2D)) as Texture2D;
-                Texture_Nuke = Resources.Load(Constants.FILE_DELETEALL_DARK, typeof(Texture2D)) as Texture2D;
-                Texture_Edit = Resources.Load(Constants.FILE_EDIT_DARK, typeof(Texture2D)) as Texture2D;
-                Texture_Delete = Resources.Load(Constants.FILE_DELETE_DARK, typeof(Texture2D)) as Texture2D;
-                Texture_Remove = Resources.Load(Constants.FILE_REMOVE_DARK, typeof(Texture2D)) as Texture2D;
+                Texture_Add = Resources.Load(Constants.TEX_ADD_DARK, typeof(Texture2D)) as Texture2D;
+                Texture_Get = Resources.Load(Constants.TEX_GET_DARK, typeof(Texture2D)) as Texture2D;
+                Texture_Refresh = Resources.Load(Constants.TEX_REFRESH_DARK, typeof(Texture2D)) as Texture2D;
+                Texture_Settings = Resources.Load(Constants.TEX_SETTINGS_DARK, typeof(Texture2D)) as Texture2D;
+                Texture_Nuke = Resources.Load(Constants.TEX_DELETEALL_DARK, typeof(Texture2D)) as Texture2D;
+                Texture_Edit = Resources.Load(Constants.TEX_EDIT_DARK, typeof(Texture2D)) as Texture2D;
+                Texture_Delete = Resources.Load(Constants.TEX_DELETE_DARK, typeof(Texture2D)) as Texture2D;
+                Texture_Remove = Resources.Load(Constants.TEX_REMOVE_DARK, typeof(Texture2D)) as Texture2D;
                 CurrentIconStyle = IconStyle.DARK;
             }
             else
             {
-                Texture_Add = Resources.Load(Constants.FILE_ADD_LIGHT, typeof(Texture2D)) as Texture2D;
-                Texture_Get = Resources.Load(Constants.FILE_GET_LIGHT, typeof(Texture2D)) as Texture2D;
-                Texture_Refresh = Resources.Load(Constants.FILE_REFRESH_LIGHT, typeof(Texture2D)) as Texture2D;
-                Texture_Settings = Resources.Load(Constants.FILE_SETTINGS_LIGHT, typeof(Texture2D)) as Texture2D;
-                Texture_Nuke = Resources.Load(Constants.FILE_DELETEALL_LIGHT, typeof(Texture2D)) as Texture2D;
-                Texture_Edit = Resources.Load(Constants.FILE_EDIT_LIGHT, typeof(Texture2D)) as Texture2D;
-                Texture_Delete = Resources.Load(Constants.FILE_DELETE_LIGHT, typeof(Texture2D)) as Texture2D;
-                Texture_Remove = Resources.Load(Constants.FILE_REMOVE_LIGHT, typeof(Texture2D)) as Texture2D;
+                Texture_Add = Resources.Load(Constants.TEX_ADD_LIGHT, typeof(Texture2D)) as Texture2D;
+                Texture_Get = Resources.Load(Constants.TEX_GET_LIGHT, typeof(Texture2D)) as Texture2D;
+                Texture_Refresh = Resources.Load(Constants.TEX_REFRESH_LIGHT, typeof(Texture2D)) as Texture2D;
+                Texture_Settings = Resources.Load(Constants.TEX_SETTINGS_LIGHT, typeof(Texture2D)) as Texture2D;
+                Texture_Nuke = Resources.Load(Constants.TEX_DELETEALL_LIGHT, typeof(Texture2D)) as Texture2D;
+                Texture_Edit = Resources.Load(Constants.TEX_EDIT_LIGHT, typeof(Texture2D)) as Texture2D;
+                Texture_Delete = Resources.Load(Constants.TEX_DELETE_LIGHT, typeof(Texture2D)) as Texture2D;
+                Texture_Remove = Resources.Load(Constants.TEX_REMOVE_LIGHT, typeof(Texture2D)) as Texture2D;
                 CurrentIconStyle = IconStyle.LIGHT;
             }
         }

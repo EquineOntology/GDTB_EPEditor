@@ -73,15 +73,11 @@ namespace com.immortalyhydra.gdtb.epeditor
         }
         #endregion
 
-        // Custom shortcut
+        // Custom shortcut (no public get, can't see a use for it).
         private const string PREFS_EPEDITOR_SHORTCUT = "GDTB_EPEditor_Shortcut";
         private static string _shortcut = "%|q";
         private static string _newShortcut;
         private static string _shortcut_default = "%|q";
-        public static string Shortcut
-        {
-            get { return _shortcut; }
-        }
         private static bool[] _modifierKeys = new bool[] { false, false, false }; // Ctrl/Cmd, Alt, Shift.
         private static int _mainShortcutKeyIndex = 0;
         // Restrict options to what we're sure works.
@@ -92,8 +88,9 @@ namespace com.immortalyhydra.gdtb.epeditor
         [PreferenceItem("EP Editor")]
         public static void PreferencesGUI()
         {
-            GetAllPrefValues();
+            GetAllPrefValues(); // First we load all current preferences.
 
+            // Then we actually display them.
             EditorGUILayout.BeginVertical();
             EditorGUILayout.LabelField("General Settings", EditorStyles.boldLabel);
             _buttonsDisplay = (ButtonsDisplayFormat)EditorGUILayout.Popup("Button style", (int)_buttonsDisplay, arr_buttonStyle);
@@ -124,10 +121,9 @@ namespace com.immortalyhydra.gdtb.epeditor
                     shouldReopenWindowMain = true;
                 }
 
+                // We want to save preferences before we maybe close reopen WindowMain.
                 SetPrefValues();
-                GetAllPrefValues();
 
-                // We need to set and get prefs before the change will be noticed by the window.
                 if (shouldReopenWindowMain)
                 {
                     if (WindowMain.IsOpen)
@@ -136,7 +132,6 @@ namespace com.immortalyhydra.gdtb.epeditor
                         var window = EditorWindow.GetWindow(typeof(WindowMain)) as WindowMain;
                         window.SetMinSize();
                         window.Show();
-
                     }
                 }
             }
@@ -204,7 +199,6 @@ namespace com.immortalyhydra.gdtb.epeditor
             ParseShortcutValues();
         }
 
-
         /// Get IconStyle.
         private static void GetIconStyle()
         {
@@ -238,8 +232,6 @@ namespace com.immortalyhydra.gdtb.epeditor
 
             return val;
         }
-
-
         /// Get the value of a string preference.
         private static string GetPrefValue(string aKey, string aDefault)
         {
@@ -256,8 +248,6 @@ namespace com.immortalyhydra.gdtb.epeditor
 
             return val;
         }
-
-
         /// Get the value of a Color preference.
         private static Color GetPrefValue(string aKey, Color aDefault)
         {
@@ -344,7 +334,7 @@ namespace com.immortalyhydra.gdtb.epeditor
         }
 
 
-        /// Draw update button.
+        /// Draw Apply colors - Load dark theme - load light theme.
         private static void DrawThemeButtons()
         {
             EditorGUILayout.BeginHorizontal();
@@ -370,7 +360,7 @@ namespace com.immortalyhydra.gdtb.epeditor
                     canExecute = true;
                 }
 
-                // Actually do the thing.
+                // Do it if we have permission.
                 if (canExecute == true)
                 {
                     _primary = new Color(_primary_dark.r / 255.0f, _primary_dark.g / 255.0f, _primary_dark.b / 255.0f, 1.0f);
@@ -378,10 +368,12 @@ namespace com.immortalyhydra.gdtb.epeditor
                     _tertiary = new Color(_tertiary_dark.r / 255.0f, _tertiary_dark.g / 255.0f, _tertiary_dark.b / 255.0f, 1.0f);
                     SetColorPrefs();
                     GetColorPrefs();
+
                     _iconStyle = IconStyle.LIGHT;
                     SetIconStyle();
                     GetIconStyle();
                     ReloadSkins();
+
                     RepaintOpenWindows();
                 }
             }
@@ -409,10 +401,12 @@ namespace com.immortalyhydra.gdtb.epeditor
                     _tertiary = new Color(_tertiary_light.r / 255.0f, _tertiary_light.g / 255.0f, _tertiary_light.b / 255.0f, 1.0f);
                     SetColorPrefs();
                     GetColorPrefs();
+
                     _iconStyle = IconStyle.DARK;
                     SetIconStyle();
                     GetIconStyle();
                     ReloadSkins();
+                    
                     RepaintOpenWindows();
                 }
             }
@@ -442,7 +436,7 @@ namespace com.immortalyhydra.gdtb.epeditor
                     canExecute = true;
                 }
 
-                // Actually do the thing.
+                // If we have permission, do it.
                 if (canExecute == true)
                 {
                     ResetPrefsToDefault();
@@ -457,6 +451,7 @@ namespace com.immortalyhydra.gdtb.epeditor
         private static void ResetPrefsToDefault()
         {
             _buttonsDisplay = (ButtonsDisplayFormat)_buttonsDisplay_default;
+            _confirmationDialogs = _confirmationDialogs_default;
             _iconStyle = (IconStyle)_iconStyle_default;
             _primary = new Color(_primary_default.r / 255, _primary_default.g / 255, _primary_default.b / 255, _primary_default.a);
             _secondary = new Color(_secondary_default.r / 255, _secondary_default.g / 255, _secondary_default.b / 255, _secondary_default.a);
@@ -465,7 +460,6 @@ namespace com.immortalyhydra.gdtb.epeditor
             SetShortcutPref(true);
             ReloadSkins();
             SetPrefValues();
-            GetAllPrefValues();
         }
 
 

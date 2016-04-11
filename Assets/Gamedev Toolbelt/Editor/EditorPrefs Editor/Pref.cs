@@ -1,6 +1,5 @@
 namespace com.immortalyhydra.gdtb.epeditor
 {
-    [System.Serializable]
     public class Pref
     {
         public PrefType Type;

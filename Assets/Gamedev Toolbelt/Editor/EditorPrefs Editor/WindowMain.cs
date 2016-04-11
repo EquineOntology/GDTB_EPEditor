@@ -29,7 +29,7 @@ namespace com.immortalyhydra.gdtb.epeditor
         private int width_typeLabel;
         private float idx_height = 0;
         private Vector2 _scrollPosition = new Vector2(0.0f, 0.0f);
-        private Rect rect_scrollView, rect_scrollArea, rect_type, rect_pref, rect_buttons;
+        private Rect rect_scrollView, rect_scrollArea, rect_type, rect_remove, rect_pref, rect_buttons;
         private bool showingScrollbar = false;
 
 
@@ -124,6 +124,11 @@ namespace com.immortalyhydra.gdtb.epeditor
             idx_height = _offset;
             for (var i = 0; i < Prefs.Count; i++)
             {
+                if (Prefs[i].IsVisible == false)
+                {
+                    continue;
+                }
+
                 var key = new GUIContent(Prefs[i].Key);
                 var val = new GUIContent(Prefs[i].Value);
                 var height_key = style_key.CalcHeight(key, width_prefs);
@@ -138,6 +143,8 @@ namespace com.immortalyhydra.gdtb.epeditor
 
                 rect_pref = new Rect(_offset, idx_height, width_prefs, prefBGHeight);
                 rect_type = new Rect(-2, rect_pref.y, width_type, prefBGHeight);
+                rect_remove = rect_type;
+                rect_remove.y += IconSize;
                 rect_buttons = new Rect(width_type + width_prefs + IconSize, rect_pref.y, width_buttons, prefBGHeight);
 
 
@@ -157,8 +164,9 @@ namespace com.immortalyhydra.gdtb.epeditor
 
                 DrawPrefBG(prefBGRect);
                 DrawType(rect_type, Prefs[i]);
+                DrawRemove(rect_remove, Prefs[i]);
                 DrawKeyAndValue(rect_pref, Prefs[i], height_key);
-                DrawEditAndRemove(rect_buttons, Prefs[i]);
+                DrawEditAndDelete(rect_buttons, Prefs[i]);
             }
 
             if(rect_scrollArea.height < rect_scrollView.height)
@@ -181,7 +189,6 @@ namespace com.immortalyhydra.gdtb.epeditor
         }
 
 
-        /// Draw the pref's type.
         private void DrawType(Rect aRect, Pref aPref)
         {
             var typeRect = aRect;
@@ -196,6 +203,60 @@ namespace com.immortalyhydra.gdtb.epeditor
             type = type.Substring(0, 1).ToUpper() + type.Substring(1);
             EditorGUI.LabelField(typeRect, type, style_type);
         }
+
+
+        #region hide button
+        private void DrawRemove(Rect aRect, Pref aPref)
+        {
+            Rect removeRect;
+            GUIContent removeContent;
+            switch (Preferences.ButtonsDisplay)
+            {
+                case ButtonsDisplayFormat.REGULAR_BUTTONS:
+                    Button_Hide_default(aRect, out removeRect, out removeContent);
+                    break;
+                default:
+                    Button_Hide_icon(aRect, out removeRect, out removeContent);
+                    break;
+            }
+
+            if (GUI.Button(removeRect, removeContent))
+            {
+                Prefs.Remove(aPref);
+            }
+            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
+            {
+                DrawingUtils.DrawTextureButton(removeRect, DrawingUtils.Texture_Remove);
+            }
+            else
+            {
+                DrawingUtils.DrawTextButton(removeRect, removeContent.text, style_buttonText);
+            }
+
+        }
+
+
+        /// Create rect and content for default Remove button.
+        private void Button_Hide_default(Rect aRect, out Rect aRemoveRect, out GUIContent aRemoveContent)
+        {
+            aRemoveRect = aRect;
+            aRemoveRect.y += ButtonHeight + _offset + 2;
+            aRemoveRect.width = ButtonWidth;
+            aRemoveRect.height = ButtonHeight;
+            aRemoveContent = new GUIContent("Remove", "Remove this EditorPref from the list (without deleting it)");
+        }
+
+
+        /// Create rect and content for icon Remove button.
+        private void Button_Hide_icon(Rect aRect, out Rect aRemoveRect, out GUIContent aRemoveContent)
+        {
+            aRemoveRect = aRect;
+            aRemoveRect.y += _offset;
+            aRemoveRect.width = IconSize;
+            aRemoveRect.height = IconSize;
+            aRemoveContent = new GUIContent("", "Remove this EditorPref from the list (without deleting it)");
+        }
+        #endregion
 
 
         private void DrawKeyAndValue(Rect aRect, Pref aPref, float aHeight)
@@ -218,10 +279,10 @@ namespace com.immortalyhydra.gdtb.epeditor
 
         #region EditAndRemove
         /// Select which format to use based on the user preference.
-        private void DrawEditAndRemove(Rect aRect, Pref aPref)
+        private void DrawEditAndDelete(Rect aRect, Pref aPref)
         {
-            Rect editRect, removeRect;
-            GUIContent editContent, removeContent;
+            Rect editRect, deleteRect;
+            GUIContent editContent, deleteContent;
 
             if (showingScrollbar == true)
             {
@@ -243,14 +304,12 @@ namespace com.immortalyhydra.gdtb.epeditor
             switch (Preferences.ButtonsDisplay)
             {
                 case ButtonsDisplayFormat.REGULAR_BUTTONS:
-                    //GUI.skin = _defaultSkin;
                     Button_Edit_default(aRect, out editRect, out editContent);
-                    Button_Remove_default(aRect, out removeRect, out removeContent);
+                    Button_Delete_default(aRect, out deleteRect, out deleteContent);
                     break;
                 default:
-                    //GUI.skin = skin_custom;
                     Button_Edit_icon(aRect, out editRect, out editContent);
-                    Button_Remove_icon(aRect, out removeRect, out removeContent);
+                    Button_Delete_icon(aRect, out deleteRect, out deleteContent);
                     break;
             }
 
@@ -267,13 +326,13 @@ namespace com.immortalyhydra.gdtb.epeditor
                 DrawingUtils.DrawTextButton(editRect, editContent.text, style_buttonText);
             }
 
-            if (GUI.Button(removeRect, removeContent))
+            if (GUI.Button(deleteRect, deleteContent))
             {
                 // Get confirmation through dialog (or not if the user doesn't want to).
                 var canExecute = false;
                 if (Preferences.ShowConfirmationDialogs == true)
                 {
-                    if (EditorUtility.DisplayDialog("Remove EditorPref", "Are you sure you want to remove this EditorPref?", "Remove pref", "Cancel"))
+                    if (EditorUtility.DisplayDialog("Delete EditorPref", "Are you sure you want to delete this EditorPref?", "Delete pref", "Cancel"))
                     {
                         canExecute = true;
                     }
@@ -291,11 +350,11 @@ namespace com.immortalyhydra.gdtb.epeditor
             }
             if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
             {
-                DrawingUtils.DrawTextureButton(removeRect, DrawingUtils.Texture_Remove);
+                DrawingUtils.DrawTextureButton(deleteRect, DrawingUtils.Texture_Delete);
             }
             else
             {
-                DrawingUtils.DrawTextButton(removeRect, removeContent.text, style_buttonText);
+                DrawingUtils.DrawTextButton(deleteRect, deleteContent.text, style_buttonText);
             }
         }
 
@@ -312,14 +371,14 @@ namespace com.immortalyhydra.gdtb.epeditor
         }
 
         /// Create rect and content for normal Remove button.
-        private void Button_Remove_default(Rect aRect, out Rect aRemoveRect, out GUIContent aRemoveContent)
+        private void Button_Delete_default(Rect aRect, out Rect aDeleteRect, out GUIContent aDeleteContent)
         {
-            aRemoveRect = aRect;
-            aRemoveRect.y += ButtonHeight + _offset + 2;
-            aRemoveRect.width = ButtonWidth;
-            aRemoveRect.height = ButtonHeight;
+            aDeleteRect = aRect;
+            aDeleteRect.y += ButtonHeight + _offset + 2;
+            aDeleteRect.width = ButtonWidth;
+            aDeleteRect.height = ButtonHeight;
 
-            aRemoveContent = new GUIContent("Remove", "Remove this EditorPref");
+            aDeleteContent = new GUIContent("Delete", "Delete this EditorPref");
         }
 
 
@@ -334,14 +393,14 @@ namespace com.immortalyhydra.gdtb.epeditor
         }
 
         /// Create rect and content for icon Remove button.
-        private void Button_Remove_icon(Rect aRect, out Rect aRemoveRect, out GUIContent aRemoveContent)
+        private void Button_Delete_icon(Rect aRect, out Rect aDeleteRect, out GUIContent aDeleteContent)
         {
-            aRemoveRect = aRect;
-            aRemoveRect.y += IconSize +  _offset + 2;
-            aRemoveRect.width = IconSize;
-            aRemoveRect.height = IconSize;
+            aDeleteRect = aRect;
+            aDeleteRect.y += IconSize +  _offset + 2;
+            aDeleteRect.width = IconSize;
+            aDeleteRect.height = IconSize;
 
-            aRemoveContent = new GUIContent("", "Remove this EditorPref");
+            aDeleteContent = new GUIContent("", "Delete this EditorPref");
         }
         #endregion
 

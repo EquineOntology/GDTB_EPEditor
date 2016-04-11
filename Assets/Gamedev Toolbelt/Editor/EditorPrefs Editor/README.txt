@@ -27,7 +27,7 @@ We both know you're not here to read about me, so let's get to the interesting s
   ╚╩╝┴ ┴┴ ┴ ┴   ┴└─┘  ╚═╝╩  ╚═╝═╩╝╩ ╩ ╚═╝╩╚═ o
      WHAT IS EPEDITOR?
 
-EPEditor (a.k.a. EditorPrefs Editor, but that's a handful so let's go with the short version)
+EPEditor (a.k.a. EditorPrefs Editor, but that's a mouthful so let's go with the short version)
 is a small extension for Unity in which you can add a new or existing EditorPref, and keep
 track of it.
 
@@ -56,9 +56,9 @@ wrapper called NewEditorPrefs, which works the same as the Unity one (it relies 
 functions, as a matter of fact), but is also integrated with the interface of the extension, so
 that you can add an EditorPref from code and have it automatically added to the EPEditor interface.
 
-It's a fairly small and simple extension, but as always I love me some gifs, so I suggest going
-to http://immortalhydra.com/gamedev-toolbelt/editorprefs-editor/ to see everything the extension has to
-offer :)
+It's a fairly small and simple extension, but seeing is believing and I love gifs, so I suggest
+going to http://immortalhydra.com/gamedev-toolbelt/editorprefs-editor/ to see everything the
+extension has to offer :)
 
 
   ┬ ┬┬ ┬┌─┐┬─┐┌─┐  ┌─┐┌─┐┌┐┌  ┬  ┌─┐┬┌┐┌┌┬┐  ┌┬┐┌─┐┬─┐┌─┐
@@ -69,9 +69,8 @@ offer :)
             ╩╝╚╝╚  ╚═╝╩╚═╩ ╩╩ ╩ ╩ ╩╚═╝╝╚╝ o
      WHERE CAN I FIND MORE INFORMATION?
 
-While there isn't much more to learn outside the EPEditor webpage, you can definitely
-write me if you want to! You can reach me @hherebus on Twitter, or by writing me a
-quick email at support@immortalhydra.com
+You can definitely write me if you want to! You can reach me @hherebus on Twitter, or by writing me
+a quick email at support@immortalhydra.com
 
 ASCII titles realized with http://patorjk.com/software/taag/ ("ANSI Shadow" and
 "Calvin S" styles).

@@ -136,7 +136,8 @@ namespace com.immortalyhydra.gdtb.epeditor
 
                 rect_pref = new Rect(_offset, height_totalPrefHeight, width_prefs, height_prefBackground);
                 rect_type = new Rect(-2, rect_pref.y, width_type, height_prefBackground);
-                rect_remove = new Rect(rect_type.x, rect_type.y + IconSize, rect_type.width, rect_type.height);
+                rect_remove = new Rect(rect_type.x, 0, rect_type.width, rect_type.height);
+                rect_remove.y = rect_pref.y + rect_pref.height - _offset * 7;
                 rect_buttons = new Rect(width_type + width_prefs + IconSize, rect_pref.y, width_buttons, height_prefBackground);
 
                 var rect_prefBackground = rect_pref;
@@ -243,8 +244,8 @@ namespace com.immortalyhydra.gdtb.epeditor
         private void Button_Remove_default(Rect aRect, out Rect aRemoveRect, out GUIContent aRemoveContent)
         {
             aRemoveRect = aRect;
-            aRemoveRect.x += _offset * 3;
-            aRemoveRect.y += _offset;
+            aRemoveRect.x += _offset * 2 + 1;
+            aRemoveRect.y += _offset + 2;
             aRemoveRect.width = ButtonWidth / 2 + 3;
             aRemoveRect.height = ButtonHeight;
             aRemoveContent = new GUIContent("Hide", "Remove this EditorPref from\nthis list (without deleting it\nfrom EditorPrefs)");
@@ -256,7 +257,7 @@ namespace com.immortalyhydra.gdtb.epeditor
         {
             aRemoveRect = aRect;
             aRemoveRect.x += IconSize / 2 + 1;
-            aRemoveRect.y += _offset + 2;
+            aRemoveRect.y += _offset + 1;
             aRemoveRect.width = IconSize;
             aRemoveRect.height = IconSize;
             aRemoveContent = new GUIContent("", "Remove this EditorPref from\nthis list (without deleting it\nfrom EditorPrefs)");
@@ -632,7 +633,7 @@ namespace com.immortalyhydra.gdtb.epeditor
             style_buttonText.normal.textColor = Preferences.Color_Tertiary;
 
             // Change scrollbar color.
-            var scrollbar = Resources.Load(Constants.FILE_SCROLLBAR, typeof(Texture2D)) as Texture2D;
+            var scrollbar = Resources.Load(Constants.TEX_SCROLLBAR, typeof(Texture2D)) as Texture2D;
             scrollbar.SetPixel(0, 0, Preferences.Color_Secondary);
             scrollbar.Apply();
             skin_custom.verticalScrollbarThumb.normal.background = scrollbar;

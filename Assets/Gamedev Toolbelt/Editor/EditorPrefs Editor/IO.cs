@@ -7,13 +7,15 @@ namespace com.immortalyhydra.gdtb.epeditor
     public static class IO
     {
         /// Return the first instance of the given folder.
-        /// This is a non-recursive, breadth-first search algorithm.
+        /// This is a non-recursive, breadth-first search.
         private static string GetFirstInstanceOfFolder(string aFolderName)
         {
             var projectDirectoryPath = Directory.GetCurrentDirectory();
             var projectDirectoryInfo = new DirectoryInfo(projectDirectoryPath);
             var listOfAssetsDirs = projectDirectoryInfo.GetDirectories("Assets");
             var assetsDir = "";
+
+            // 1. Get the Assets dir.
             foreach (var dir in listOfAssetsDirs)
             {
                 if (dir.FullName.EndsWith("\\Assets"))
@@ -26,9 +28,12 @@ namespace com.immortalyhydra.gdtb.epeditor
             var q = new Queue<string>();
             q.Enqueue(path);
             var absolutePath = "";
+
+            // 2. While there's still folders in the queue:
             while (q.Count > 0)
             {
                 path = q.Dequeue();
+                // 2a. Get sub directories of the current folder and add them to the queue.
                 try
                 {
                     foreach (string subDir in Directory.GetDirectories(path))
@@ -36,8 +41,9 @@ namespace com.immortalyhydra.gdtb.epeditor
                         q.Enqueue(subDir);
                     }
                 }
-                catch (Exception) { }
+                catch (Exception) { } // If there are problems, they're not folders, so ignore them.
 
+                // Get the folder we were looking for in the complete list.
                 string[] folders = null;
                 try
                 {
@@ -52,10 +58,12 @@ namespace com.immortalyhydra.gdtb.epeditor
                         if (folders[i].EndsWith(aFolderName))
                         {
                             absolutePath = folders[i];
+                            break;
                         }
                     }
                 }
             }
+            // Get the path of the folder we're interested in.
             var relativePath = absolutePath.Remove(0, projectDirectoryPath.Length + 1);
             return relativePath;
         }

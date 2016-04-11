@@ -131,28 +131,9 @@ namespace com.immortalyhydra.gdtb.epeditor
                     // Actually do the thing.
                     if (canExecute == true)
                     {
-                        // Check that pref was added correctly.
                         if (NewEditorPrefs.HasKey(pref_key))
                         {
-                            switch (idx_prefType)
-                            {
-                                case 0:
-                                    pref_value_bool = NewEditorPrefs.GetBool(pref_key);
-                                    PrefOps.GetPref(pref_key, PrefType.BOOL);
-                                    break;
-                                case 1:
-                                    pref_value_int = NewEditorPrefs.GetInt(pref_key);
-                                    PrefOps.GetPref(pref_key, PrefType.INT);
-                                    break;
-                                case 2:
-                                    pref_value_float = NewEditorPrefs.GetFloat(pref_key);
-                                    PrefOps.GetPref(pref_key, PrefType.FLOAT);
-                                    break;
-                                case 3:
-                                    prefe_value_string = NewEditorPrefs.GetString(pref_key);
-                                    PrefOps.GetPref(pref_key, PrefType.STRING);
-                                    break;
-                            }
+                            AddEditorPref(idx_prefType, pref_key);
 
                             if (WindowMain.IsOpen)
                             {
@@ -190,21 +171,25 @@ namespace com.immortalyhydra.gdtb.epeditor
 
 
         /// Add EditorPref to list.
-        private void AddEditorPref()
+        private void AddEditorPref(int aType, string aKey)
         {
-            switch (idx_prefType)
+            switch (aType)
             {
                 case 0:
-                    PrefOps.AddPref(pref_key, pref_value_bool);
+                    pref_value_bool = NewEditorPrefs.GetBool(aKey);
+                    PrefOps.GetPref(aKey, PrefType.BOOL);
                     break;
                 case 1:
-                    PrefOps.AddPref(pref_key, pref_value_int);
+                    pref_value_int = NewEditorPrefs.GetInt(aKey);
+                    PrefOps.GetPref(aKey, PrefType.INT);
                     break;
                 case 2:
-                    PrefOps.AddPref(pref_key, pref_value_float);
+                    pref_value_float = NewEditorPrefs.GetFloat(aKey);
+                    PrefOps.GetPref(aKey, PrefType.FLOAT);
                     break;
                 case 3:
-                    PrefOps.AddPref(pref_key, prefe_value_string);
+                    prefe_value_string = NewEditorPrefs.GetString(aKey);
+                    PrefOps.GetPref(aKey, PrefType.STRING);
                     break;
             }
         }

@@ -10,28 +10,24 @@ namespace com.immortalyhydra.gdtb.epeditor
             IO.WritePrefsToFile();
             EditorWindow.GetWindow(typeof(WindowMain)).Repaint();
         }
-
         public static void AddPref(string aKey, bool aValue)
         {
             WindowMain.Prefs.Add(new Pref(PrefType.BOOL, aKey, aValue.ToString()));
             IO.WritePrefsToFile();
             EditorWindow.GetWindow(typeof(WindowMain)).Repaint();
         }
-
         public static void AddPref(string aKey, int aValue)
         {
             WindowMain.Prefs.Add(new Pref(PrefType.INT, aKey, aValue.ToString()));
             IO.WritePrefsToFile();
             EditorWindow.GetWindow(typeof(WindowMain)).Repaint();
         }
-
         public static void AddPref(string aKey, float aValue)
         {
             WindowMain.Prefs.Add(new Pref(PrefType.FLOAT, aKey, aValue.ToString()));
             IO.WritePrefsToFile();
             EditorWindow.GetWindow(typeof(WindowMain)).Repaint();
         }
-
         public static void AddPref(string aKey, string aValue)
         {
             WindowMain.Prefs.Add(new Pref(PrefType.STRING, aKey, aValue));
@@ -39,6 +35,10 @@ namespace com.immortalyhydra.gdtb.epeditor
             EditorWindow.GetWindow(typeof(WindowMain)).Repaint();
         }
 
+
+        /// Add existing EditorPref to list of prefs.
+        /// If the EditorPref doesn't exist, due to the fact that these Unity functions never return errors,
+        /// a pref will be added with a default value anyway.
         public static void GetPref (string aKey, PrefType aType)
         {
             string val = "";
@@ -62,6 +62,8 @@ namespace com.immortalyhydra.gdtb.epeditor
             EditorWindow.GetWindow(typeof(WindowMain)).Repaint();
         }
 
+
+        /// Remove pref from list of prefs (NOT EditorPrefs).
         public static void RemovePref(string aKey)
         {
             // Iterate backwards by index, a foreach will throw an InvalidOperationException.
@@ -75,7 +77,7 @@ namespace com.immortalyhydra.gdtb.epeditor
             IO.WritePrefsToFile();
             EditorWindow.GetWindow(typeof(WindowMain)).Repaint();
         }
-
+        /// Remove pref from list of prefs (NOT EditorPrefs).
         public static void RemovePref(Pref aPref)
         {
             WindowMain.Prefs.Remove(aPref);
@@ -84,6 +86,7 @@ namespace com.immortalyhydra.gdtb.epeditor
         }
 
 
+        /// Re-populate the list of prefs from the ones in bak.gdtb.
         public static void RefreshPrefs()
         {
             var storedPrefs = IO.LoadStoredPrefs();

@@ -11,8 +11,8 @@ namespace com.immortalyhydra.gdtb.epeditor
         }
 
         // =========================== Editor GUI =============================
-        private GUISkin skin_custom, skin_default;
-        private GUIStyle style_bold, style_customGrid, style_buttonText;
+        private GUISkin skin_custom;
+        private GUIStyle style_bold, style_pressedButton, style_normalButton;
 
         // ========================= Editor layouting =========================
         private const int IconSize = Constants.ICON_SIZE;
@@ -24,14 +24,14 @@ namespace com.immortalyhydra.gdtb.epeditor
         private Rect rect_type_label, rect_type;
 
         // ========================= Class functionality =========================
-        private string _key = "";
+        private string pref_key = "";
         private int idx_prefType = 0;
         private string[] arr_prefTypes = { "Bool", "Int", "Float", "String" };
 
-        private bool val_bool = false;
-        private int val_int = 0;
-        private float val_float = 0.0f;
-        private string val_string = "";
+        private bool pref_value_bool = false;
+        private int pref_value_int = 0;
+        private float pref_value_float = 0.0f;
+        private string prefe_value_string = "";
 
 
         public static void Init()
@@ -53,21 +53,15 @@ namespace com.immortalyhydra.gdtb.epeditor
 
         public void OnGUI()
         {
-            if (skin_default == null)
-            {
-                skin_default = GUI.skin;
-            }
-            GUI.skin = skin_custom;
-
-            DrawBG();
+            DrawWindowBackground();
             DrawType();
             DrawKeyField();
             DrawGet();
         }
 
 
-        /// Draw the background texture.
-        private void DrawBG()
+        /// Draw the background rectangle.
+        private void DrawWindowBackground()
         {
             EditorGUI.DrawRect(new Rect(0,0, position.width, position.height), Preferences.Color_Primary);
         }
@@ -80,19 +74,19 @@ namespace com.immortalyhydra.gdtb.epeditor
             EditorGUI.LabelField(rect_key_label, "Key:", style_bold);
 
             rect_key = new Rect(10, 29, position.width - 20, 32);
-            _key = EditorGUI.TextField(rect_key, _key);
+            pref_key = EditorGUI.TextField(rect_key, pref_key);
         }
 
 
-        /// Draw type popup.
+        /// Draw type selector.
         private void DrawType()
         {
             rect_type_label = new Rect(10, 71, position.width - 20, 16);
             EditorGUI.LabelField(rect_type_label, "Type:", style_bold);
 
             rect_type = new Rect(10, 90, position.width - 20, 20);
-            idx_prefType = GUI.SelectionGrid(rect_type, idx_prefType, arr_prefTypes, arr_prefTypes.Length, style_customGrid);
-            DrawingUtils.DrawSelectionGrid(rect_type, arr_prefTypes, idx_prefType, 60, 5, style_buttonText, style_customGrid);
+            idx_prefType = GUI.SelectionGrid(rect_type, idx_prefType, arr_prefTypes, arr_prefTypes.Length, style_pressedButton);
+            DrawingUtils.DrawSelectionGrid(rect_type, arr_prefTypes, idx_prefType, 60, 5, style_normalButton, style_pressedButton); // Draw our selectionGrid above Unity's one.
 
         }
 
@@ -114,7 +108,7 @@ namespace com.immortalyhydra.gdtb.epeditor
 
             if (GUI.Button(rect_get, getContent))
             {
-                if (_key == "")
+                if (pref_key == "")
                 {
                     EditorUtility.DisplayDialog("No key to look for", "Please add a key.", "Ok");
                 }
@@ -138,25 +132,25 @@ namespace com.immortalyhydra.gdtb.epeditor
                     if (canExecute == true)
                     {
                         // Check that pref was added correctly.
-                        if (NewEditorPrefs.HasKey(_key))
+                        if (NewEditorPrefs.HasKey(pref_key))
                         {
                             switch (idx_prefType)
                             {
                                 case 0:
-                                    val_bool = NewEditorPrefs.GetBool(_key);
-                                    PrefOps.GetPref(_key, PrefType.BOOL);
+                                    pref_value_bool = NewEditorPrefs.GetBool(pref_key);
+                                    PrefOps.GetPref(pref_key, PrefType.BOOL);
                                     break;
                                 case 1:
-                                    val_int = NewEditorPrefs.GetInt(_key);
-                                    PrefOps.GetPref(_key, PrefType.INT);
+                                    pref_value_int = NewEditorPrefs.GetInt(pref_key);
+                                    PrefOps.GetPref(pref_key, PrefType.INT);
                                     break;
                                 case 2:
-                                    val_float = NewEditorPrefs.GetFloat(_key);
-                                    PrefOps.GetPref(_key, PrefType.FLOAT);
+                                    pref_value_float = NewEditorPrefs.GetFloat(pref_key);
+                                    PrefOps.GetPref(pref_key, PrefType.FLOAT);
                                     break;
                                 case 3:
-                                    val_string = NewEditorPrefs.GetString(_key);
-                                    PrefOps.GetPref(_key, PrefType.STRING);
+                                    prefe_value_string = NewEditorPrefs.GetString(pref_key);
+                                    PrefOps.GetPref(pref_key, PrefType.STRING);
                                     break;
                             }
 
@@ -179,20 +173,15 @@ namespace com.immortalyhydra.gdtb.epeditor
             }
             else
             {
-                DrawingUtils.DrawTextButton(rect_get, getContent.text, style_buttonText);
+                DrawingUtils.DrawTextButton(rect_get, getContent.text, style_normalButton);
             }
         }
 
-
-        /// Create rect and content for default Get.
         private void Button_Get_default(out Rect aRect, out GUIContent aContent)
         {
             aRect = new Rect((Screen.width / 2) - ButtonWidth/2, 126, ButtonWidth, ButtonHeight);
             aContent = new GUIContent("Get key", "Add existing key");
         }
-
-
-        /// Create rect and content for icon Get.
         private void Button_Get_icon(out Rect aRect, out GUIContent aContent)
         {
             aRect = new Rect((Screen.width / 2) - IconSize/2, 126, IconSize, IconSize);
@@ -206,31 +195,31 @@ namespace com.immortalyhydra.gdtb.epeditor
             switch (idx_prefType)
             {
                 case 0:
-                    PrefOps.AddPref(_key, val_bool);
+                    PrefOps.AddPref(pref_key, pref_value_bool);
                     break;
                 case 1:
-                    PrefOps.AddPref(_key, val_int);
+                    PrefOps.AddPref(pref_key, pref_value_int);
                     break;
                 case 2:
-                    PrefOps.AddPref(_key, val_float);
+                    PrefOps.AddPref(pref_key, pref_value_float);
                     break;
                 case 3:
-                    PrefOps.AddPref(_key, val_string);
+                    PrefOps.AddPref(pref_key, prefe_value_string);
                     break;
             }
         }
 
 
-        /// Load styles and apply preferences to them.
+        /// Load styles and apply color preferences to them.
         public void LoadStyles()
         {
             style_bold = skin_custom.GetStyle("GDTB_EPEditor_key");
             style_bold.normal.textColor = Preferences.Color_Secondary;
             style_bold.active.textColor = Preferences.Color_Secondary;
-            style_customGrid = skin_custom.GetStyle("GDTB_EPEditor_selectionGrid");
-            style_buttonText = skin_custom.GetStyle("GDTB_EPEditor_buttonText");
-            style_buttonText.active.textColor = Preferences.Color_Tertiary;
-            style_buttonText.normal.textColor = Preferences.Color_Tertiary;
+            style_pressedButton = skin_custom.GetStyle("GDTB_EPEditor_selectionGrid");
+            style_normalButton = skin_custom.GetStyle("GDTB_EPEditor_buttonText");
+            style_normalButton.active.textColor = Preferences.Color_Tertiary;
+            style_normalButton.normal.textColor = Preferences.Color_Tertiary;
         }
 
 

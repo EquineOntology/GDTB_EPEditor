@@ -70,7 +70,7 @@ namespace com.immortalyhydra.gdtb.epeditor
                 Prefs.AddRange(IO.LoadStoredPrefs());
             }
 
-            DrawBG();
+            DrawWindowBackground();
 
             // If the list is still clean after the above, then we really have no Prefs to show.
             if (Prefs.Count == 0)
@@ -85,7 +85,7 @@ namespace com.immortalyhydra.gdtb.epeditor
 
 
         /// Draw the background texture.
-        private void DrawBG()
+        private void DrawWindowBackground()
         {
             EditorGUI.DrawRect(new Rect(0, 0, position.width, position.height), Preferences.Color_Primary);
         }

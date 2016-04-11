@@ -9,8 +9,9 @@ namespace com.immortalyhydra.gdtb.epeditor
         public static Texture2D Texture_Get = Resources.Load(Constants.FILE_GET_DARK, typeof(Texture2D)) as Texture2D;
         public static Texture2D Texture_Refresh = Resources.Load(Constants.FILE_REFRESH_DARK, typeof(Texture2D)) as Texture2D;
         public static Texture2D Texture_Settings = Resources.Load(Constants.FILE_SETTINGS_DARK, typeof(Texture2D)) as Texture2D;
-        public static Texture2D Texture_Nuke = Resources.Load(Constants.FILE_REMOVEALL_DARK, typeof(Texture2D)) as Texture2D;
+        public static Texture2D Texture_Nuke = Resources.Load(Constants.FILE_DELETEALL_DARK, typeof(Texture2D)) as Texture2D;
         public static Texture2D Texture_Edit = Resources.Load(Constants.FILE_EDIT_DARK, typeof(Texture2D)) as Texture2D;
+        public static Texture2D Texture_Delete = Resources.Load(Constants.FILE_DELETE_DARK, typeof(Texture2D)) as Texture2D;
         public static Texture2D Texture_Remove = Resources.Load(Constants.FILE_REMOVE_DARK, typeof(Texture2D)) as Texture2D;
 
         public static IconStyle CurrentIconStyle = IconStyle.LIGHT;
@@ -83,7 +84,7 @@ namespace com.immortalyhydra.gdtb.epeditor
             Texture_Settings = null;
             Texture_Nuke = null;
             Texture_Edit = null;
-            Texture_Remove = null;
+            Texture_Delete = null;
 
             if (aStyle == IconStyle.DARK)
             {
@@ -91,8 +92,9 @@ namespace com.immortalyhydra.gdtb.epeditor
                 Texture_Get = Resources.Load(Constants.FILE_GET_DARK, typeof(Texture2D)) as Texture2D;
                 Texture_Refresh = Resources.Load(Constants.FILE_REFRESH_DARK, typeof(Texture2D)) as Texture2D;
                 Texture_Settings = Resources.Load(Constants.FILE_SETTINGS_DARK, typeof(Texture2D)) as Texture2D;
-                Texture_Nuke = Resources.Load(Constants.FILE_REMOVEALL_DARK, typeof(Texture2D)) as Texture2D;
+                Texture_Nuke = Resources.Load(Constants.FILE_DELETEALL_DARK, typeof(Texture2D)) as Texture2D;
                 Texture_Edit = Resources.Load(Constants.FILE_EDIT_DARK, typeof(Texture2D)) as Texture2D;
+                Texture_Delete = Resources.Load(Constants.FILE_DELETE_DARK, typeof(Texture2D)) as Texture2D;
                 Texture_Remove = Resources.Load(Constants.FILE_REMOVE_DARK, typeof(Texture2D)) as Texture2D;
                 CurrentIconStyle = IconStyle.DARK;
             }
@@ -102,8 +104,9 @@ namespace com.immortalyhydra.gdtb.epeditor
                 Texture_Get = Resources.Load(Constants.FILE_GET_LIGHT, typeof(Texture2D)) as Texture2D;
                 Texture_Refresh = Resources.Load(Constants.FILE_REFRESH_LIGHT, typeof(Texture2D)) as Texture2D;
                 Texture_Settings = Resources.Load(Constants.FILE_SETTINGS_LIGHT, typeof(Texture2D)) as Texture2D;
-                Texture_Nuke = Resources.Load(Constants.FILE_REMOVEALL_LIGHT, typeof(Texture2D)) as Texture2D;
+                Texture_Nuke = Resources.Load(Constants.FILE_DELETEALL_LIGHT, typeof(Texture2D)) as Texture2D;
                 Texture_Edit = Resources.Load(Constants.FILE_EDIT_LIGHT, typeof(Texture2D)) as Texture2D;
+                Texture_Delete = Resources.Load(Constants.FILE_DELETE_LIGHT, typeof(Texture2D)) as Texture2D;
                 Texture_Remove = Resources.Load(Constants.FILE_REMOVE_LIGHT, typeof(Texture2D)) as Texture2D;
                 CurrentIconStyle = IconStyle.LIGHT;
             }

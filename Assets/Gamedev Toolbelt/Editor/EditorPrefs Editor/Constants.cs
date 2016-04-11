@@ -23,10 +23,6 @@
 
         public const string FILE_GUISKIN = "GUI/epeditor_skin";
 
-        private const int CHAR_HEIGHT = 11;
-        private const float VERTICAL_SPACING = 1.5f;
-        public const float LINE_HEIGHT = CHAR_HEIGHT * VERTICAL_SPACING;
-
         public const int ICON_SIZE = 20;
         public const int BUTTON_TEXTURE_SIZE = 16;
         public const int BUTTON_BORDER_THICKNESS = 1;

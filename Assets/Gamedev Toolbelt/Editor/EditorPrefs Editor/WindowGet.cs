@@ -46,6 +46,11 @@ namespace com.immortalyhydra.gdtb.epeditor
             LoadStyles();
         }
 
+        private void OnDestroy()
+        {
+            Resources.UnloadUnusedAssets();
+        }
+
         public void OnGUI()
         {
             DrawWindowBackground();
@@ -210,13 +215,6 @@ namespace com.immortalyhydra.gdtb.epeditor
             {
                 EditorWindow.GetWindow(typeof(WindowEdit)).Close();
             }
-        }
-
-
-        /// Remove textures from memory when not needed anymore.
-        private void OnDestroy()
-        {
-            Resources.UnloadUnusedAssets();
         }
     }
 }

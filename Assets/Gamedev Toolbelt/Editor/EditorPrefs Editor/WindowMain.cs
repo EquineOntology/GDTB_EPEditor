@@ -47,7 +47,6 @@ namespace com.immortalyhydra.gdtb.epeditor
             window.Show();
         }
 
-
         public void OnEnable()
         {
             titleContent = new GUIContent("EditorPrefs Editor");
@@ -55,6 +54,11 @@ namespace com.immortalyhydra.gdtb.epeditor
             Preferences.GetAllPrefValues(); // Load current preferences (like colours, etc.). We do this here so that most preferences are updated as soon as they're changed.
             skin_custom = Resources.Load(Constants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
             LoadStyles();
+        }
+
+        private void OnDestroy()
+        {
+            Resources.UnloadUnusedAssets();
         }
 
 
@@ -649,13 +653,6 @@ namespace com.immortalyhydra.gdtb.epeditor
             }
 
             width_typeLabel = (int)style_type.CalcSize(new GUIContent("String")).x;
-        }
-
-
-        /// Remove textures from memory when not needed anymore.
-        private void OnDestroy()
-        {
-            Resources.UnloadUnusedAssets();
         }
 
 

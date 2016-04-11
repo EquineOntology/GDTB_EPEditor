@@ -55,10 +55,13 @@ namespace com.immortalyhydra.gdtb.epeditor
             LoadStyles();
         }
 
+        private void OnDestroy()
+        {
+            Resources.UnloadUnusedAssets();
+        }
+
         public void OnGUI()
         {
-            //GUI.skin = skin_custom;
-
             DrawWindowBackground();
             DrawKey();
             DrawType();
@@ -205,15 +208,11 @@ namespace com.immortalyhydra.gdtb.epeditor
         }
 
 
-        /// Create rect and content for default Add.
         private void Button_Edit_default(out Rect aRect, out GUIContent aContent)
         {
             aRect = new Rect(Mathf.Clamp((Screen.width / 2) - ButtonWidth/2, 0, position.width), 179, ButtonWidth, ButtonHeight);
             aContent = new GUIContent("Save", "Save changes");
         }
-
-
-        /// Create rect and content for icon Add.
         private void Button_Edit_icon(out Rect aRect, out GUIContent aContent)
         {
             aRect = new Rect(Mathf.Clamp((Screen.width / 2) - IconSize/2, 0, position.width), 179, IconSize, IconSize);
@@ -270,13 +269,6 @@ namespace com.immortalyhydra.gdtb.epeditor
             {
                 EditorWindow.GetWindow(typeof(WindowGet)).Close();
             }
-        }
-
-
-        /// Remove textures from memory when not needed anymore.
-        private void OnDestroy()
-        {
-            Resources.UnloadUnusedAssets();
         }
     }
 }

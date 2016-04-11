@@ -15,7 +15,7 @@ namespace com.immortalyhydra.gdtb.epeditor
         public static List<Pref> Prefs = new List<Pref>();
 
         //============================ Editor GUI =============================
-        private GUISkin skin_custom, _defaultSkin;
+        private GUISkin skin_custom;
         private GUIStyle style_type, style_key, style_value, style_buttonText;
 
         // ========================= Editor layouting =========================
@@ -60,12 +60,8 @@ namespace com.immortalyhydra.gdtb.epeditor
 
         private void OnGUI()
         {
-            UpdateLayoutingSizes();
-            if (_defaultSkin == null)
-            {
-                _defaultSkin = GUI.skin;
-            }
-            GUI.skin = skin_custom;
+            UpdateLayoutingSizes(); // Calculate a rough size for each major element group (type, pref, buttons).
+            GUI.skin = skin_custom; // Without this, almost everything will work aside from the scrollbar.
 
             // If the list is clean (for instance because we just recompiled) load Prefs again.
             if (Prefs.Count == 0)
@@ -213,16 +209,16 @@ namespace com.immortalyhydra.gdtb.epeditor
             switch (Preferences.ButtonsDisplay)
             {
                 case ButtonsDisplayFormat.REGULAR_BUTTONS:
-                    Button_Hide_default(aRect, out removeRect, out removeContent);
+                    Button_Remove_default(aRect, out removeRect, out removeContent);
                     break;
                 default:
-                    Button_Hide_icon(aRect, out removeRect, out removeContent);
+                    Button_Remove_icon(aRect, out removeRect, out removeContent);
                     break;
             }
 
             if (GUI.Button(removeRect, removeContent))
             {
-                Prefs.Remove(aPref);
+                PrefOps.RemovePref(aPref);
             }
             if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
             {
@@ -237,24 +233,26 @@ namespace com.immortalyhydra.gdtb.epeditor
 
 
         /// Create rect and content for default Remove button.
-        private void Button_Hide_default(Rect aRect, out Rect aRemoveRect, out GUIContent aRemoveContent)
+        private void Button_Remove_default(Rect aRect, out Rect aRemoveRect, out GUIContent aRemoveContent)
         {
             aRemoveRect = aRect;
-            aRemoveRect.y += ButtonHeight + _offset + 2;
-            aRemoveRect.width = ButtonWidth;
+            aRemoveRect.x += _offset * 3;
+            aRemoveRect.y += _offset;
+            aRemoveRect.width = ButtonWidth/2 + 3;
             aRemoveRect.height = ButtonHeight;
-            aRemoveContent = new GUIContent("Remove", "Remove this EditorPref from the list (without deleting it)");
+            aRemoveContent = new GUIContent("Hide", "Remove this EditorPref from\nthis list (without deleting it\nfrom EditorPrefs)");
         }
 
 
         /// Create rect and content for icon Remove button.
-        private void Button_Hide_icon(Rect aRect, out Rect aRemoveRect, out GUIContent aRemoveContent)
+        private void Button_Remove_icon(Rect aRect, out Rect aRemoveRect, out GUIContent aRemoveContent)
         {
             aRemoveRect = aRect;
-            aRemoveRect.y += _offset;
+            aRemoveRect.x += IconSize / 2 + 1;
+            aRemoveRect.y += _offset + 2;
             aRemoveRect.width = IconSize;
             aRemoveRect.height = IconSize;
-            aRemoveContent = new GUIContent("", "Remove this EditorPref from the list (without deleting it)");
+            aRemoveContent = new GUIContent("", "Remove this EditorPref from\nthis list (without deleting it\nfrom EditorPrefs)");
         }
         #endregion
 
@@ -423,7 +421,6 @@ namespace com.immortalyhydra.gdtb.epeditor
             switch (Preferences.ButtonsDisplay)
             {
                 case ButtonsDisplayFormat.REGULAR_BUTTONS:
-                    GUI.skin = _defaultSkin;
                     Button_Add_default(out addRect, out addContent);
                     Button_Get_default(out getRect, out getContent);
                     Button_Refresh_default(out refreshRect, out refreshContent);
@@ -659,7 +656,7 @@ namespace com.immortalyhydra.gdtb.epeditor
             style_buttonText.normal.textColor = Preferences.Color_Tertiary;
 
             // Change scrollbar color.
-            var scrollbar = Resources.Load("GUI/epeditor_scrollbar", typeof(Texture2D)) as Texture2D;
+            var scrollbar = Resources.Load(Constants.FILE_SCROLLBAR, typeof(Texture2D)) as Texture2D;
             scrollbar.SetPixel(0, 0, Preferences.Color_Secondary);
             scrollbar.Apply();
             skin_custom.verticalScrollbarThumb.normal.background = scrollbar;

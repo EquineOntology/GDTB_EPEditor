@@ -28,11 +28,6 @@ namespace com.immortalyhydra.gdtb.epeditor
         private int idx_prefType = 0;
         private string[] arr_prefTypes = { "Bool", "Int", "Float", "String" };
 
-        private bool pref_value_bool = false;
-        private int pref_value_int = 0;
-        private float pref_value_float = 0.0f;
-        private string prefe_value_string = "";
-
 
         public static void Init()
         {
@@ -176,19 +171,15 @@ namespace com.immortalyhydra.gdtb.epeditor
             switch (aType)
             {
                 case 0:
-                    pref_value_bool = NewEditorPrefs.GetBool(aKey);
                     PrefOps.GetPref(aKey, PrefType.BOOL);
                     break;
                 case 1:
-                    pref_value_int = NewEditorPrefs.GetInt(aKey);
                     PrefOps.GetPref(aKey, PrefType.INT);
                     break;
                 case 2:
-                    pref_value_float = NewEditorPrefs.GetFloat(aKey);
                     PrefOps.GetPref(aKey, PrefType.FLOAT);
                     break;
                 case 3:
-                    prefe_value_string = NewEditorPrefs.GetString(aKey);
                     PrefOps.GetPref(aKey, PrefType.STRING);
                     break;
             }

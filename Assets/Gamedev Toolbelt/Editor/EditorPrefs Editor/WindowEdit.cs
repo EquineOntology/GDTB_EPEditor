@@ -21,20 +21,20 @@ namespace com.immortalyhydra.gdtb.epeditor
 
         // ======================= Class functionality ========================
         private Pref _originalPref;
-        private string _key = "";
+        private string pref_key = "";
         private int idx_prefType = 0;
         private string[] arr_prefTypes = { "Bool", "Int", "Float", "String" };
 
-        private bool val_bool = false;
-        private int idx_bool = 0;
+        private bool pref_boolValue = false;
+        private int idx_boolValues = 0;
         private string[] arr_boolValues = { "False", "True" };
-        private int val_int = 0;
-        private float val_float = 0.0f;
-        private string val_string = "";
+        private int pref_intValue = 0;
+        private float pref_floatValue = 0.0f;
+        private string pref_stringValue = "";
 
         //============================ Editor GUI =============================
-        private GUISkin skin_custom, skin_default;
-        private GUIStyle style_bold, style_customGrid, style_buttonText;
+        private GUISkin skin_custom;
+        private GUIStyle style_bold, style_pressedButton, style_normalButton;
 
 
         public static void Init(Pref aPref)
@@ -57,52 +57,48 @@ namespace com.immortalyhydra.gdtb.epeditor
 
         public void OnGUI()
         {
-            if (skin_default == null)
-            {
-                skin_default = GUI.skin;
-            }
-            GUI.skin = skin_custom;
+            //GUI.skin = skin_custom;
 
-            DrawBG();
-            DrawKeyField();
+            DrawWindowBackground();
+            DrawKey();
             DrawType();
-            DrawValueField();
-            DrawEditButton();
+            DrawValue();
+            DrawEdit();
         }
 
 
         /// Draw the background texture.
-        private void DrawBG()
+        private void DrawWindowBackground()
         {
             EditorGUI.DrawRect(new Rect(0,0, position.width, position.height), Preferences.Color_Primary);
         }
 
 
         /// Draw key input field.
-        private void DrawKeyField()
+        private void DrawKey()
         {
             rect_key_label = new Rect(10, 10, Mathf.Clamp(position.width - 20, 80, position.width), 16);
             EditorGUI.LabelField(rect_key_label, "Key:", style_bold);
 
             rect_key = new Rect(10, 29, Mathf.Clamp(position.width - 20, 80, position.width), 32);
-            _key = EditorGUI.TextField(rect_key, _key);
+            pref_key = EditorGUI.TextField(rect_key, pref_key);
         }
 
 
-        /// Draw type popup.
+        /// Draw type selection.
         private void DrawType()
         {
             rect_type_label = new Rect(10, 71, Mathf.Clamp(position.width - 20, 80, position.width), 16);
             EditorGUI.LabelField(rect_type_label, "Type:", style_bold);
 
             rect_type = new Rect(10, 90, position.width - 20, 20);
-            idx_prefType = GUI.SelectionGrid(rect_type, idx_prefType, arr_prefTypes, arr_prefTypes.Length, style_customGrid);
-            DrawingUtils.DrawSelectionGrid(rect_type, arr_prefTypes, idx_prefType, 60, 5, style_buttonText, style_customGrid);
+            idx_prefType = GUI.SelectionGrid(rect_type, idx_prefType, arr_prefTypes, arr_prefTypes.Length, style_pressedButton);
+            DrawingUtils.DrawSelectionGrid(rect_type, arr_prefTypes, idx_prefType, 60, 5, style_normalButton, style_pressedButton);
         }
 
 
         /// Draw value input field.
-        private void DrawValueField()
+        private void DrawValue()
         {
             rect_value_label = new Rect(10, 118, Mathf.Clamp(position.width - 20, 80, position.width), 16);
             EditorGUI.LabelField(rect_value_label, "Value:", style_bold);
@@ -111,28 +107,28 @@ namespace com.immortalyhydra.gdtb.epeditor
             {
                 case 0:
                     var boolRect = new Rect(10, 137, 130, 20);
-                    idx_bool = GUI.SelectionGrid(boolRect, idx_bool, arr_boolValues, arr_boolValues.Length, style_customGrid);
-                    DrawingUtils.DrawSelectionGrid(boolRect, arr_boolValues, idx_bool, 60, 5, style_buttonText, style_customGrid);
-                    val_bool = idx_bool == 0 ? false : true;
+                    idx_boolValues = GUI.SelectionGrid(boolRect, idx_boolValues, arr_boolValues, arr_boolValues.Length, style_pressedButton);
+                    DrawingUtils.DrawSelectionGrid(boolRect, arr_boolValues, idx_boolValues, 60, 5, style_normalButton, style_pressedButton);
+                    pref_boolValue = idx_boolValues == 0 ? false : true;
                     break;
                 case 1:
                     var intRect = new Rect(10, 137, position.width - 20, 16);
-                    val_int = EditorGUI.IntField(intRect, val_int);
+                    pref_intValue = EditorGUI.IntField(intRect, pref_intValue);
                     break;
                 case 2:
                     var floatRect = new Rect(10, 137, position.width - 20, 16);
-                    val_float = EditorGUI.FloatField(floatRect, val_float);
+                    pref_floatValue = EditorGUI.FloatField(floatRect, pref_floatValue);
                     break;
                 case 3:
                     var stringRect = new Rect(10, 137, position.width - 20, 32);
-                    val_string = EditorGUI.TextField(stringRect, val_string);
+                    pref_stringValue = EditorGUI.TextField(stringRect, pref_stringValue);
                     break;
             }
         }
 
 
         /// Draw Edit button based on preferences.
-        private void DrawEditButton()
+        private void DrawEdit()
         {
             GUIContent editContent;
 
@@ -149,36 +145,54 @@ namespace com.immortalyhydra.gdtb.epeditor
 
             if (GUI.Button(rect_edit, editContent))
             {
-                if (_key == "")
+                if (pref_key == "") // We definitely want a key.
                 {
                     EditorUtility.DisplayDialog("No key to use", "Please add a key.", "Ok");
                 }
-                else
+                else // What we do when editing is basically removing the old key and creating a new, updated one.
                 {
-                    NewEditorPrefs.DeleteKey(_originalPref.Key);
-
-                    switch (idx_prefType)
+                    // Get confirmation through dialog (or not if the user doesn't want to).
+                    var canExecute = false;
+                    if (Preferences.ShowConfirmationDialogs == true)
                     {
-                        case 0:
-                            NewEditorPrefs.SetBool(_key, val_bool);
-                            break;
-                        case 1:
-                            NewEditorPrefs.SetInt(_key, val_int);
-                            break;
-                        case 2:
-                            NewEditorPrefs.SetFloat(_key, val_float);
-                            break;
-                        case 3:
-                            NewEditorPrefs.SetString(_key, val_string);
-                            break;
+                        if (EditorUtility.DisplayDialog("Save edited Pref?", "Are you sure you want to save the changes to this EditorPref?", "Save", "Cancel"))
+                        {
+                            canExecute = true;
+                        }
+                    }
+                    else
+                    {
+                        canExecute = true;
+                    }
+
+                    // Actually do the thing.
+                    if (canExecute == true)
+                    {
+                        NewEditorPrefs.DeleteKey(_originalPref.Key);
+
+                        switch (idx_prefType)
+                        {
+                            case 0:
+                                NewEditorPrefs.SetBool(pref_key, pref_boolValue);
+                                break;
+                            case 1:
+                                NewEditorPrefs.SetInt(pref_key, pref_intValue);
+                                break;
+                            case 2:
+                                NewEditorPrefs.SetFloat(pref_key, pref_floatValue);
+                                break;
+                            case 3:
+                                NewEditorPrefs.SetString(pref_key, pref_stringValue);
+                                break;
+                        }
+                        if (WindowMain.IsOpen)
+                        {
+                            EditorWindow.GetWindow(typeof(WindowMain)).Repaint();
+                        }
+                        EditorWindow.GetWindow(typeof(WindowEdit)).Close();
                     }
                 }
 
-                if (WindowMain.IsOpen)
-                {
-                    EditorWindow.GetWindow(typeof(WindowMain)).Repaint();
-                }
-                EditorWindow.GetWindow(typeof(WindowEdit)).Close();
             }
             if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
             {
@@ -186,7 +200,7 @@ namespace com.immortalyhydra.gdtb.epeditor
             }
             else
             {
-                DrawingUtils.DrawTextButton(rect_edit, editContent.text, style_buttonText);
+                DrawingUtils.DrawTextButton(rect_edit, editContent.text, style_normalButton);
             }
         }
 
@@ -211,37 +225,37 @@ namespace com.immortalyhydra.gdtb.epeditor
         private void InitInputValues(Pref aPref)
         {
             _originalPref = aPref;
-            _key = _originalPref.Key;
+            pref_key = _originalPref.Key;
             idx_prefType = (int)_originalPref.Type;
             switch (idx_prefType)
             {
                 case 0:
-                    val_bool = aPref.Value == "True" ? true : false;
-                    idx_bool = val_bool == true ? 1 : 0;
+                    pref_boolValue = aPref.Value == "True" ? true : false;
+                    idx_boolValues = pref_boolValue == true ? 1 : 0;
                     break;
                 case 1:
-                    val_int = int.Parse(aPref.Value);
+                    pref_intValue = int.Parse(aPref.Value);
                     break;
                 case 2:
-                    val_float = float.Parse(aPref.Value);
+                    pref_floatValue = float.Parse(aPref.Value);
                     break;
                 case 3:
-                    val_string = aPref.Value;
+                    pref_stringValue = aPref.Value;
                     break;
             }
         }
 
 
-        /// Load custom styles.
+        /// Load custom styles and apply colors in preferences.
         public void LoadStyles ()
         {
             style_bold = skin_custom.GetStyle("GDTB_EPEditor_key");
             style_bold.normal.textColor = Preferences.Color_Secondary;
             style_bold.active.textColor = Preferences.Color_Secondary;
-            style_customGrid = skin_custom.GetStyle("GDTB_EPEditor_selectionGrid");
-            style_buttonText = skin_custom.GetStyle("GDTB_EPEditor_buttonText");
-            style_buttonText.active.textColor = Preferences.Color_Tertiary;
-            style_buttonText.normal.textColor = Preferences.Color_Tertiary;
+            style_pressedButton = skin_custom.GetStyle("GDTB_EPEditor_selectionGrid");
+            style_normalButton = skin_custom.GetStyle("GDTB_EPEditor_buttonText");
+            style_normalButton.active.textColor = Preferences.Color_Tertiary;
+            style_normalButton.normal.textColor = Preferences.Color_Tertiary;
         }
 
 

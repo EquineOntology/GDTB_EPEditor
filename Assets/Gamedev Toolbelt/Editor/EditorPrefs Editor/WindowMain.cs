@@ -149,11 +149,17 @@ namespace com.immortalyhydra.gdtb.epeditor
 
                 height_totalPrefHeight += rect_prefBackground.height + _offset;
 
-                DrawPrefBackground(rect_prefBackground);
-                DrawType(rect_type, Prefs[i]);
-                DrawRemove(rect_remove, Prefs[i]);
-                DrawKeyAndValue(rect_pref, Prefs[i], height_key);
-                DrawEditAndDelete(rect_buttons, Prefs[i]);
+                // If the user removes a pref from the list in the middle of a draw call, the index in the for loop stays the same but Prefs.Count diminishes.
+                // I couldn't find a way around it, so what we do is swallow the exception and wait for the next draw call.
+                try
+                {
+                    DrawPrefBackground(rect_prefBackground);
+                    DrawType(rect_type, Prefs[i]);
+                    DrawRemove(rect_remove, Prefs[i]);
+                    DrawKeyAndValue(rect_pref, Prefs[i], height_key);
+                    DrawEditAndDelete(rect_buttons, Prefs[i]);
+                }
+                catch (System.Exception) { }
             }
 
             // Are we showing the scrollbar?

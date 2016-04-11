@@ -43,7 +43,7 @@ namespace com.immortalyhydra.gdtb.epeditor
         private const string PREFS_EPEDITOR_COLOR_PRIMARY = "GDTB_EPEditor_Primary";
         private static Color _primary = new Color(56, 56, 56, 1);
         private static Color _primary_dark = new Color(56, 56, 56, 1);
-        private static Color _primary_light = new Color(222, 222, 222, 1);
+        private static Color _primary_light = new Color(194, 194, 194, 1);
         private static Color _primary_default = new Color(56, 56, 56, 1);
         public static Color Color_Primary
         {
@@ -54,7 +54,7 @@ namespace com.immortalyhydra.gdtb.epeditor
         private const string PREFS_EPEDITOR_COLOR_SECONDARY = "GDTB_EPEditor_Secondary";
         private static Color _secondary = new Color(55, 222, 179, 1);
         private static Color _secondary_dark = new Color(55, 222, 179, 1);
-        private static Color _secondary_light = new Color(0, 148, 130, 1);
+        private static Color _secondary_light = new Color(0, 101, 89, 1);
         private static Color _secondary_default = new Color(55, 222, 179, 1);
         public static Color Color_Secondary
         {
@@ -406,7 +406,7 @@ namespace com.immortalyhydra.gdtb.epeditor
                     SetIconStyle();
                     GetIconStyle();
                     ReloadSkins();
-                    
+
                     RepaintOpenWindows();
                 }
             }

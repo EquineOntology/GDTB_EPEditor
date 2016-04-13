@@ -189,12 +189,56 @@ namespace com.immortalyhydra.gdtb.epeditor
         /// If preferences have keys already saved in EditorPrefs, get them. Otherwise, set them.
         public static void GetAllPrefValues()
         {
-            _buttonsDisplay = (ButtonsDisplayFormat)EditorPrefs.GetInt(PREFS_EPEDITOR_BUTTONS_DISPLAY, _buttonsDisplay_default); // Buttons display.
+            // Buttons display.
+            if (EditorPrefs.HasKey(PREFS_EPEDITOR_BUTTONS_DISPLAY))
+            {
+                _buttonsDisplay = (ButtonsDisplayFormat)EditorPrefs.GetInt(PREFS_EPEDITOR_BUTTONS_DISPLAY, _buttonsDisplay_default);
+            }
+            else
+            {
+                Reset_ButtonsDisplayFormat();
+            }
             _oldDisplayFormat = _buttonsDisplay;
-            GetIconStyle();
-            _confirmationDialogs = GetPrefValue(PREFS_EPEDITOR_CONFIRMATION_DIALOGS, _confirmationDialogs_default);
-            GetColorPrefs();
-            _shortcut = GetPrefValue(PREFS_EPEDITOR_SHORTCUT, _shortcut_default); // Shortcut.
+
+            // Icon style.
+            if (EditorPrefs.HasKey(PREFS_EPEDITOR_ICON_STYLE))
+            {
+                GetIconStyle();
+            }
+            else
+            {
+                Reset_IconStyle();
+            }
+
+            // Confirmation dialogs.
+            if (EditorPrefs.HasKey(PREFS_EPEDITOR_CONFIRMATION_DIALOGS))
+            {
+                _confirmationDialogs = GetPrefValue(PREFS_EPEDITOR_CONFIRMATION_DIALOGS, _confirmationDialogs_default);
+            }
+            else
+            {
+                Reset_ConfirmationDialogs();
+            }
+
+            // Colors.
+            if (EditorPrefs.HasKey(PREFS_EPEDITOR_COLOR_PRIMARY))
+            {
+                GetColorPrefs();
+            }
+            else
+            {
+                Reset_Colors();
+            }
+
+            // Shortcut.
+            if (EditorPrefs.HasKey(PREFS_EPEDITOR_SHORTCUT))
+            {
+                _shortcut = GetPrefValue(PREFS_EPEDITOR_SHORTCUT, _shortcut_default);
+            }
+            else
+            {
+                Reset_Shortcut();
+            }
             _newShortcut = _shortcut;
             ParseShortcutValues();
         }
@@ -439,28 +483,50 @@ namespace com.immortalyhydra.gdtb.epeditor
                 // If we have permission, do it.
                 if (canExecute == true)
                 {
-                    ResetPrefsToDefault();
+                    Reset_All();
                 }
             }
             EditorGUILayout.Space();
             EditorGUILayout.EndHorizontal();
         }
 
-
+        #region Resets
         /// Reset all preferences to default.
-        private static void ResetPrefsToDefault()
+        private static void Reset_All()
         {
-            _buttonsDisplay = (ButtonsDisplayFormat)_buttonsDisplay_default;
-            _confirmationDialogs = _confirmationDialogs_default;
-            _iconStyle = (IconStyle)_iconStyle_default;
-            _primary = new Color(_primary_default.r / 255, _primary_default.g / 255, _primary_default.b / 255, _primary_default.a);
-            _secondary = new Color(_secondary_default.r / 255, _secondary_default.g / 255, _secondary_default.b / 255, _secondary_default.a);
-            _tertiary = new Color(_tertiary_default.r / 255, _tertiary_default.g / 255, _tertiary_default.b / 255, _tertiary_default.a);
-            _shortcut = _shortcut_default;
-            SetShortcutPref(true);
+            Reset_ButtonsDisplayFormat();
+            Reset_ConfirmationDialogs();
+            Reset_IconStyle();
+            Reset_Colors();
+            Reset_Shortcut();
             ReloadSkins();
             SetPrefValues();
         }
+
+        private static void Reset_ButtonsDisplayFormat()
+        {
+            _buttonsDisplay = (ButtonsDisplayFormat)_buttonsDisplay_default;
+        }
+        private static void Reset_ConfirmationDialogs()
+        {
+            _confirmationDialogs = _confirmationDialogs_default;
+        }
+        private static void Reset_IconStyle()
+        {
+            _iconStyle = (IconStyle)_iconStyle_default;
+        }
+        private static void Reset_Colors()
+        {
+            _primary = new Color(_primary_default.r / 255, _primary_default.g / 255, _primary_default.b / 255, _primary_default.a);
+            _secondary = new Color(_secondary_default.r / 255, _secondary_default.g / 255, _secondary_default.b / 255, _secondary_default.a);
+            _tertiary = new Color(_tertiary_default.r / 255, _tertiary_default.g / 255, _tertiary_default.b / 255, _tertiary_default.a);
+        }
+        private static void Reset_Shortcut()
+        {
+            _shortcut = _shortcut_default;
+            SetShortcutPref(true);
+        }
+        #endregion
 
 
         /// Repaint all open EPEditor windows.

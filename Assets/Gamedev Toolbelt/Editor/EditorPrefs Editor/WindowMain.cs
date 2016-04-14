@@ -50,7 +50,12 @@ namespace com.immortalyhydra.gdtb.epeditor
 
         public void OnEnable()
         {
-            titleContent = new GUIContent("EditorPrefs Editor");
+            #if UNITY_5_3_OR_NEWER || UNITY_5_1 || UNITY_5_2
+                titleContent = new GUIContent("EditorPrefs Editor");
+            #else
+                title = "EditorPrefs Editor";
+            #endif
+
             Instance = this;
             Preferences.GetAllPrefValues(); // Load current preferences (like colours, etc.). We do this here so that most preferences are updated as soon as they're changed.
             skin_custom = Resources.Load(Constants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
@@ -101,9 +106,21 @@ namespace com.immortalyhydra.gdtb.epeditor
         {
             var label = "There are currently no EditorPrefs loaded.\nYou can add a new EditorPref or\nget an existing one with the buttons below.\n\nIf you see this after the project recompiled,\ntry refreshing the window!\nYour prefs should come back just fine.";
             var labelContent = new GUIContent(label);
-            var labelSize = EditorStyles.centeredGreyMiniLabel.CalcSize(labelContent);
+
+            Vector2 labelSize;
+            #if UNITY_UNITY_5_3_OR_NEWER // 5.2.1 works, how about 5.2.0?
+                labelSize = EditorStyles.centeredGreyMiniLabel.CalcSize(labelContent);
+            #else
+                labelSize = EditorStyles.wordWrappedMiniLabel.CalcSize(labelContent);
+            #endif
+
             var labelRect = new Rect(position.width / 2 - labelSize.x / 2, position.height / 2 - labelSize.y / 2 - _offset * 2.5f, labelSize.x, labelSize.y);
-            EditorGUI.LabelField(labelRect, labelContent, EditorStyles.centeredGreyMiniLabel);
+
+            #if UNITY_5_3_OR_NEWER
+                EditorGUI.LabelField(labelRect, labelContent, EditorStyles.centeredGreyMiniLabel);
+            #else
+                EditorGUI.LabelField(labelRect, labelContent, EditorStyles.wordWrappedMiniLabel);
+            #endif
         }
 
 
@@ -246,7 +263,7 @@ namespace com.immortalyhydra.gdtb.epeditor
         {
             aRemoveRect = aRect;
             aRemoveRect.x += _offset * 2 + 1;
-            aRemoveRect.y += _offset + 2;
+            aRemoveRect.y += _offset + 3;
             aRemoveRect.width = ButtonWidth / 2 + 3;
             aRemoveRect.height = ButtonHeight;
             aRemoveContent = new GUIContent("Hide", "Remove this EditorPref from\nthis list (without deleting it\nfrom EditorPrefs)");
@@ -285,7 +302,7 @@ namespace com.immortalyhydra.gdtb.epeditor
         }
 
 
-        #region EditAndRemove
+        #region edit and delete
         /// Select which format to use based on the user preference.
         private void DrawEditAndDelete(Rect aRect, Pref aPref)
         {
@@ -634,9 +651,23 @@ namespace com.immortalyhydra.gdtb.epeditor
             style_buttonText.active.textColor = Preferences.Color_Tertiary;
             style_buttonText.normal.textColor = Preferences.Color_Tertiary;
 
+            skin_custom.settings.selectionColor = Preferences.Color_Secondary;
+
             // Change scrollbar color.
             var scrollbar = Resources.Load(Constants.TEX_SCROLLBAR, typeof(Texture2D)) as Texture2D;
-            scrollbar.SetPixel(0, 0, Preferences.Color_Secondary);
+
+            #if UNITY_5 || UNITY_5_3_OR_NEWER
+                scrollbar.SetPixel(0,0, Preferences.Color_Secondary);
+            #else
+				var pixels = scrollbar.GetPixels();
+				// We do it like this because minimum texture size in older versions of Unity is 2x2.
+				for(var i = 0; i < pixels.GetLength(0); i++)
+				{
+					scrollbar.SetPixel(i, 0, Preferences.Color_Secondary);
+					scrollbar.SetPixel(i, 1, Preferences.Color_Secondary);
+				}
+            #endif
+
             scrollbar.Apply();
             skin_custom.verticalScrollbarThumb.normal.background = scrollbar;
         }

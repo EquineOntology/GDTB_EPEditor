@@ -39,9 +39,14 @@ namespace com.immortalyhydra.gdtb.epeditor
         {
             WindowAdd window = (WindowAdd)EditorWindow.GetWindow(typeof(WindowAdd));
             window.minSize = new Vector2(275, 209);
-            window.titleContent = new GUIContent("Add EditorPref");
-            window.CloseOtherWindows();
 
+            #if UNITY_5_3_OR_NEWER || UNITY_5_1 || UNITY_5_2
+                window.titleContent = new GUIContent("Add EditorPref");
+            #else
+                window.title = "Add EditorPref";
+            #endif
+            
+            window.CloseOtherWindows();
             window.ShowUtility();
         }
 

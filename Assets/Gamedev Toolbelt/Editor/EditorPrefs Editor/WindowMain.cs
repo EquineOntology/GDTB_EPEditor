@@ -108,7 +108,7 @@ namespace com.immortalyhydra.gdtb.epeditor
             var labelContent = new GUIContent(label);
 
             Vector2 labelSize;
-            #if UNITY_UNITY_5_3_OR_NEWER // 5.2.1 works, how about 5.2.0?
+            #if UNITY_UNITY_5_3_OR_NEWER
                 labelSize = EditorStyles.centeredGreyMiniLabel.CalcSize(labelContent);
             #else
                 labelSize = EditorStyles.wordWrappedMiniLabel.CalcSize(labelContent);

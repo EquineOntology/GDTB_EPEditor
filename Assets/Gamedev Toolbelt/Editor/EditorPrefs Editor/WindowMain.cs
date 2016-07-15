@@ -57,7 +57,11 @@ namespace com.immortalyhydra.gdtb.epeditor
             #endif
 
             Instance = this;
-            Preferences.GetAllPrefValues(); // Load current preferences (like colours, etc.). We do this here so that most preferences are updated as soon as they're changed.
+            /* Load current preferences (like colours, etc.).
+             * We do this here so that most preferences are updated as soon as they're changed.
+             */
+            Preferences.GetAllPrefValues();
+
             skin_custom = Resources.Load(Constants.FILE_GUISKIN, typeof(GUISkin)) as GUISkin;
             LoadStyles();
         }
@@ -129,7 +133,7 @@ namespace com.immortalyhydra.gdtb.epeditor
         {
             rect_scrollView.height = height_totalPrefHeight - _offset;
 
-            //Diminish the width of scrollview and scroll area so that the scollbar is offset from the right edge of the window.
+            // Diminish the width of scrollview and scroll area so that the scollbar is offset from the right edge of the window.
             rect_scrollArea.width += IconSize - _offset;
             rect_scrollView.width -= _offset;
 
@@ -142,6 +146,7 @@ namespace com.immortalyhydra.gdtb.epeditor
             _scrollPosition = GUI.BeginScrollView(rect_scrollArea, _scrollPosition, rect_scrollView);
 
             height_totalPrefHeight = _offset; // This includes all prefs, not just a single one.
+
             for (var i = 0; i < Prefs.Count; i++)
             {
                 var key = new GUIContent(Prefs[i].Key);

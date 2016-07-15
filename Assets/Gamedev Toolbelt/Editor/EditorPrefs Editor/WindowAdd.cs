@@ -45,7 +45,7 @@ namespace com.immortalyhydra.gdtb.epeditor
             #else
                 window.title = "Add EditorPref";
             #endif
-            
+
             window.CloseOtherWindows();
             window.ShowUtility();
         }
@@ -229,12 +229,12 @@ namespace com.immortalyhydra.gdtb.epeditor
                 }
 
                 // B-b: the key is not in the list (but it exists in EditorPrefs).
-                if (!InPrefs)
+                if (InPrefs == false)
                 {
                     switch (pref_typeIndex) // Get the key's value based on the type given.
                     {
                         case 0:
-                            pref_boolValue = idx_bool == 0 ? false : true;
+                            pref_boolValue = NewEditorPrefs.GetBool(pref_key); //idx_bool == 0 ? false : true;
                             currentPref = new Pref(PrefType.BOOL, pref_key, pref_boolValue.ToString());
                             break;
                         case 1:

@@ -124,12 +124,9 @@ public static class NewEditorPrefs
     {
         foreach(var pref in WindowMain.Prefs)
         {
-            if (pref.Key == aKey)
+            if (pref.Key == aKey && pref.Type == aType)
             {
-                if (pref.Type == PrefType.BOOL)
-                {
-                    return pref;
-                }
+                return pref;
             }
         }
         return null;

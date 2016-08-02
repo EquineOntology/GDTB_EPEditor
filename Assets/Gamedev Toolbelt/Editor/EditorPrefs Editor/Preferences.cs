@@ -43,7 +43,7 @@ namespace com.immortalyhydra.gdtb.epeditor
         private const string PREFS_EPEDITOR_COLOR_PRIMARY = "GDTB_EPEditor_Primary";
         private static Color _primary = new Color(56, 56, 56, 1);
         private static Color _primary_dark = new Color(56, 56, 56, 1);
-        private static Color _primary_light = new Color(194, 194, 194, 1);
+        private static Color _primary_light = new Color(233, 233, 233, 1);
         private static Color _primary_default = new Color(56, 56, 56, 1);
         public static Color Color_Primary
         {
@@ -70,6 +70,17 @@ namespace com.immortalyhydra.gdtb.epeditor
         public static Color Color_Tertiary
         {
             get { return _tertiary; }
+        }
+
+        // Quaretnary color.
+        private const string PREFS_CODETODOS_COLOR_QUATERNARY = "GDTB_CodeTODOs_Quaternary";
+        private static Color _quaternary = new Color(70, 70, 70, 1);
+        private static Color _quaternary_dark = new Color(70, 70, 70, 1);
+        private static Color _quaternary_light = new Color(220, 220, 220, 1);
+        private static Color _quaternary_default = new Color(70, 70, 70, 1);
+        public static Color Color_Quaternary
+        {
+            get { return _quaternary; }
         }
         #endregion
 
@@ -100,9 +111,10 @@ namespace com.immortalyhydra.gdtb.epeditor
             EditorGUILayout.LabelField("UI", EditorStyles.boldLabel);
             _iconStyle = (IconStyle)EditorGUILayout.Popup("Icon style", (int)_iconStyle, arr_iconStyle);
             EditorGUILayout.Separator();
-            _primary = EditorGUILayout.ColorField("Primary color", _primary);
-            _secondary = EditorGUILayout.ColorField("Secondary color", _secondary);
-            _tertiary = EditorGUILayout.ColorField("Tertiary color", _tertiary);
+            _primary = EditorGUILayout.ColorField("Background and button color", _primary);
+            _secondary = EditorGUILayout.ColorField("Accent color", _secondary);
+            _tertiary = EditorGUILayout.ColorField("Text color", _tertiary);
+            _quaternary = EditorGUILayout.ColorField("Element background color", _quaternary);
             EditorGUILayout.Separator();
             DrawThemeButtons();
             GUILayout.Space(20);
@@ -162,7 +174,8 @@ namespace com.immortalyhydra.gdtb.epeditor
         {
             EditorPrefs.SetString(PREFS_EPEDITOR_COLOR_PRIMARY, RGBA.ColorToString(_primary));
             EditorPrefs.SetString(PREFS_EPEDITOR_COLOR_SECONDARY, RGBA.ColorToString(_secondary));
-            EditorPrefs.SetString(PREFS_EPEDITOR_COLOR_TERTIARY, RGBA.ColorToString(_tertiary));
+            EditorPrefs.SetString(PREFS_EPEDITOR_COLOR_TERTIARY, RGBA.ColorToString(_tertiary));            
+            EditorPrefs.SetString(PREFS_CODETODOS_COLOR_QUATERNARY, RGBA.ColorToString(_quaternary));
         }
 
 
@@ -257,6 +270,7 @@ namespace com.immortalyhydra.gdtb.epeditor
             _primary = GetPrefValue(PREFS_EPEDITOR_COLOR_PRIMARY, _primary_default); // PRIMARY color.
             _secondary = GetPrefValue(PREFS_EPEDITOR_COLOR_SECONDARY, _secondary_default); // SECONDARY color.
             _tertiary = GetPrefValue(PREFS_EPEDITOR_COLOR_TERTIARY, _tertiary_default); // TERTIARY color.
+            _quaternary = GetPrefValue(PREFS_CODETODOS_COLOR_QUATERNARY, _quaternary_default); // QUATERNARY color.
         }
 
 
@@ -410,6 +424,7 @@ namespace com.immortalyhydra.gdtb.epeditor
                     _primary = new Color(_primary_dark.r / 255.0f, _primary_dark.g / 255.0f, _primary_dark.b / 255.0f, 1.0f);
                     _secondary = new Color(_secondary_dark.r / 255.0f, _secondary_dark.g / 255.0f, _secondary_dark.b / 255.0f, 1.0f);
                     _tertiary = new Color(_tertiary_dark.r / 255.0f, _tertiary_dark.g / 255.0f, _tertiary_dark.b / 255.0f, 1.0f);
+                    _quaternary = new Color(_quaternary_dark.r / 255.0f, _quaternary_dark.g / 255.0f, _quaternary_dark.b / 255.0f, 1.0f);
                     SetColorPrefs();
                     GetColorPrefs();
 
@@ -443,6 +458,7 @@ namespace com.immortalyhydra.gdtb.epeditor
                     _primary = new Color(_primary_light.r / 255.0f, _primary_light.g / 255.0f, _primary_light.b / 255.0f, 1.0f);
                     _secondary = new Color(_secondary_light.r / 255.0f, _secondary_light.g / 255.0f, _secondary_light.b / 255.0f, 1.0f);
                     _tertiary = new Color(_tertiary_light.r / 255.0f, _tertiary_light.g / 255.0f, _tertiary_light.b / 255.0f, 1.0f);
+                    _quaternary = new Color(_quaternary_light.r / 255.0f, _quaternary_light.g / 255.0f, _quaternary_light.b / 255.0f, 1.0f);
                     SetColorPrefs();
                     GetColorPrefs();
 
@@ -520,6 +536,7 @@ namespace com.immortalyhydra.gdtb.epeditor
             _primary = new Color(_primary_default.r / 255, _primary_default.g / 255, _primary_default.b / 255, _primary_default.a);
             _secondary = new Color(_secondary_default.r / 255, _secondary_default.g / 255, _secondary_default.b / 255, _secondary_default.a);
             _tertiary = new Color(_tertiary_default.r / 255, _tertiary_default.g / 255, _tertiary_default.b / 255, _tertiary_default.a);
+            _quaternary = new Color(_quaternary_default.r / 255, _quaternary_default.g / 255, _quaternary_default.b / 255, _quaternary_default.a);
         }
         private static void Reset_Shortcut()
         {

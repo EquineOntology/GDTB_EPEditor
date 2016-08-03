@@ -57,7 +57,7 @@ functions, as a matter of fact), but is also integrated with the interface of th
 that you can add an EditorPref from code and have it automatically added to the EPEditor interface.
 
 It's a fairly small and simple extension, but seeing is believing and I love gifs, so I suggest
-going to http://immortalhydra.com/gamedev-toolbelt/editorprefs-editor/ to see everything the
+going to http://immortalhydra.com/stuff/editorprefs-editor/ to see everything the
 extension has to offer :)
 
 

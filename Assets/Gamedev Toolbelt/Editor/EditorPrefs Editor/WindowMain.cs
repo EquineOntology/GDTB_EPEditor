@@ -540,7 +540,7 @@ namespace com.immortalyhydra.gdtb.epeditor
                 var canExecute = false;
                 if (Preferences.ShowConfirmationDialogs == true)
                 {
-                    if (EditorUtility.DisplayDialog("Remove ALL EditorPrefs", "Are you sure ABSOLUTELY sure you want to remove ALL EditorPrefs currently set?\nThis is IRREVERSIBLE, only do this if you know what you're doing.", "Nuke EditorPrefs", "Cancel"))
+                    if (EditorUtility.DisplayDialog("Remove ALL EditorPrefs", "Are you sure ABSOLUTELY sure you want to remove ALL EditorPrefs currently set?\nThis is IRREVERSIBLE, only do this if you know what you're doing.\nYOU WILL ALSO NEED TO RESTART UNITY, as you'll be deleting some EditorPrefs that are required for the engine to work.", "Nuke EditorPrefs", "Cancel"))
                     {
                         canExecute = true;
                     }

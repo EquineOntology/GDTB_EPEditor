@@ -217,7 +217,12 @@ namespace com.immortalyhydra.gdtb.epeditor
         private void DrawPrefBackground(Rect aRect)
         {
             EditorGUI.DrawRect(aRect, Preferences.Color_Secondary);
-            EditorGUI.DrawRect(new Rect(aRect.x + Constants.BUTTON_BORDER_THICKNESS, aRect.y + Constants.BUTTON_BORDER_THICKNESS, aRect.width - Constants.BUTTON_BORDER_THICKNESS * 2, aRect.height - Constants.BUTTON_BORDER_THICKNESS * 2), Preferences.Color_Quaternary);
+            EditorGUI.DrawRect(new Rect(
+                    aRect.x + Constants.BUTTON_BORDER_THICKNESS,
+                    aRect.y + Constants.BUTTON_BORDER_THICKNESS,
+                    aRect.width - Constants.BUTTON_BORDER_THICKNESS * 2,
+                    aRect.height - Constants.BUTTON_BORDER_THICKNESS * 2),
+                Preferences.Color_Quaternary);
         }
 
 
@@ -260,21 +265,7 @@ namespace com.immortalyhydra.gdtb.epeditor
                 clicked_remove = true;
                 PrefOps.RemovePref(aPref);
             }
-            else
-            {
-                clicked_remove = false;
-            }
-
-            // We need to "cover" the actual button with our style, so we draw ours after Unity's one.
-            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
-            {
-                DrawingUtils.DrawIconButton(removeRect, DrawingUtils.Texture_Remove, clicked_remove);
-            }
-            else
-            {
-                DrawingUtils.DrawTextButton(removeRect, removeContent.text, style_textButton, clicked_remove);
-            }
-
+            clicked_remove = DrawingUtils.DrawButton(removeRect, Preferences.ButtonsDisplay, clicked_remove, DrawingUtils.Texture_Remove, removeContent.text, style_textButton);
         }
 
 
@@ -363,18 +354,7 @@ namespace com.immortalyhydra.gdtb.epeditor
                 clicked_edit = true;
                 WindowEdit.Init(aPref);
             }
-            else
-            {
-                clicked_edit = false;
-            }
-            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
-            {
-                DrawingUtils.DrawIconButton(editRect, DrawingUtils.Texture_Edit, clicked_edit);
-            }
-            else
-            {
-                DrawingUtils.DrawTextButton(editRect, editContent.text, style_textButton, clicked_edit);
-            }
+            clicked_edit = DrawingUtils.DrawButton(editRect, Preferences.ButtonsDisplay, clicked_edit, DrawingUtils.Texture_Edit, editContent.text, style_textButton);
 
             if (GUI.Button(deleteRect, deleteContent))
             {
@@ -399,19 +379,7 @@ namespace com.immortalyhydra.gdtb.epeditor
                     NewEditorPrefs.DeleteKey(aPref.Key);
                 }
             }
-            else
-            {
-                clicked_delete = false;
-            }
-
-            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
-            {
-                DrawingUtils.DrawIconButton(deleteRect, DrawingUtils.Texture_Delete, clicked_delete);
-            }
-            else
-            {
-                DrawingUtils.DrawTextButton(deleteRect, deleteContent.text, style_textButton, clicked_delete);
-            }
+            clicked_delete = DrawingUtils.DrawButton(deleteRect, Preferences.ButtonsDisplay, clicked_delete, DrawingUtils.Texture_Delete, deleteContent.text, style_textButton);
         }
 
 
@@ -433,7 +401,6 @@ namespace com.immortalyhydra.gdtb.epeditor
 
             aDeleteContent = new GUIContent("Delete", "Delete this EditorPref");
         }
-
 
         private void Button_Edit_icon(Rect aRect, out Rect anEditRect, out GUIContent anEditContent)
         {
@@ -493,22 +460,9 @@ namespace com.immortalyhydra.gdtb.epeditor
             if (GUI.Button(addRect, addContent))
             {
                 clicked_add = true;
-                DrawingUtils.DrawTextButton(addRect, addContent.text, style_textButton, true);
                 WindowAdd.Init();
             }
-            else
-            {
-                clicked_add = false;
-            }
-
-            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
-            {
-                DrawingUtils.DrawIconButton(addRect, DrawingUtils.Texture_Add, clicked_add);
-            }
-            else
-            {
-                DrawingUtils.DrawTextButton(addRect, addContent.text, style_textButton, clicked_add);
-            }
+            clicked_add = DrawingUtils.DrawButton(addRect, Preferences.ButtonsDisplay, clicked_add, DrawingUtils.Texture_Add, addContent.text, style_textButton);
 
 
             // Get already existing pref.
@@ -517,19 +471,7 @@ namespace com.immortalyhydra.gdtb.epeditor
                 clicked_get = true;
                 WindowGet.Init();
             }
-            else
-            {
-                clicked_get = false;
-            }
-
-            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
-            {
-                DrawingUtils.DrawIconButton(getRect, DrawingUtils.Texture_Get, clicked_get);
-            }
-            else
-            {
-                DrawingUtils.DrawTextButton(getRect, getContent.text, style_textButton, clicked_get);
-            }
+            clicked_get = DrawingUtils.DrawButton(getRect, Preferences.ButtonsDisplay, clicked_get, DrawingUtils.Texture_Get, getContent.text, style_textButton);
 
 
             // Refresh list of prefs.
@@ -538,19 +480,7 @@ namespace com.immortalyhydra.gdtb.epeditor
                 clicked_refresh = true;
                 PrefOps.RefreshPrefs();
             }
-            else
-            {
-                clicked_refresh = false;
-            }
-
-            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
-            {
-                DrawingUtils.DrawIconButton(refreshRect, DrawingUtils.Texture_Refresh, clicked_refresh);
-            }
-            else
-            {
-                DrawingUtils.DrawTextButton(refreshRect, refreshContent.text, style_textButton, clicked_refresh);
-            }
+            clicked_refresh = DrawingUtils.DrawButton(refreshRect, Preferences.ButtonsDisplay, clicked_refresh, DrawingUtils.Texture_Refresh, refreshContent.text, style_textButton);
 
 
             // Open settings.
@@ -565,19 +495,7 @@ namespace com.immortalyhydra.gdtb.epeditor
                 var method = type.GetMethod("ShowPreferencesWindow", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
                 method.Invoke(null, null);
             }
-            else
-            {
-                clicked_settings = false;
-            }
-
-            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
-            {
-                DrawingUtils.DrawIconButton(settingsRect, DrawingUtils.Texture_Settings, clicked_settings);
-            }
-            else
-            {
-                DrawingUtils.DrawTextButton(settingsRect, settingsContent.text, style_textButton, clicked_settings);
-            }
+            clicked_settings = DrawingUtils.DrawButton(settingsRect, Preferences.ButtonsDisplay, clicked_settings, DrawingUtils.Texture_Settings, settingsContent.text, style_textButton);
 
 
             // Nuke prefs.
@@ -603,19 +521,7 @@ namespace com.immortalyhydra.gdtb.epeditor
                     NewEditorPrefs.DeleteAll();
                 }
             }
-            else
-            {
-                clicked_nuke = false;
-            }
-
-            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
-            {
-                DrawingUtils.DrawIconButton(nukeRect, DrawingUtils.Texture_Nuke, clicked_nuke);
-            }
-            else
-            {
-                DrawingUtils.DrawTextButton(nukeRect, nukeContent.text, style_textButton, clicked_nuke);
-            }
+            clicked_nuke = DrawingUtils.DrawButton(nukeRect, Preferences.ButtonsDisplay, clicked_nuke, DrawingUtils.Texture_Nuke, nukeContent.text, style_textButton);
         }
 
 

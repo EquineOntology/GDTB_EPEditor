@@ -16,9 +16,22 @@ namespace com.immortalyhydra.gdtb.epeditor
 
         public static IconStyle CurrentIconStyle = IconStyle.LIGHT;
 
+        /// Draw the button, based on the type.
+        public static bool DrawButton(Rect aRect, ButtonsDisplayFormat aButtonType, bool isPressed, Texture2D aTexture, string aText, GUIStyle aStyle)
+        {
+            if(aButtonType == ButtonsDisplayFormat.COOL_ICONS)
+            {
+                DrawIconButton(aRect, aTexture, isPressed);
+            }
+            else
+            {
+                DrawTextButton(aRect, aText, aStyle, isPressed);
+            }
+            return false;
+        }
 
         /// Draw "fake" texture button.
-        public static void DrawIconButton(Rect aRect, Texture2D aTexture, bool isPressed = false)
+        private static void DrawIconButton(Rect aRect, Texture2D aTexture, bool isPressed)
         {
             EditorGUI.DrawRect(aRect, Preferences.Color_Secondary);
 
@@ -32,7 +45,7 @@ namespace com.immortalyhydra.gdtb.epeditor
 
 
         /// Draw "fake" text button based on preferences.
-        public static void DrawTextButton(Rect aRect, string aText, GUIStyle aStyle, bool isPressed = false)
+        public static void DrawTextButton(Rect aRect, string aText, GUIStyle aStyle, bool isPressed)
         {
             EditorGUI.DrawRect(aRect, Preferences.Color_Secondary);
             var bgRect = new Rect(aRect.x + Constants.BUTTON_BORDER_THICKNESS, aRect.y + Constants.BUTTON_BORDER_THICKNESS, aRect.width - Constants.BUTTON_BORDER_THICKNESS * 2, aRect.height - Constants.BUTTON_BORDER_THICKNESS * 2);

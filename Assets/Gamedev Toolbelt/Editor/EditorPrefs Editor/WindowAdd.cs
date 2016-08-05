@@ -157,20 +157,7 @@ namespace com.immortalyhydra.gdtb.epeditor
                 clicked_add = true;
                 AddButtonPressed(currentPref); // In another function to help readability of this one.
             }
-            else
-            {
-                clicked_add = false;
-            }
-
-            // We draw our button above Unity's one (because ours looks cooler ;D )
-            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
-            {
-                DrawingUtils.DrawIconButton(rect_add, DrawingUtils.Texture_Add, clicked_add);
-            }
-            else
-            {
-                DrawingUtils.DrawTextButton(rect_add, addContent.text, style_textButton, clicked_add);
-            }
+            clicked_add = DrawingUtils.DrawButton(rect_add, Preferences.ButtonsDisplay, clicked_add, DrawingUtils.Texture_Add, addContent.text, style_textButton);
         }
 
         private void Button_Add_default(out Rect aRect, out GUIContent aContent)

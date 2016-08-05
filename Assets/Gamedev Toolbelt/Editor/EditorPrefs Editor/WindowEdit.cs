@@ -204,20 +204,7 @@ namespace com.immortalyhydra.gdtb.epeditor
                     }
                 }
             }
-            else
-            {
-                clicked_edit = false;
-            }
-
-
-            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
-            {
-                DrawingUtils.DrawIconButton(rect_edit, DrawingUtils.Texture_Edit, clicked_edit);
-            }
-            else
-            {
-                DrawingUtils.DrawTextButton(rect_edit, editContent.text, style_textButton, clicked_edit);
-            }
+            clicked_edit = DrawingUtils.DrawButton(rect_edit, Preferences.ButtonsDisplay, clicked_edit, DrawingUtils.Texture_Edit, editContent.text, style_textButton);
         }
 
 

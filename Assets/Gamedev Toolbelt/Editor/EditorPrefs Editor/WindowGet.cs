@@ -155,19 +155,7 @@ namespace com.immortalyhydra.gdtb.epeditor
                     }
                 }
             }
-            else
-            {
-                clicked_get = false;
-            }
-
-            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
-            {
-                DrawingUtils.DrawIconButton(rect_get, DrawingUtils.Texture_Get, clicked_get);
-            }
-            else
-            {
-                DrawingUtils.DrawTextButton(rect_get, getContent.text, style_textButton, clicked_get);
-            }
+            clicked_get = DrawingUtils.DrawButton(rect_get, Preferences.ButtonsDisplay, clicked_get, DrawingUtils.Texture_Get, getContent.text, style_textButton);
         }
 
         private void Button_Get_default(out Rect aRect, out GUIContent aContent)

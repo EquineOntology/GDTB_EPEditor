@@ -154,7 +154,15 @@ namespace com.immortalyhydra.gdtb.epeditor
                 var height_key = style_key.CalcHeight(key, width_prefs);
                 var height_value = style_value.CalcHeight(val, width_prefs);
 
-                float height_prefBackground = height_key + height_value + 16.5f + _offset * 2 + 4;
+                float height_prefBackground = 0;
+                if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
+                {
+                    height_prefBackground = height_key + height_value + IconSize * 2;
+                }
+                else
+                {
+                    height_prefBackground = height_key + height_value + _offset * 7;
+                }
                 height_prefBackground = height_prefBackground < (IconSize * 3 - 3) ? (IconSize * 3 - 3) : height_prefBackground;
 
                 rect_pref = new Rect(_offset, height_totalPrefHeight, width_prefs, height_prefBackground);
@@ -392,7 +400,7 @@ namespace com.immortalyhydra.gdtb.epeditor
         private void Button_Edit_default(Rect aRect, out Rect anEditRect, out GUIContent anEditContent)
         {
             anEditRect = aRect;
-            anEditRect.y += _offset;
+            anEditRect.y += _offset + 2;
             anEditRect.width = ButtonWidth;
             anEditRect.height = ButtonHeight;
 
@@ -401,7 +409,7 @@ namespace com.immortalyhydra.gdtb.epeditor
         private void Button_Delete_default(Rect aRect, out Rect aDeleteRect, out GUIContent aDeleteContent)
         {
             aDeleteRect = aRect;
-            aDeleteRect.y += ButtonHeight + _offset + 2;
+            aDeleteRect.y += ButtonHeight + _offset + 8;
             aDeleteRect.width = ButtonWidth;
             aDeleteRect.height = ButtonHeight;
 
@@ -412,7 +420,7 @@ namespace com.immortalyhydra.gdtb.epeditor
         private void Button_Edit_icon(Rect aRect, out Rect anEditRect, out GUIContent anEditContent)
         {
             anEditRect = aRect;
-            anEditRect.y += _offset;
+            anEditRect.y += _offset + 2;
             anEditRect.width = IconSize;
             anEditRect.height = IconSize;
             anEditContent = new GUIContent("", "Edit this EditorPref");
@@ -420,7 +428,7 @@ namespace com.immortalyhydra.gdtb.epeditor
         private void Button_Delete_icon(Rect aRect, out Rect aDeleteRect, out GUIContent aDeleteContent)
         {
             aDeleteRect = aRect;
-            aDeleteRect.y += IconSize + _offset + 2;
+            aDeleteRect.y += IconSize + _offset + 8;
             aDeleteRect.width = IconSize;
             aDeleteRect.height = IconSize;
 

@@ -33,7 +33,8 @@ namespace com.immortalyhydra.gdtb.epeditor
 
         //============================ Editor GUI =============================
         private GUISkin skin_custom;
-        private GUIStyle style_bold, style_customGrid, style_buttonText;
+        private GUIStyle style_bold, style_selectedGridButton, style_textButton;
+        private bool clicked_add;
 
         public static void Init()
         {
@@ -99,8 +100,8 @@ namespace com.immortalyhydra.gdtb.epeditor
             EditorGUI.LabelField(rect_type_label, "Type:", style_bold);
 
             rect_type = new Rect(10, 90, position.width - 20, 20);
-            pref_typeIndex = GUI.SelectionGrid(rect_type, pref_typeIndex, arr_prefTypes, arr_prefTypes.Length, style_customGrid);
-            DrawingUtils.DrawSelectionGrid(rect_type, arr_prefTypes, pref_typeIndex, 60, 5, style_buttonText, style_customGrid);
+            pref_typeIndex = GUI.SelectionGrid(rect_type, pref_typeIndex, arr_prefTypes, arr_prefTypes.Length, style_selectedGridButton);
+            DrawingUtils.DrawSelectionGrid(rect_type, arr_prefTypes, pref_typeIndex, 60, 5, style_textButton, style_selectedGridButton);
         }
 
 
@@ -114,8 +115,8 @@ namespace com.immortalyhydra.gdtb.epeditor
             {
                 case 0:
                     var boolRect = new Rect(10, 137, 130, 20);
-                    idx_bool = GUI.SelectionGrid(boolRect, idx_bool, arr_boolValues, arr_boolValues.Length, style_customGrid);
-                    DrawingUtils.DrawSelectionGrid(boolRect, arr_boolValues, idx_bool, 60, 5, style_buttonText, style_customGrid);
+                    idx_bool = GUI.SelectionGrid(boolRect, idx_bool, arr_boolValues, arr_boolValues.Length, style_selectedGridButton);
+                    DrawingUtils.DrawSelectionGrid(boolRect, arr_boolValues, idx_bool, 60, 5, style_textButton, style_selectedGridButton);
                     pref_boolValue = idx_bool == 0 ? false : true;
                     break;
                 case 1:
@@ -153,17 +154,22 @@ namespace com.immortalyhydra.gdtb.epeditor
 
             if (GUI.Button(rect_add, addContent))
             {
+                clicked_add = true;
                 AddButtonPressed(currentPref); // In another function to help readability of this one.
+            }
+            else
+            {
+                clicked_add = false;
             }
 
             // We draw our button above Unity's one (because ours looks cooler ;D )
             if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
             {
-                DrawingUtils.DrawTextureButton(rect_add, DrawingUtils.Texture_Add);
+                DrawingUtils.DrawIconButton(rect_add, DrawingUtils.Texture_Add, clicked_add);
             }
             else
             {
-                DrawingUtils.DrawTextButton(rect_add, addContent.text, style_buttonText);
+                DrawingUtils.DrawTextButton(rect_add, addContent.text, style_textButton, clicked_add);
             }
         }
 
@@ -185,10 +191,12 @@ namespace com.immortalyhydra.gdtb.epeditor
             style_bold = skin_custom.GetStyle("GDTB_EPEditor_key");
             style_bold.normal.textColor = Preferences.Color_Secondary;
             style_bold.active.textColor = Preferences.Color_Secondary;
-            style_customGrid = skin_custom.GetStyle("GDTB_EPEditor_selectionGrid");
-            style_buttonText = skin_custom.GetStyle("GDTB_EPEditor_buttonText");
-            style_buttonText.active.textColor = Preferences.Color_Tertiary;
-            style_buttonText.normal.textColor = Preferences.Color_Tertiary;
+            style_selectedGridButton = skin_custom.GetStyle("GDTB_EPEditor_selectionGrid");
+            style_selectedGridButton.normal.textColor = Preferences.Color_Primary;
+            style_selectedGridButton.active.textColor = Preferences.Color_Primary;
+            style_textButton = skin_custom.GetStyle("GDTB_EPEditor_buttonText");
+            style_textButton.active.textColor = Preferences.Color_Tertiary;
+            style_textButton.normal.textColor = Preferences.Color_Tertiary;
         }
 
 

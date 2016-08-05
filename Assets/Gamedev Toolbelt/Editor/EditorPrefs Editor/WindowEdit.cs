@@ -34,7 +34,8 @@ namespace com.immortalyhydra.gdtb.epeditor
 
         //============================ Editor GUI =============================
         private GUISkin skin_custom;
-        private GUIStyle style_bold, style_pressedButton, style_normalButton;
+        private GUIStyle style_bold, style_selectedGridButton, style_textButton;
+        private bool clicked_edit;
 
 
         public static void Init(Pref aPref)
@@ -101,8 +102,8 @@ namespace com.immortalyhydra.gdtb.epeditor
             EditorGUI.LabelField(rect_type_label, "Type:", style_bold);
 
             rect_type = new Rect(10, 90, position.width - 20, 20);
-            idx_prefType = GUI.SelectionGrid(rect_type, idx_prefType, arr_prefTypes, arr_prefTypes.Length, style_pressedButton);
-            DrawingUtils.DrawSelectionGrid(rect_type, arr_prefTypes, idx_prefType, 60, 5, style_normalButton, style_pressedButton);
+            idx_prefType = GUI.SelectionGrid(rect_type, idx_prefType, arr_prefTypes, arr_prefTypes.Length, style_selectedGridButton);
+            DrawingUtils.DrawSelectionGrid(rect_type, arr_prefTypes, idx_prefType, 60, 5, style_textButton, style_selectedGridButton);
         }
 
 
@@ -116,8 +117,8 @@ namespace com.immortalyhydra.gdtb.epeditor
             {
                 case 0:
                     var boolRect = new Rect(10, 137, 130, 20);
-                    idx_boolValues = GUI.SelectionGrid(boolRect, idx_boolValues, arr_boolValues, arr_boolValues.Length, style_pressedButton);
-                    DrawingUtils.DrawSelectionGrid(boolRect, arr_boolValues, idx_boolValues, 60, 5, style_normalButton, style_pressedButton);
+                    idx_boolValues = GUI.SelectionGrid(boolRect, idx_boolValues, arr_boolValues, arr_boolValues.Length, style_selectedGridButton);
+                    DrawingUtils.DrawSelectionGrid(boolRect, arr_boolValues, idx_boolValues, 60, 5, style_textButton, style_selectedGridButton);
                     pref_boolValue = idx_boolValues == 0 ? false : true;
                     break;
                 case 1:
@@ -154,6 +155,7 @@ namespace com.immortalyhydra.gdtb.epeditor
 
             if (GUI.Button(rect_edit, editContent))
             {
+                clicked_edit = true;
                 if (pref_key == "") // We definitely want a key.
                 {
                     EditorUtility.DisplayDialog("No key to use", "Please add a key.", "Ok");
@@ -201,15 +203,20 @@ namespace com.immortalyhydra.gdtb.epeditor
                         EditorWindow.GetWindow(typeof(WindowEdit)).Close();
                     }
                 }
-
-            }
-            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
-            {
-                DrawingUtils.DrawTextureButton(rect_edit, DrawingUtils.Texture_Edit);
             }
             else
             {
-                DrawingUtils.DrawTextButton(rect_edit, editContent.text, style_normalButton);
+                clicked_edit = false;
+            }
+
+
+            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
+            {
+                DrawingUtils.DrawIconButton(rect_edit, DrawingUtils.Texture_Edit, clicked_edit);
+            }
+            else
+            {
+                DrawingUtils.DrawTextButton(rect_edit, editContent.text, style_textButton, clicked_edit);
             }
         }
 
@@ -257,10 +264,12 @@ namespace com.immortalyhydra.gdtb.epeditor
             style_bold = skin_custom.GetStyle("GDTB_EPEditor_key");
             style_bold.normal.textColor = Preferences.Color_Secondary;
             style_bold.active.textColor = Preferences.Color_Secondary;
-            style_pressedButton = skin_custom.GetStyle("GDTB_EPEditor_selectionGrid");
-            style_normalButton = skin_custom.GetStyle("GDTB_EPEditor_buttonText");
-            style_normalButton.active.textColor = Preferences.Color_Tertiary;
-            style_normalButton.normal.textColor = Preferences.Color_Tertiary;
+            style_selectedGridButton = skin_custom.GetStyle("GDTB_EPEditor_selectionGrid");
+            style_selectedGridButton.active.textColor = Preferences.Color_Primary;
+            style_selectedGridButton.normal.textColor = Preferences.Color_Primary;
+            style_textButton = skin_custom.GetStyle("GDTB_EPEditor_buttonText");
+            style_textButton.active.textColor = Preferences.Color_Primary;
+            style_textButton.normal.textColor = Preferences.Color_Tertiary;
         }
 
 

@@ -13,7 +13,6 @@ namespace com.immortalyhydra.gdtb.epeditor
         // =========================== Editor GUI =============================
         private GUISkin skin_custom;
         private GUIStyle style_bold, style_selectedGridButton, style_textButton;
-        private bool clicked_get;
 
         // ========================= Editor layouting =========================
         private const int IconSize = Constants.ICON_SIZE;
@@ -114,7 +113,7 @@ namespace com.immortalyhydra.gdtb.epeditor
 
             if (GUI.Button(rect_get, getContent))
             {
-                clicked_get = true;
+                DrawingUtils.DrawButtonPressed(rect_get, Preferences.ButtonsDisplay, DrawingUtils.Texture_Get, getContent.text, style_textButton);
                 if (pref_key == "")
                 {
                     EditorUtility.DisplayDialog("No key to look for", "Please add a key.", "Ok");
@@ -155,7 +154,10 @@ namespace com.immortalyhydra.gdtb.epeditor
                     }
                 }
             }
-            clicked_get = DrawingUtils.DrawButton(rect_get, Preferences.ButtonsDisplay, clicked_get, DrawingUtils.Texture_Get, getContent.text, style_textButton);
+            else
+            {
+                DrawingUtils.DrawButton(rect_get, Preferences.ButtonsDisplay, DrawingUtils.Texture_Get, getContent.text, style_textButton);
+            }
         }
 
         private void Button_Get_default(out Rect aRect, out GUIContent aContent)

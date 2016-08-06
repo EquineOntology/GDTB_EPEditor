@@ -34,7 +34,6 @@ namespace com.immortalyhydra.gdtb.epeditor
         //============================ Editor GUI =============================
         private GUISkin skin_custom;
         private GUIStyle style_bold, style_selectedGridButton, style_textButton;
-        private bool clicked_add;
 
         public static void Init()
         {
@@ -154,10 +153,14 @@ namespace com.immortalyhydra.gdtb.epeditor
 
             if (GUI.Button(rect_add, addContent))
             {
-                clicked_add = true;
+                DrawingUtils.DrawButtonPressed(rect_add, Preferences.ButtonsDisplay, DrawingUtils.Texture_Add, addContent.text, style_textButton);
                 AddButtonPressed(currentPref); // In another function to help readability of this one.
             }
-            clicked_add = DrawingUtils.DrawButton(rect_add, Preferences.ButtonsDisplay, clicked_add, DrawingUtils.Texture_Add, addContent.text, style_textButton);
+            else
+            {
+                DrawingUtils.DrawButton(rect_add, Preferences.ButtonsDisplay, DrawingUtils.Texture_Add, addContent.text, style_textButton);
+            }
+
         }
 
         private void Button_Add_default(out Rect aRect, out GUIContent aContent)

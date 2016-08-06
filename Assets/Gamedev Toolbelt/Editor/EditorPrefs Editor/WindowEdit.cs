@@ -35,8 +35,6 @@ namespace com.immortalyhydra.gdtb.epeditor
         //============================ Editor GUI =============================
         private GUISkin skin_custom;
         private GUIStyle style_bold, style_selectedGridButton, style_textButton;
-        private bool clicked_edit;
-
 
         public static void Init(Pref aPref)
         {
@@ -155,7 +153,7 @@ namespace com.immortalyhydra.gdtb.epeditor
 
             if (GUI.Button(rect_edit, editContent))
             {
-                clicked_edit = true;
+                DrawingUtils.DrawButtonPressed(rect_edit, Preferences.ButtonsDisplay, DrawingUtils.Texture_Edit, editContent.text, style_textButton);
                 if (pref_key == "") // We definitely want a key.
                 {
                     EditorUtility.DisplayDialog("No key to use", "Please add a key.", "Ok");
@@ -204,7 +202,11 @@ namespace com.immortalyhydra.gdtb.epeditor
                     }
                 }
             }
-            clicked_edit = DrawingUtils.DrawButton(rect_edit, Preferences.ButtonsDisplay, clicked_edit, DrawingUtils.Texture_Edit, editContent.text, style_textButton);
+            else
+            {
+                DrawingUtils.DrawButton(rect_edit, Preferences.ButtonsDisplay, DrawingUtils.Texture_Edit, editContent.text, style_textButton);
+            }
+
         }
 
 

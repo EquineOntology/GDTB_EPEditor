@@ -12,7 +12,7 @@ namespace com.immortalyhydra.gdtb.epeditor
 
         // =========================== Editor GUI =============================
         private GUISkin skin_custom;
-        private GUIStyle style_bold, style_pressedButton, style_normalButton;
+        private GUIStyle style_bold, style_selectedGridButton, style_textButton;
 
         // ========================= Editor layouting =========================
         private const int IconSize = Constants.ICON_SIZE;
@@ -90,8 +90,8 @@ namespace com.immortalyhydra.gdtb.epeditor
             EditorGUI.LabelField(rect_type_label, "Type:", style_bold);
 
             rect_type = new Rect(10, 90, position.width - 20, 20);
-            idx_prefType = GUI.SelectionGrid(rect_type, idx_prefType, arr_prefTypes, arr_prefTypes.Length, style_pressedButton);
-            DrawingUtils.DrawSelectionGrid(rect_type, arr_prefTypes, idx_prefType, 60, 5, style_normalButton, style_pressedButton); // Draw our selectionGrid above Unity's one.
+            idx_prefType = GUI.SelectionGrid(rect_type, idx_prefType, arr_prefTypes, arr_prefTypes.Length, style_selectedGridButton);
+            DrawingUtils.DrawSelectionGrid(rect_type, arr_prefTypes, idx_prefType, 60, 5, style_textButton, style_selectedGridButton); // Draw our selectionGrid above Unity's one.
 
         }
 
@@ -113,6 +113,7 @@ namespace com.immortalyhydra.gdtb.epeditor
 
             if (GUI.Button(rect_get, getContent))
             {
+                DrawingUtils.DrawButtonPressed(rect_get, Preferences.ButtonsDisplay, DrawingUtils.Texture_Get, getContent.text, style_textButton);
                 if (pref_key == "")
                 {
                     EditorUtility.DisplayDialog("No key to look for", "Please add a key.", "Ok");
@@ -153,13 +154,9 @@ namespace com.immortalyhydra.gdtb.epeditor
                     }
                 }
             }
-            if (Preferences.ButtonsDisplay == ButtonsDisplayFormat.COOL_ICONS)
-            {
-                DrawingUtils.DrawTextureButton(rect_get, DrawingUtils.Texture_Get);
-            }
             else
             {
-                DrawingUtils.DrawTextButton(rect_get, getContent.text, style_normalButton);
+                DrawingUtils.DrawButton(rect_get, Preferences.ButtonsDisplay, DrawingUtils.Texture_Get, getContent.text, style_textButton);
             }
         }
 
@@ -202,10 +199,12 @@ namespace com.immortalyhydra.gdtb.epeditor
             style_bold = skin_custom.GetStyle("GDTB_EPEditor_key");
             style_bold.normal.textColor = Preferences.Color_Secondary;
             style_bold.active.textColor = Preferences.Color_Secondary;
-            style_pressedButton = skin_custom.GetStyle("GDTB_EPEditor_selectionGrid");
-            style_normalButton = skin_custom.GetStyle("GDTB_EPEditor_buttonText");
-            style_normalButton.active.textColor = Preferences.Color_Tertiary;
-            style_normalButton.normal.textColor = Preferences.Color_Tertiary;
+            style_selectedGridButton = skin_custom.GetStyle("GDTB_EPEditor_selectionGrid");
+            style_selectedGridButton.active.textColor = Preferences.Color_Primary;
+            style_selectedGridButton.normal.textColor = Preferences.Color_Primary;
+            style_textButton = skin_custom.GetStyle("GDTB_EPEditor_buttonText");
+            style_textButton.active.textColor = Preferences.Color_Primary;
+            style_textButton.normal.textColor = Preferences.Color_Tertiary;
         }
 
 

@@ -16,13 +16,26 @@ namespace com.immortalyhydra.gdtb.epeditor
 
         public static IconStyle CurrentIconStyle = IconStyle.LIGHT;
 
+        /// Draw the button, based on the type.
+        public static void DrawButton(Rect aRect, ButtonsDisplayFormat aButtonType, Texture2D aTexture, string aText, GUIStyle aStyle)
+        {
+            if(aButtonType == ButtonsDisplayFormat.COOL_ICONS)
+            {
+                DrawIconButton(aRect, aTexture);
+            }
+            else
+            {
+                DrawTextButton(aRect, aText, aStyle);
+            }
+        }
 
-        /// Draw "fake" texture button.
-        public static void DrawTextureButton(Rect aRect, Texture2D aTexture)
+        private static void DrawIconButton(Rect aRect, Texture2D aTexture)
         {
             EditorGUI.DrawRect(aRect, Preferences.Color_Secondary);
+
             var bgRect = new Rect(aRect.x + Constants.BUTTON_BORDER_THICKNESS, aRect.y + Constants.BUTTON_BORDER_THICKNESS, aRect.width - Constants.BUTTON_BORDER_THICKNESS * 2, aRect.height - Constants.BUTTON_BORDER_THICKNESS * 2);
             EditorGUI.DrawRect(bgRect, Preferences.Color_Primary);
+
             GUI.DrawTexture(new Rect(aRect.x + 2, aRect.y + 2, Constants.BUTTON_TEXTURE_SIZE, Constants.BUTTON_TEXTURE_SIZE), aTexture);
         }
 
@@ -32,18 +45,39 @@ namespace com.immortalyhydra.gdtb.epeditor
         {
             EditorGUI.DrawRect(aRect, Preferences.Color_Secondary);
             var bgRect = new Rect(aRect.x + Constants.BUTTON_BORDER_THICKNESS, aRect.y + Constants.BUTTON_BORDER_THICKNESS, aRect.width - Constants.BUTTON_BORDER_THICKNESS * 2, aRect.height - Constants.BUTTON_BORDER_THICKNESS * 2);
+
             EditorGUI.DrawRect(bgRect, Preferences.Color_Primary);
             GUI.Label(new Rect(bgRect.x, bgRect.y - 1, bgRect.width, bgRect.height), aText, aStyle);
-            aStyle.normal.textColor = Preferences.Color_Tertiary;
         }
 
 
-        /// Draw "fake" text button in the pressed state.
-        public static void DrawPressedTextButton(Rect aRect, string aText, GUIStyle aStyle)
+        public static void DrawButtonPressed(Rect aRect, ButtonsDisplayFormat aButtonType, Texture2D aTexture, string aText, GUIStyle aStyle)
+        {
+            if(aButtonType == ButtonsDisplayFormat.COOL_ICONS)
+            {
+                DrawIconButtonPressed(aRect, aTexture);
+            }
+            else
+            {
+                DrawTextButtonPressed(aRect, aText, aStyle);
+            }
+        }
+
+        /// Draw "fake" texture button.
+        private static void DrawIconButtonPressed(Rect aRect, Texture2D aTexture)
         {
             EditorGUI.DrawRect(aRect, Preferences.Color_Secondary);
-            aStyle.normal.textColor = Preferences.Color_Primary;
-            GUI.Label(new Rect(aRect.x, aRect.y - 1, aRect.width, aRect.height), aText, aStyle);
+            GUI.DrawTexture(new Rect(aRect.x + 2, aRect.y + 2, Constants.BUTTON_TEXTURE_SIZE, Constants.BUTTON_TEXTURE_SIZE), aTexture);
+        }
+
+
+        /// Draw "fake" text button based on preferences.
+        public static void DrawTextButtonPressed(Rect aRect, string aText, GUIStyle aStyle)
+        {
+
+            EditorGUI.DrawRect(aRect, Preferences.Color_Secondary);
+            var bgRect = new Rect(aRect.x + Constants.BUTTON_BORDER_THICKNESS, aRect.y + Constants.BUTTON_BORDER_THICKNESS, aRect.width - Constants.BUTTON_BORDER_THICKNESS * 2, aRect.height - Constants.BUTTON_BORDER_THICKNESS * 2);
+            GUI.Label(new Rect(bgRect.x, bgRect.y - 1, bgRect.width, bgRect.height), aText, aStyle);
         }
 
 
@@ -64,7 +98,7 @@ namespace com.immortalyhydra.gdtb.epeditor
                 }
                 else
                 {
-                    DrawPressedTextButton(gridRect, anElementArray[i], aPressedStyle);
+                    DrawTextButtonPressed(gridRect, anElementArray[i], aPressedStyle);
                 }
             }
         }

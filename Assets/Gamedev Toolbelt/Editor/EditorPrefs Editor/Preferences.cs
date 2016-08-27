@@ -86,9 +86,9 @@ namespace com.immortalyhydra.gdtb.epeditor
 
         // Custom shortcut (no public get, can't see a use for it).
         private const string PREFS_EPEDITOR_SHORTCUT = "GDTB_EPEditor_Shortcut";
-        private static string _shortcut = "%|q";
+        private static string _shortcut = "%|e";
         private static string _newShortcut;
-        private static string _shortcut_default = "%|q";
+        private static string _shortcut_default = "%|e";
         private static bool[] _modifierKeys = new bool[] { false, false, false }; // Ctrl/Cmd, Alt, Shift.
         private static int _mainShortcutKeyIndex = 0;
         // Restrict options to what we're sure works.
@@ -174,7 +174,7 @@ namespace com.immortalyhydra.gdtb.epeditor
         {
             EditorPrefs.SetString(PREFS_EPEDITOR_COLOR_PRIMARY, RGBA.ColorToString(_primary));
             EditorPrefs.SetString(PREFS_EPEDITOR_COLOR_SECONDARY, RGBA.ColorToString(_secondary));
-            EditorPrefs.SetString(PREFS_EPEDITOR_COLOR_TERTIARY, RGBA.ColorToString(_tertiary));            
+            EditorPrefs.SetString(PREFS_EPEDITOR_COLOR_TERTIARY, RGBA.ColorToString(_tertiary));
             EditorPrefs.SetString(PREFS_CODETODOS_COLOR_QUATERNARY, RGBA.ColorToString(_quaternary));
         }
 

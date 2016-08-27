@@ -15,8 +15,9 @@ namespace com.immortalyhydra.gdtb.epeditor
         public static Texture2D Texture_Remove = Resources.Load(Constants.TEX_REMOVE_DARK, typeof(Texture2D)) as Texture2D;
 
         public static IconStyle CurrentIconStyle = IconStyle.LIGHT;
+        
 
-        /// Draw the button, based on the type.
+        /// Draw the button, based on the type, not pressed.
         public static void DrawButton(Rect aRect, ButtonsDisplayFormat aButtonType, Texture2D aTexture, string aText, GUIStyle aStyle)
         {
             if(aButtonType == ButtonsDisplayFormat.COOL_ICONS)
@@ -29,6 +30,7 @@ namespace com.immortalyhydra.gdtb.epeditor
             }
         }
 
+        /// Draw icon button, not pressed.
         private static void DrawIconButton(Rect aRect, Texture2D aTexture)
         {
             EditorGUI.DrawRect(aRect, Preferences.Color_Secondary);
@@ -39,8 +41,7 @@ namespace com.immortalyhydra.gdtb.epeditor
             GUI.DrawTexture(new Rect(aRect.x + 2, aRect.y + 2, Constants.BUTTON_TEXTURE_SIZE, Constants.BUTTON_TEXTURE_SIZE), aTexture);
         }
 
-
-        /// Draw "fake" text button based on preferences.
+        /// Draw text button, not pressed.
         public static void DrawTextButton(Rect aRect, string aText, GUIStyle aStyle)
         {
             EditorGUI.DrawRect(aRect, Preferences.Color_Secondary);
@@ -51,6 +52,7 @@ namespace com.immortalyhydra.gdtb.epeditor
         }
 
 
+        // Draw button based on the type, pressed.
         public static void DrawButtonPressed(Rect aRect, ButtonsDisplayFormat aButtonType, Texture2D aTexture, string aText, GUIStyle aStyle)
         {
             if(aButtonType == ButtonsDisplayFormat.COOL_ICONS)
@@ -63,15 +65,14 @@ namespace com.immortalyhydra.gdtb.epeditor
             }
         }
 
-        /// Draw "fake" texture button.
+        /// Draw icon button, pressed.
         private static void DrawIconButtonPressed(Rect aRect, Texture2D aTexture)
         {
             EditorGUI.DrawRect(aRect, Preferences.Color_Secondary);
             GUI.DrawTexture(new Rect(aRect.x + 2, aRect.y + 2, Constants.BUTTON_TEXTURE_SIZE, Constants.BUTTON_TEXTURE_SIZE), aTexture);
         }
 
-
-        /// Draw "fake" text button based on preferences.
+        /// Draw text button, pressed.
         public static void DrawTextButtonPressed(Rect aRect, string aText, GUIStyle aStyle)
         {
 

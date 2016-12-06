@@ -1,4 +1,6 @@
 # EditorPrefs Editor
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
+
 Hello! This is Christian, the author of EditorPrefs Editor. I hope you're liking the extension!
 
 ## What is EPEditor?

@@ -17,6 +17,7 @@
 *.pidb
 *.booproj
 .vscode
+.idea
 
 # Unity3D generated meta files
 *.pidb.meta

@@ -1,5 +1,5 @@
 using UnityEditor;
-using com.immortalyhydra.gdtb.epeditor;
+using com.immortalhydra.gdtb.epeditor;
 
 public static class NewEditorPrefs
 {

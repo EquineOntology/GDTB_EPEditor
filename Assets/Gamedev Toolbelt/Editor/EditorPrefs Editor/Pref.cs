@@ -1,4 +1,4 @@
-namespace com.immortalyhydra.gdtb.epeditor
+namespace com.immortalhydra.gdtb.epeditor
 {
     public class Pref
     {

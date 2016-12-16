@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System;
 
-namespace com.immortalyhydra.gdtb.epeditor
+namespace com.immortalhydra.gdtb.epeditor
 {
     public static class IO
     {

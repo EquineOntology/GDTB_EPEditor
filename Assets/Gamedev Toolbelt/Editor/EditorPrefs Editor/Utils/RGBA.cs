@@ -1,13 +1,13 @@
 using UnityEngine;
 using System;
 
-namespace com.immortalyhydra.gdtb.epeditor
+namespace com.immortalhydra.gdtb.epeditor
 {
     public class RGBA
     {
         public static string ColorToString(Color aColor)
         {
-            string colorString = "";
+            var colorString = "";
             colorString = aColor.r.ToString() + '/' + aColor.g.ToString() + '/' + aColor.b.ToString() + '/' + aColor.a.ToString();
             return colorString;
         }

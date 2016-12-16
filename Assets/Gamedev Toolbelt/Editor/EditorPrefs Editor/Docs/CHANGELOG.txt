@@ -1,7 +1,8 @@
 =============================
 ========== 2017.1 ===========
 =============================
- * Reduce size of asset by simplifying UI.
+ * Reduce size of EPEditor by simplifying UI.
+ * Button feedback!
 
 =============================
 ========== 2016.1 ===========

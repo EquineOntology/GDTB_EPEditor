@@ -45,8 +45,12 @@ namespace com.immortalhydra.gdtb.epeditor
             window.UpdateLayoutingSizes(); // Calculate a rough size for each major element group (type, pref, buttons).
             PrefOps.RefreshPrefs(); // Load stored prefs (if any).
 
-            //window.DebugPrefs();
             window.Show();
+
+            if(Preferences.ShowWelcome)
+            {
+                WindowWelcome.Init();
+            }
         }
 
         public void OnEnable()
@@ -567,6 +571,11 @@ namespace com.immortalhydra.gdtb.epeditor
             if (WindowEdit.IsOpen)
             {
                 GetWindow(typeof(WindowEdit)).Close();
+            }
+            if (WindowWelcome.IsOpen)
+            {
+                var window = GetWindow(typeof(WindowWelcome)) as WindowWelcome;
+                window.LoadStyle();
             }
         }
     }

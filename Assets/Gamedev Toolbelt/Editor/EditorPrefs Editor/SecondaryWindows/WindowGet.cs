@@ -214,6 +214,11 @@ namespace com.immortalhydra.gdtb.epeditor
             {
                 GetWindow(typeof(WindowEdit)).Close();
             }
+            if (WindowWelcome.IsOpen)
+            {
+                var window = GetWindow(typeof(WindowWelcome)) as WindowWelcome;
+                window.LoadStyle();
+            }
         }
     }
 }

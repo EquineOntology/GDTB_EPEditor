@@ -9,5 +9,6 @@
         public const int ICON_SIZE = 20;
         public const int BUTTON_TEXTURE_SIZE = 16;
         public const int BUTTON_BORDER_THICKNESS = 1;
+        public const int OFFSET = 5;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEditor;
+using UnityEngine.Tizen;
 
 namespace com.immortalhydra.gdtb.epeditor
 {
@@ -15,6 +16,16 @@ namespace com.immortalhydra.gdtb.epeditor
         public static bool ShowConfirmationDialogs
         {
             get { return _confirmationDialogs; }
+        }
+
+        // Welcome window.
+        private const string PREFS_EPEDITOR_WELCOME = "GDTB_EPEditor_Welcome";
+        private static bool _showWelcome = true;
+        private const bool ShowWelcomeDefault = true;
+        public static bool ShowWelcome
+        {
+            get { return _showWelcome; }
+            set { _showWelcome = value; }
         }
 
         #region Colors
@@ -56,7 +67,7 @@ namespace com.immortalhydra.gdtb.epeditor
         }
 
         // Quaretnary color.
-        private const string PREFS_CODETODOS_COLOR_QUATERNARY = "GDTB_CodeTODOs_Quaternary";
+        private const string PREFS_EPEDITOR_COLOR_QUATERNARY = "GDTB_EPEditor_Quaternary";
         private static Color _quaternary = new Color(70, 70, 70, 1);
         private static Color _quaternary_dark = new Color(70, 70, 70, 1);
         private static Color _quaternary_light = new Color(220, 220, 220, 1);
@@ -74,10 +85,10 @@ namespace com.immortalhydra.gdtb.epeditor
         private static string _shortcut = "%|e";
         private static string _newShortcut;
         private static string _shortcut_default = "%|e";
-        private static bool[] _modifierKeys = new bool[] {false, false, false}; // Ctrl/Cmd, Alt, Shift.
+        private static bool[] _modifierKeys = {false, false, false}; // Ctrl/Cmd, Alt, Shift.
         private static int _mainShortcutKeyIndex = 0;
         // Restrict options to what we're sure works.
-        private static string[] _shortcutKeys = new string[]
+        private static string[] _shortcutKeys =
         {
             "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u",
             "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "LEFT", "RIGHT", "UP", "DOWN",
@@ -95,7 +106,7 @@ namespace com.immortalhydra.gdtb.epeditor
             EditorGUILayout.BeginVertical();
             EditorGUILayout.LabelField("General Settings", EditorStyles.boldLabel);
             _confirmationDialogs = EditorGUILayout.Toggle("Show confirmation dialogs", _confirmationDialogs);
-            _newShortcut = DrawShortcutSelector();
+            ShowWelcome = EditorGUILayout.Toggle("Show Welcome window", ShowWelcome);
             GUILayout.Space(20);
             EditorGUILayout.LabelField("UI", EditorStyles.boldLabel);
             _primary = EditorGUILayout.ColorField("Background and button color", _primary);
@@ -104,6 +115,8 @@ namespace com.immortalhydra.gdtb.epeditor
             _quaternary = EditorGUILayout.ColorField("Element background color", _quaternary);
             EditorGUILayout.Separator();
             DrawThemeButtons();
+            GUILayout.Space(20);
+            _newShortcut = DrawShortcutSelector();
             GUILayout.Space(20);
             EditorGUILayout.LabelField("Reset preferences", EditorStyles.boldLabel);
             DrawResetButton();
@@ -122,8 +135,14 @@ namespace com.immortalhydra.gdtb.epeditor
             EditorPrefs.SetBool(PREFS_EPEDITOR_CONFIRMATION_DIALOGS, _confirmationDialogs);
             SetColorPrefs();
             SetShortcutPref();
+            SetWelcome(ShowWelcome);
         }
 
+        /// Set the value of ShowWelcome.
+        public static void SetWelcome(bool val)
+        {
+            EditorPrefs.SetBool(PREFS_EPEDITOR_WELCOME, val);
+        }
 
         /// Set the value of a Color preference.
         private static void SetColorPrefs()
@@ -131,14 +150,14 @@ namespace com.immortalhydra.gdtb.epeditor
             EditorPrefs.SetString(PREFS_EPEDITOR_COLOR_PRIMARY, RGBA.ColorToString(_primary));
             EditorPrefs.SetString(PREFS_EPEDITOR_COLOR_SECONDARY, RGBA.ColorToString(_secondary));
             EditorPrefs.SetString(PREFS_EPEDITOR_COLOR_TERTIARY, RGBA.ColorToString(_tertiary));
-            EditorPrefs.SetString(PREFS_CODETODOS_COLOR_QUATERNARY, RGBA.ColorToString(_quaternary));
+            EditorPrefs.SetString(PREFS_EPEDITOR_COLOR_QUATERNARY, RGBA.ColorToString(_quaternary));
         }
 
 
         /// Set the value of the shortcut preference.
         private static void SetShortcutPref(bool forceUpdate = false)
         {
-            if (forceUpdate == true)
+            if (forceUpdate)
             {
                 EditorPrefs.SetString(PREFS_EPEDITOR_SHORTCUT, _shortcut);
                 var formattedShortcut = _shortcut.Replace("|", "");
@@ -158,35 +177,10 @@ namespace com.immortalhydra.gdtb.epeditor
         /// If preferences have keys already saved in EditorPrefs, get them. Otherwise, set them.
         public static void GetAllPrefValues()
         {
-            // Confirmation dialogs.
-            if (EditorPrefs.HasKey(PREFS_EPEDITOR_CONFIRMATION_DIALOGS))
-            {
-                _confirmationDialogs = GetPrefValue(PREFS_EPEDITOR_CONFIRMATION_DIALOGS, _confirmationDialogs_default);
-            }
-            else
-            {
-                Reset_ConfirmationDialogs();
-            }
-
-            // Colors.
-            if (EditorPrefs.HasKey(PREFS_EPEDITOR_COLOR_PRIMARY))
-            {
-                GetColorPrefs();
-            }
-            else
-            {
-                Reset_Colors();
-            }
-
-            // Shortcut.
-            if (EditorPrefs.HasKey(PREFS_EPEDITOR_SHORTCUT))
-            {
-                _shortcut = GetPrefValue(PREFS_EPEDITOR_SHORTCUT, _shortcut_default);
-            }
-            else
-            {
-                Reset_Shortcut();
-            }
+            _confirmationDialogs = GetPrefValue(PREFS_EPEDITOR_CONFIRMATION_DIALOGS, _confirmationDialogs_default);
+            ShowWelcome = GetPrefValue(PREFS_EPEDITOR_WELCOME, ShowWelcomeDefault);
+            GetColorPrefs();
+            _shortcut = GetPrefValue(PREFS_EPEDITOR_SHORTCUT, _shortcut_default);
             _newShortcut = _shortcut;
             ParseShortcutValues();
         }
@@ -197,7 +191,7 @@ namespace com.immortalhydra.gdtb.epeditor
             _primary = GetPrefValue(PREFS_EPEDITOR_COLOR_PRIMARY, _primary_default); // PRIMARY color.
             _secondary = GetPrefValue(PREFS_EPEDITOR_COLOR_SECONDARY, _secondary_default); // SECONDARY color.
             _tertiary = GetPrefValue(PREFS_EPEDITOR_COLOR_TERTIARY, _tertiary_default); // TERTIARY color.
-            _quaternary = GetPrefValue(PREFS_CODETODOS_COLOR_QUATERNARY, _quaternary_default); // QUATERNARY color.
+            _quaternary = GetPrefValue(PREFS_EPEDITOR_COLOR_QUATERNARY, _quaternary_default); // QUATERNARY color.
         }
 
 
@@ -272,15 +266,15 @@ namespace com.immortalhydra.gdtb.epeditor
             GUILayout.EndHorizontal();
 
             // Generate shortcut string.
-            if (_modifierKeys[0] == true)
+            if (_modifierKeys[0])
             {
                 shortcut += "%|";
             }
-            if (_modifierKeys[1] == true)
+            if (_modifierKeys[1])
             {
                 shortcut += "&|";
             }
-            if (_modifierKeys[2] == true)
+            if (_modifierKeys[2])
             {
                 shortcut += "#|";
             }
@@ -336,7 +330,7 @@ namespace com.immortalhydra.gdtb.epeditor
             {
                 // Get confirmation through dialog (or not if the user doesn't want to).
                 var canExecute = false;
-                if (ShowConfirmationDialogs == true)
+                if (ShowConfirmationDialogs)
                 {
                     if (EditorUtility.DisplayDialog("Change to dark theme?",
                         "Are you sure you want to change the color scheme to the dark (default) theme?",
@@ -351,7 +345,7 @@ namespace com.immortalhydra.gdtb.epeditor
                 }
 
                 // Do it if we have permission.
-                if (canExecute == true)
+                if (canExecute)
                 {
                     _primary = new Color(_primary_dark.r / 255.0f, _primary_dark.g / 255.0f, _primary_dark.b / 255.0f,
                         1.0f);
@@ -373,7 +367,7 @@ namespace com.immortalhydra.gdtb.epeditor
             {
                 // Get confirmation through dialog (or not if the user doesn't want to).
                 var canExecute = false;
-                if (ShowConfirmationDialogs == true)
+                if (ShowConfirmationDialogs)
                 {
                     if (EditorUtility.DisplayDialog("Change to light theme?",
                         "Are you sure you want to change the color scheme to the light theme?", "Change color scheme",
@@ -388,7 +382,7 @@ namespace com.immortalhydra.gdtb.epeditor
                 }
 
                 // Actually do the thing.
-                if (canExecute == true)
+                if (canExecute)
                 {
                     _primary = new Color(_primary_light.r / 255.0f, _primary_light.g / 255.0f, _primary_light.b / 255.0f,
                         1.0f);
@@ -420,7 +414,7 @@ namespace com.immortalhydra.gdtb.epeditor
             {
                 // Get confirmation through dialog (or not if the user doesn't want to).
                 var canExecute = false;
-                if (ShowConfirmationDialogs == true)
+                if (ShowConfirmationDialogs)
                 {
                     if (EditorUtility.DisplayDialog("Reset preferences?",
                         "Are you sure you want to reset preferences to their default values?", "Reset", "Cancel"))
@@ -434,9 +428,9 @@ namespace com.immortalhydra.gdtb.epeditor
                 }
 
                 // If we have permission, do it.
-                if (canExecute == true)
+                if (canExecute)
                 {
-                    Reset_All();
+                    ResetPrefsToDefault();
                 }
             }
             EditorGUILayout.Space();
@@ -446,22 +440,24 @@ namespace com.immortalhydra.gdtb.epeditor
         #region Resets
 
         /// Reset all preferences to default.
-        private static void Reset_All()
+        private static void ResetPrefsToDefault()
         {
-            Reset_ConfirmationDialogs();
-            Reset_Colors();
-            Reset_Shortcut();
+            ResetConfirmationDialogs();
+            ResetColors();
+            ResetShortcut();
             ReloadSkins();
             SetPrefValues();
+            ShowWelcome = ShowWelcomeDefault;
+
         }
 
 
-        private static void Reset_ConfirmationDialogs()
+        private static void ResetConfirmationDialogs()
         {
             _confirmationDialogs = _confirmationDialogs_default;
         }
 
-        private static void Reset_Colors()
+        private static void ResetColors()
         {
             _primary = new Color(_primary_default.r / 255, _primary_default.g / 255, _primary_default.b / 255,
                 _primary_default.a);
@@ -473,7 +469,7 @@ namespace com.immortalhydra.gdtb.epeditor
                 _quaternary_default.b / 255, _quaternary_default.a);
         }
 
-        private static void Reset_Shortcut()
+        private static void ResetShortcut()
         {
             _shortcut = _shortcut_default;
             SetShortcutPref(true);
@@ -525,6 +521,11 @@ namespace com.immortalhydra.gdtb.epeditor
             {
                 var window = EditorWindow.GetWindow(typeof(WindowGet)) as WindowMain;
                 window.LoadStyles();
+            }
+            if (WindowWelcome.IsOpen)
+            {
+                var window = EditorWindow.GetWindow(typeof(WindowWelcome)) as WindowWelcome;
+                window.LoadStyle();
             }
         }
     }

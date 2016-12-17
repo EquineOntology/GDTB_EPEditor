@@ -92,13 +92,19 @@ namespace com.immortalhydra.gdtb.epeditor
             header3Rect.height = _headerLabel.CalcHeight(header3Content, _usableWidth);
             EditorGUI.LabelField(header3Rect, header3Content, _headerLabel);
 
-            var label5Content = new GUIContent("There are many settings you can change, a new section has been added to the Preferences window.");
-            var label5Rect = new Rect(Offset * 2, Offset * 2 + 240, _usableWidth - Offset * 2, 0);;
+            var label5Content =
+                new GUIContent(
+                    "There are many settings you can change, a new section has been added to the Preferences window.");
+            var label5Rect = new Rect(Offset * 2, Offset * 2 + 240, _usableWidth - Offset * 2, 0);
+            ;
             label5Rect.height = _wordWrappedColoredLabel.CalcHeight(label5Content, _usableWidth);
             EditorGUI.LabelField(label5Rect, label5Content, _wordWrappedColoredLabel);
 
-            var reviewContent = new GUIContent("If you like the extension, please leave a review!\nYou can do so by clicking this sentence, a browser window will be opened.");
-            var reviewRect = new Rect(Offset * 2, Offset * 2 + 280, _usableWidth - Offset * 2, 0);;
+            var reviewContent =
+                new GUIContent(
+                    "If you like the extension, please leave a review!\nYou can do so by clicking this sentence, a browser window will be opened.");
+            var reviewRect = new Rect(Offset * 2, Offset * 2 + 280, _usableWidth - Offset * 2, 0);
+            ;
             reviewRect.height = _headerLabel.CalcHeight(reviewContent, _usableWidth);
             EditorGUIUtility.AddCursorRect(reviewRect, MouseCursor.Link);
             EditorGUI.LabelField(reviewRect, reviewContent, _headerLabel);
@@ -172,7 +178,8 @@ namespace com.immortalhydra.gdtb.epeditor
         private void DrawToggle()
         {
             var rect = new Rect(Offset * 2, position.height - 20 - Offset, position.width, 20);
-            _welcomeValue = EditorGUI.ToggleLeft(rect, " Show this window every time EditorPrefs Editor is opened", _welcomeValue,
+            _welcomeValue = EditorGUI.ToggleLeft(rect, " Show this window every time EditorPrefs Editor is opened",
+                _welcomeValue,
                 _wordWrappedColoredLabel);
             if (_welcomeValue != Preferences.ShowWelcome)
             {

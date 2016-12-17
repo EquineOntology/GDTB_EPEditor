@@ -5,9 +5,6 @@ namespace com.immortalhydra.gdtb.epeditor
 {
     public static class Controls
     {
-
-        #region METHODS
-
         public static bool Button(Rect controlRect, GUIContent controlContent)
         {
             var shouldFire = false;
@@ -51,6 +48,8 @@ namespace com.immortalhydra.gdtb.epeditor
         }
 
 
+
+
         private static void DrawUnpressedButton(Rect aRect, GUIContent aContent)
         {
             var style = new GUIStyle();
@@ -73,9 +72,6 @@ namespace com.immortalhydra.gdtb.epeditor
             EditorGUI.LabelField(textRect, aContent.text, style);
         }
 
-
-
-
         private static void DrawPressedButton(Rect aRect, GUIContent aContent)
         {
             var style = new GUIStyle();
@@ -91,8 +87,5 @@ namespace com.immortalhydra.gdtb.epeditor
             textRect.y--;
             EditorGUI.LabelField(textRect, aContent.text, style);
         }
-
-        #endregion
-
     }
 }

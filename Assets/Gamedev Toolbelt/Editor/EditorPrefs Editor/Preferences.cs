@@ -22,6 +22,7 @@ namespace com.immortalhydra.gdtb.epeditor
         private const string PREFS_EPEDITOR_WELCOME = "GDTB_EPEditor_Welcome";
         private static bool _showWelcome = true;
         private const bool ShowWelcomeDefault = true;
+
         public static bool ShowWelcome
         {
             get { return _showWelcome; }
@@ -128,6 +129,23 @@ namespace com.immortalhydra.gdtb.epeditor
             }
         }
 
+        /// Set the value of ShowWelcome.
+        public static void SetWelcome(bool val)
+        {
+            EditorPrefs.SetBool(PREFS_EPEDITOR_WELCOME, val);
+        }
+
+        /// If preferences have keys already saved in EditorPrefs, get them. Otherwise, set them.
+        public static void GetAllPrefValues()
+        {
+            _confirmationDialogs = GetPrefValue(PREFS_EPEDITOR_CONFIRMATION_DIALOGS, _confirmationDialogs_default);
+            ShowWelcome = GetPrefValue(PREFS_EPEDITOR_WELCOME, ShowWelcomeDefault);
+            GetColorPrefs();
+            _shortcut = GetPrefValue(PREFS_EPEDITOR_SHORTCUT, _shortcut_default);
+            _newShortcut = _shortcut;
+            ParseShortcutValues();
+        }
+
 
         /// Set the value of all preferences.
         private static void SetPrefValues()
@@ -138,12 +156,6 @@ namespace com.immortalhydra.gdtb.epeditor
             SetWelcome(ShowWelcome);
         }
 
-        /// Set the value of ShowWelcome.
-        public static void SetWelcome(bool val)
-        {
-            EditorPrefs.SetBool(PREFS_EPEDITOR_WELCOME, val);
-        }
-
         /// Set the value of a Color preference.
         private static void SetColorPrefs()
         {
@@ -152,7 +164,6 @@ namespace com.immortalhydra.gdtb.epeditor
             EditorPrefs.SetString(PREFS_EPEDITOR_COLOR_TERTIARY, RGBA.ColorToString(_tertiary));
             EditorPrefs.SetString(PREFS_EPEDITOR_COLOR_QUATERNARY, RGBA.ColorToString(_quaternary));
         }
-
 
         /// Set the value of the shortcut preference.
         private static void SetShortcutPref(bool forceUpdate = false)
@@ -173,18 +184,6 @@ namespace com.immortalhydra.gdtb.epeditor
             }
         }
 
-
-        /// If preferences have keys already saved in EditorPrefs, get them. Otherwise, set them.
-        public static void GetAllPrefValues()
-        {
-            _confirmationDialogs = GetPrefValue(PREFS_EPEDITOR_CONFIRMATION_DIALOGS, _confirmationDialogs_default);
-            ShowWelcome = GetPrefValue(PREFS_EPEDITOR_WELCOME, ShowWelcomeDefault);
-            GetColorPrefs();
-            _shortcut = GetPrefValue(PREFS_EPEDITOR_SHORTCUT, _shortcut_default);
-            _newShortcut = _shortcut;
-            ParseShortcutValues();
-        }
-
         /// Load color preferences.
         private static void GetColorPrefs()
         {
@@ -193,7 +192,6 @@ namespace com.immortalhydra.gdtb.epeditor
             _tertiary = GetPrefValue(PREFS_EPEDITOR_COLOR_TERTIARY, _tertiary_default); // TERTIARY color.
             _quaternary = GetPrefValue(PREFS_EPEDITOR_COLOR_QUATERNARY, _quaternary_default); // QUATERNARY color.
         }
-
 
         /// Get the value of a bool preference.
         private static bool GetPrefValue(string aKey, bool aDefault)
@@ -246,7 +244,6 @@ namespace com.immortalhydra.gdtb.epeditor
             return val;
         }
 
-
         /// Draw the shortcut selector.
         private static string DrawShortcutSelector()
         {
@@ -283,7 +280,6 @@ namespace com.immortalhydra.gdtb.epeditor
             return shortcut;
         }
 
-
         /// Get usable values from the shortcut string pref.
         private static void ParseShortcutValues()
         {
@@ -314,7 +310,6 @@ namespace com.immortalhydra.gdtb.epeditor
             _modifierKeys[1] = foundAlt; // Alt.
             _modifierKeys[2] = foundShift; // Shift.
         }
-
 
         /// Draw Apply colors - Load dark theme - load light theme.
         private static void DrawThemeButtons()
@@ -404,7 +399,6 @@ namespace com.immortalhydra.gdtb.epeditor
             EditorGUILayout.EndHorizontal();
         }
 
-
         /// Draw reset button.
         private static void DrawResetButton()
         {
@@ -448,9 +442,7 @@ namespace com.immortalhydra.gdtb.epeditor
             ReloadSkins();
             SetPrefValues();
             ShowWelcome = ShowWelcomeDefault;
-
         }
-
 
         private static void ResetConfirmationDialogs()
         {
@@ -497,7 +489,6 @@ namespace com.immortalhydra.gdtb.epeditor
                 EditorWindow.GetWindow(typeof(WindowGet)).Repaint();
             }
         }
-
 
         /// Reload skins of open windows.
         private static void ReloadSkins()

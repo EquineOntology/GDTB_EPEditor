@@ -5,23 +5,18 @@ namespace com.immortalhydra.gdtb.epeditor
 {
     public class WindowAdd : EditorWindow
     {
-        public static WindowAdd Instance { get; private set; }
+        #region FIELDS AND PROPERTIES
 
-        public static bool IsOpen
-        {
-            get { return Instance != null; }
-        }
-
-        // ========================= Editor layouting =========================
+        // Constants.
         private const int ButtonWidth = 60;
         private const int ButtonHeight = 18;
 
+        // Fields.
         private Rect _prefKeyLabelRect, _prefKeyRect;
         private Rect _prefTypeLabelRect, _prefTypeRect;
         private Rect _prefValueLabelRect;
         private Rect _addRect;
 
-        // ======================= Class functionality ========================
         private string _prefKey = "";
         private int _indexOfPrefType = 0;
         private string[] _prefType = {"Bool", "Int", "Float", "String"};
@@ -33,24 +28,20 @@ namespace com.immortalhydra.gdtb.epeditor
         private float _floatValueOfPref = 0.0f;
         private string _stringValueOfPref = "";
 
-        //============================ Editor GUI =============================
         private GUISkin _customSkin;
         private GUIStyle _boldStyle, _selectedGridButtonStyle, _textButtonStyle;
 
-        public static void Init()
+        // Properties.
+        public static WindowAdd Instance { get; private set; }
+
+        public static bool IsOpen
         {
-            WindowAdd window = (WindowAdd) GetWindow(typeof(WindowAdd));
-            window.minSize = new Vector2(275, 209);
-
-#if UNITY_5_3_OR_NEWER || UNITY_5_1 || UNITY_5_2
-            window.titleContent = new GUIContent("Add EditorPref");
-#else
-                window.title = "Add EditorPref";
-            #endif
-
-            window.CloseOtherWindows();
-            window.ShowUtility();
+            get { return Instance != null; }
         }
+
+        #endregion
+
+        #region MONOBEHAVIOUR METHODS
 
         public void OnEnable()
         {
@@ -83,13 +74,47 @@ namespace com.immortalhydra.gdtb.epeditor
             Repaint();
         }
 
+        #endregion
+
+        #region METHODS
+
+        public static void Init()
+        {
+            WindowAdd window = (WindowAdd) GetWindow(typeof(WindowAdd));
+            window.minSize = new Vector2(275, 209);
+
+#if UNITY_5_3_OR_NEWER || UNITY_5_1 || UNITY_5_2
+            window.titleContent = new GUIContent("Add EditorPref");
+#else
+                window.title = "Add EditorPref";
+            #endif
+
+            window.CloseOtherWindows();
+            window.ShowUtility();
+        }
+
+        /// Load custom styles and apply colors from preferences.
+        public void LoadStyles()
+        {
+            _boldStyle = _customSkin.GetStyle("GDTB_EPEditor_key");
+            _boldStyle.normal.textColor = Preferences.Secondary;
+            _boldStyle.active.textColor = Preferences.Secondary;
+            _selectedGridButtonStyle = _customSkin.GetStyle("GDTB_EPEditor_selectionGrid");
+            _selectedGridButtonStyle.normal.textColor = Preferences.Primary;
+            _selectedGridButtonStyle.active.textColor = Preferences.Primary;
+            _textButtonStyle = _customSkin.GetStyle("GDTB_EPEditor_buttonText");
+            _textButtonStyle.active.textColor = Preferences.Tertiary;
+            _textButtonStyle.normal.textColor = Preferences.Tertiary;
+        }
+
+
+
 
         /// Draw the background texture.
         private void DrawWindowBackground()
         {
             EditorGUI.DrawRect(new Rect(0, 0, position.width, position.height), Preferences.Primary);
         }
-
 
         /// Draw key input field.
         private void DrawKey()
@@ -100,7 +125,6 @@ namespace com.immortalhydra.gdtb.epeditor
             _prefKeyRect = new Rect(10, 29, position.width - 20, 32);
             _prefKey = EditorGUI.TextField(_prefKeyRect, _prefKey);
         }
-
 
         /// Draw type popup.
         private void DrawType()
@@ -114,7 +138,6 @@ namespace com.immortalhydra.gdtb.epeditor
             DrawingUtils.DrawSelectionGrid(_prefTypeRect, _prefType, _indexOfPrefType, 60, 5, _textButtonStyle,
                 _selectedGridButtonStyle);
         }
-
 
         /// Draw value input field.
         private void DrawValue()
@@ -147,7 +170,6 @@ namespace com.immortalhydra.gdtb.epeditor
             }
         }
 
-
         /// Draw Add button based of preferences.
         private void DrawAdd()
         {
@@ -168,22 +190,6 @@ namespace com.immortalhydra.gdtb.epeditor
                 ButtonHeight);
             aContent = new GUIContent("Add", "Add this new EditorPref");
         }
-
-
-        /// Load custom styles and apply colors from preferences.
-        public void LoadStyles()
-        {
-            _boldStyle = _customSkin.GetStyle("GDTB_EPEditor_key");
-            _boldStyle.normal.textColor = Preferences.Secondary;
-            _boldStyle.active.textColor = Preferences.Secondary;
-            _selectedGridButtonStyle = _customSkin.GetStyle("GDTB_EPEditor_selectionGrid");
-            _selectedGridButtonStyle.normal.textColor = Preferences.Primary;
-            _selectedGridButtonStyle.active.textColor = Preferences.Primary;
-            _textButtonStyle = _customSkin.GetStyle("GDTB_EPEditor_buttonText");
-            _textButtonStyle.active.textColor = Preferences.Tertiary;
-            _textButtonStyle.normal.textColor = Preferences.Tertiary;
-        }
-
 
         /// Close other sub-windows when this one is opened.
         private void CloseOtherWindows()
@@ -305,5 +311,8 @@ namespace com.immortalhydra.gdtb.epeditor
                 }
             }
         }
+
+        #endregion
+
     }
 }

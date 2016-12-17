@@ -6,27 +6,18 @@ namespace com.immortalhydra.gdtb.epeditor
 {
     public class WindowMain : EditorWindow
     {
-        public static WindowMain Instance { get; private set; }
+        #region FIELDS AND PROPERTIES
 
-        public static bool IsOpen
-        {
-            get { return Instance != null; }
-        }
-
-        // ======================= Class functionality ========================
-        public static List<Pref> Prefs = new List<Pref>();
-
-        //============================ Editor GUI =============================
-        private GUISkin _customSkin;
-        private GUIStyle _prefTypeStyle, _prefKeyStyle, _prefValueStyle, _buttonStyle;
-
-        // ========================= Editor layouting =========================
+        // Constants.
         private const int IconSize = Constants.ICON_SIZE;
         private const int ButtonWidth = 60;
         private const int ButtonHeight = 18;
+        private const int Offset = Constants.OFFSET;
 
-        private int _offset = 5;
-
+        // Fields.
+        public static List<Pref> Prefs = new List<Pref>();
+        private GUISkin _customSkin;
+        private GUIStyle _prefTypeStyle, _prefKeyStyle, _prefValueStyle, _buttonStyle;
         private int _prefTypeWidth, _prefsWidth, _buttonsWidth;
         private int _prefTypeLabelWidth;
         private float _totalPrefHeight = 0;
@@ -34,32 +25,25 @@ namespace com.immortalhydra.gdtb.epeditor
         private Rect _scrollViewRect, _scrollAreaRect, _prefTypeRect, _removeButtonRect, _prefRect, _buttonsRect;
         private bool _showingScrollbar = false;
 
+        // Properties.
+        public static WindowMain Instance { get; private set; }
 
-        [MenuItem("Window/Gamedev Toolbelt/EditorPrefs Editor/Open EditorPrefs Editor %e", false, 1)]
-        public static void Init()
+        public static bool IsOpen
         {
-            // Get existing open window or if none, make a new one.
-            var window = (WindowMain) GetWindow(typeof(WindowMain));
-            window.SetMinSize(); // Window with icons and window with normal buttons need different minSizes.
-            window.LoadStyles();
-            window.UpdateLayoutingSizes(); // Calculate a rough size for each major element group (type, pref, buttons).
-            PrefOps.RefreshPrefs(); // Load stored prefs (if any).
-
-            window.Show();
-
-            if(Preferences.ShowWelcome)
-            {
-                WindowWelcome.Init();
-            }
+            get { return Instance != null; }
         }
+
+        #endregion
+
+        #region MONOBEHAVIOUR METHODS
 
         public void OnEnable()
         {
 #if UNITY_5_3_OR_NEWER || UNITY_5_1 || UNITY_5_2
             titleContent = new GUIContent("EditorPrefs Editor");
 #else
-                title = "EditorPrefs Editor";
-            #endif
+            title = "EditorPrefs Editor";
+        #endif
 
             Instance = this;
             /* Load current preferences (like colours, etc.).
@@ -109,13 +93,78 @@ namespace com.immortalhydra.gdtb.epeditor
             DrawBottomButtons();
         }
 
+        #endregion
+
+        #region METHODS
+
+        [MenuItem("Window/Gamedev Toolbelt/EditorPrefs Editor/Open EditorPrefs Editor %e", false, 1)]
+        public static void Init()
+        {
+            // Get existing open window or if none, make a new one.
+            var window = (WindowMain) GetWindow(typeof(WindowMain));
+            window.SetMinSize(); // Window with icons and window with normal buttons need different minSizes.
+            window.LoadStyles();
+            window.UpdateLayoutingSizes(); // Calculate a rough size for each major element group (type, pref, buttons).
+            PrefOps.RefreshPrefs(); // Load stored prefs (if any).
+
+            window.Show();
+
+            if (Preferences.ShowWelcome)
+            {
+                WindowWelcome.Init();
+            }
+        }
+
+        /// Assign the proper values to styles based on colors in Preferences.
+        public void LoadStyles()
+        {
+            _prefTypeStyle = _customSkin.GetStyle("GDTB_EPEditor_type");
+            _prefTypeStyle.normal.textColor = Preferences.Tertiary;
+            _prefTypeStyle.active.textColor = Preferences.Tertiary;
+            _prefKeyStyle = _customSkin.GetStyle("GDTB_EPEditor_key");
+            _prefKeyStyle.normal.textColor = Preferences.Secondary;
+            _prefKeyStyle.active.textColor = Preferences.Secondary;
+            _prefValueStyle = _customSkin.GetStyle("GDTB_EPEditor_value");
+            _prefValueStyle.normal.textColor = Preferences.Tertiary;
+            _prefValueStyle.active.textColor = Preferences.Tertiary;
+            _buttonStyle = _customSkin.GetStyle("GDTB_EPEditor_buttonText");
+            _buttonStyle.onActive.textColor = Preferences.Primary;
+            _buttonStyle.onNormal.textColor = Preferences.Tertiary;
+
+            _customSkin.settings.selectionColor = Preferences.Secondary;
+
+            // Change scrollbar color.
+            var scrollbar = Resources.Load(Constants.TEX_SCROLLBAR, typeof(Texture2D)) as Texture2D;
+
+#if UNITY_5 || UNITY_5_3_OR_NEWER
+            scrollbar.SetPixel(0, 0, Preferences.Secondary);
+#else
+            var pixels = scrollbar.GetPixels();
+            // We do it like this because minimum texture size in older versions of Unity is 2x2.
+            for(var i = 0; i < pixels.GetLength(0); i++)
+            {
+                scrollbar.SetPixel(i, 0, Preferences.Secondary);
+                scrollbar.SetPixel(i, 1, Preferences.Secondary);
+            }
+        #endif
+
+            scrollbar.Apply();
+            _customSkin.verticalScrollbarThumb.normal.background = scrollbar;
+        }
+
+        /// Set the minSize of the window based on preferences.
+        public void SetMinSize()
+        {
+            var window = GetWindow(typeof(WindowMain)) as WindowMain;
+            window.minSize = new Vector2(322f, 150f);
+        }
+
 
         /// Draw the background texture.
         private void DrawWindowBackground()
         {
             EditorGUI.DrawRect(new Rect(0, 0, position.width, position.height), Preferences.Primary);
         }
-
 
         /// Draw a message in center screen warning the user they have no prefs.
         private void DrawNoPrefsMessage()
@@ -126,13 +175,13 @@ namespace com.immortalhydra.gdtb.epeditor
 
             Vector2 labelSize;
 #if UNITY_UNITY_5_3_OR_NEWER
-                labelSize = EditorStyles.centeredGreyMiniLabel.CalcSize(labelContent);
-            #else
+            labelSize = EditorStyles.centeredGreyMiniLabel.CalcSize(labelContent);
+        #else
             labelSize = EditorStyles.wordWrappedMiniLabel.CalcSize(labelContent);
 #endif
 
             var labelRect = new Rect(position.width / 2 - labelSize.x / 2,
-                position.height / 2 - labelSize.y / 2 - _offset * 2.5f, labelSize.x, labelSize.y);
+                position.height / 2 - labelSize.y / 2 - Offset * 2.5f, labelSize.x, labelSize.y);
 
 #if UNITY_5_3_OR_NEWER
             EditorGUI.LabelField(labelRect, labelContent, EditorStyles.centeredGreyMiniLabel);
@@ -141,15 +190,14 @@ namespace com.immortalhydra.gdtb.epeditor
             #endif
         }
 
-
         /// Draw the list of EditorPrefs (with buttons etc.).
         private void DrawPrefs()
         {
-            _scrollViewRect.height = _totalPrefHeight - _offset;
+            _scrollViewRect.height = _totalPrefHeight - Offset;
 
             // Diminish the width of scrollview and scroll area so that the scollbar is offset from the right edge of the window.
-            _scrollAreaRect.width += IconSize - _offset;
-            _scrollViewRect.width -= _offset;
+            _scrollAreaRect.width += IconSize - Offset;
+            _scrollViewRect.width -= Offset;
 
             // Change size of the scroll area so that it fills the window when there's no scrollbar.
             if (_showingScrollbar == false)
@@ -159,7 +207,7 @@ namespace com.immortalhydra.gdtb.epeditor
 
             _scrollPosition = GUI.BeginScrollView(_scrollAreaRect, _scrollPosition, _scrollViewRect);
 
-            _totalPrefHeight = _offset; // This includes all prefs, not just a single one.
+            _totalPrefHeight = Offset; // This includes all prefs, not just a single one.
 
             for (var i = 0; i < Prefs.Count; i++)
             {
@@ -169,31 +217,31 @@ namespace com.immortalhydra.gdtb.epeditor
                 var prefValueHeight = _prefValueStyle.CalcHeight(val, _prefsWidth);
 
                 float prefBackgroundHeight = 0;
-                prefBackgroundHeight = prefKeyHeight + prefValueHeight + _offset * 7;
+                prefBackgroundHeight = prefKeyHeight + prefValueHeight + Offset * 7;
                 prefBackgroundHeight = prefBackgroundHeight < IconSize * 3 - 3
                     ? IconSize * 3 - 3
                     : prefBackgroundHeight;
 
-                _prefRect = new Rect(_offset, _totalPrefHeight, _prefsWidth, prefBackgroundHeight);
+                _prefRect = new Rect(Offset, _totalPrefHeight, _prefsWidth, prefBackgroundHeight);
                 _prefTypeRect = new Rect(-2, _prefRect.y, _prefTypeWidth, prefBackgroundHeight);
                 _removeButtonRect = new Rect(_prefTypeRect.x, 0, _prefTypeRect.width, _prefTypeRect.height);
-                _removeButtonRect.y = _prefRect.y + _prefRect.height - _offset * 7;
+                _removeButtonRect.y = _prefRect.y + _prefRect.height - Offset * 7;
                 _buttonsRect = new Rect(_prefTypeWidth + _prefsWidth + IconSize, _prefRect.y, _buttonsWidth,
                     prefBackgroundHeight);
 
                 var prefBackgroundRect = _prefRect;
-                prefBackgroundRect.height = prefBackgroundHeight - _offset;
+                prefBackgroundRect.height = prefBackgroundHeight - Offset;
 
                 if (_showingScrollbar == false) // If we're not showing the scrollbar, prefs need to be larger too.
                 {
-                    prefBackgroundRect.width = position.width - _offset * 2;
+                    prefBackgroundRect.width = position.width - Offset * 2;
                 }
                 else
                 {
                     prefBackgroundRect.width = _prefTypeWidth + _prefsWidth + _buttonsWidth;
                 }
 
-                _totalPrefHeight += prefBackgroundRect.height + _offset;
+                _totalPrefHeight += prefBackgroundRect.height + Offset;
 
                 // If the user removes a pref from the list in the middle of a draw call, the index in the for loop stays the same but Prefs.Count diminishes.
                 // I couldn't find a way around it, so what we do is swallow the exception and wait for the next draw call.
@@ -222,7 +270,6 @@ namespace com.immortalhydra.gdtb.epeditor
             GUI.EndScrollView();
         }
 
-
         /// Draw the rectangle that separates the prefs visually.
         private void DrawPrefBackground(Rect aRect)
         {
@@ -235,24 +282,21 @@ namespace com.immortalhydra.gdtb.epeditor
                 Preferences.Quaternary);
         }
 
-
         /// Draw the pref's type (string, int, etc).
         private void DrawType(Rect aRect, Pref aPref)
         {
             var typeRect = aRect;
-            typeRect.width -= _offset;
-            typeRect.height -= (IconSize / 2 + _offset);
+            typeRect.width -= Offset;
+            typeRect.height -= (IconSize / 2 + Offset);
 
-            var newX = (int) typeRect.x + IconSize - _offset + 1;
-            var newY = (int) typeRect.y + _offset;
+            var newX = (int) typeRect.x + IconSize - Offset + 1;
+            var newY = (int) typeRect.y + Offset;
             typeRect.position = new Vector2(newX, newY);
 
             var type = aPref.Type.ToString().ToLower();
             type = type.Substring(0, 1).ToUpper() + type.Substring(1);
             EditorGUI.LabelField(typeRect, type, _prefTypeStyle);
         }
-
-        #region remove button
 
         /// Draw the hide/eye button.
         private void DrawRemove(Rect aRect, Pref aPref)
@@ -273,15 +317,13 @@ namespace com.immortalhydra.gdtb.epeditor
         private void SetupButton_Remove(Rect aRect, out Rect aRemoveRect, out GUIContent aRemoveContent)
         {
             aRemoveRect = aRect;
-            aRemoveRect.x += _offset * 2 + 1;
-            aRemoveRect.y += _offset + 3;
+            aRemoveRect.x += Offset * 2 + 1;
+            aRemoveRect.y += Offset + 3;
             aRemoveRect.width = ButtonWidth / 2 + 3;
             aRemoveRect.height = ButtonHeight;
             aRemoveContent = new GUIContent("Hide",
                 "Remove this EditorPref from\nthis list (without deleting it\nfrom EditorPrefs)");
         }
-
-        #endregion
 
         /// Draw the key and value of the EditorPref.
         private void DrawKeyAndValue(Rect aRect, Pref aPref, float aHeight)
@@ -289,19 +331,17 @@ namespace com.immortalhydra.gdtb.epeditor
             // Key.
             var keyRect = aRect;
             keyRect.x = _prefTypeWidth + IconSize / 2;
-            keyRect.y += _offset;
+            keyRect.y += Offset;
             keyRect.height = aHeight;
             EditorGUI.LabelField(keyRect, aPref.Key, _prefKeyStyle);
 
             // Value.
             var valueRect = aRect;
             valueRect.x = _prefTypeWidth + IconSize / 2;
-            valueRect.y = aRect.y + aHeight + _offset * 1.5f;
+            valueRect.y = aRect.y + aHeight + Offset * 1.5f;
 
             EditorGUI.LabelField(valueRect, aPref.Value, _prefValueStyle);
         }
-
-        #region edit and delete
 
         /// Select which format to use based on the user preference.
         private void DrawEditAndDelete(Rect aRect, Pref aPref)
@@ -311,11 +351,11 @@ namespace com.immortalhydra.gdtb.epeditor
 
             if (_showingScrollbar)
             {
-                aRect.x -= _offset;
+                aRect.x -= Offset;
             }
             else
             {
-                aRect.x = position.width - _offset * 2;
+                aRect.x = position.width - Offset * 2;
                 aRect.x -= ButtonWidth;
             }
 
@@ -357,7 +397,7 @@ namespace com.immortalhydra.gdtb.epeditor
         private void SetupButton_Edit(Rect aRect, out Rect anEditRect, out GUIContent anEditContent)
         {
             anEditRect = aRect;
-            anEditRect.y += _offset + 2;
+            anEditRect.y += Offset + 2;
             anEditRect.width = ButtonWidth;
             anEditRect.height = ButtonHeight;
 
@@ -367,23 +407,19 @@ namespace com.immortalhydra.gdtb.epeditor
         private void SetupButton_Delete(Rect aRect, out Rect aDeleteRect, out GUIContent aDeleteContent)
         {
             aDeleteRect = aRect;
-            aDeleteRect.y += ButtonHeight + _offset + 8;
+            aDeleteRect.y += ButtonHeight + Offset + 8;
             aDeleteRect.width = ButtonWidth;
             aDeleteRect.height = ButtonHeight;
 
             aDeleteContent = new GUIContent("Delete", "Delete this EditorPref");
         }
 
-        #endregion
-
         /// Draw a line separating scrollview and lower buttons.
         private void DrawSeparator()
         {
-            var separator = new Rect(0, position.height - (_offset * 7), position.width, 1);
+            var separator = new Rect(0, position.height - (Offset * 7), position.width, 1);
             EditorGUI.DrawRect(separator, Preferences.Secondary);
         }
-
-        #region bottom buttons
 
         /// Draw Add, Get, Refresh, Settings and Nuke, based on preferences.
         private void DrawBottomButtons()
@@ -403,20 +439,17 @@ namespace com.immortalhydra.gdtb.epeditor
                 WindowAdd.Init();
             }
 
-
             // Get already existing pref.
             if (Controls.Button(getRect, getContent))
             {
                 WindowGet.Init();
             }
 
-
             // Refresh list of prefs.
             if (Controls.Button(refreshRect, refreshContent))
             {
                 PrefOps.RefreshPrefs();
             }
-
 
             // Open settings.
             if (Controls.Button(settingsRect, settingsContent))
@@ -429,7 +462,6 @@ namespace com.immortalhydra.gdtb.epeditor
                     System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
                 method.Invoke(null, null);
             }
-
 
             // Nuke prefs.
             if (Controls.Button(nukeRect, nukeContent))
@@ -455,7 +487,6 @@ namespace com.immortalhydra.gdtb.epeditor
                 }
             }
         }
-
 
         private void SetupButton_Add(out Rect aRect, out GUIContent aContent)
         {
@@ -492,70 +523,21 @@ namespace com.immortalhydra.gdtb.epeditor
             aContent = new GUIContent("Nuke all", "Delete ALL prefs from EditorPrefs");
         }
 
-        #endregion
-
         /// Calculate the correct size of GUI elements based on preferences.
         private void UpdateLayoutingSizes()
         {
             _prefTypeLabelWidth = (int) _prefTypeStyle.CalcSize(new GUIContent("String")).x;
-            var width = position.width - _offset * 2;
-            _scrollAreaRect = new Rect(_offset, _offset, width - _offset * 2, position.height - IconSize - _offset * 4);
+            var width = position.width - Offset * 2;
+            _scrollAreaRect = new Rect(Offset, Offset, width - Offset * 2, position.height - IconSize - Offset * 4);
             _scrollViewRect = _scrollAreaRect;
-            _prefTypeWidth = _prefTypeLabelWidth + (_offset * 2);
+            _prefTypeWidth = _prefTypeLabelWidth + (Offset * 2);
 
             if (_showingScrollbar)
-                _buttonsWidth = ButtonWidth + _offset * 3;
+                _buttonsWidth = ButtonWidth + Offset * 3;
             else
-                _buttonsWidth = ButtonWidth + _offset * 1;
-            _prefsWidth = (int) width - _prefTypeWidth - _buttonsWidth - _offset * 3;
+                _buttonsWidth = ButtonWidth + Offset * 1;
+            _prefsWidth = (int) width - _prefTypeWidth - _buttonsWidth - Offset * 3;
         }
-
-
-        /// Assign the proper values to styles based on colors in Preferences.
-        public void LoadStyles()
-        {
-            _prefTypeStyle = _customSkin.GetStyle("GDTB_EPEditor_type");
-            _prefTypeStyle.normal.textColor = Preferences.Tertiary;
-            _prefTypeStyle.active.textColor = Preferences.Tertiary;
-            _prefKeyStyle = _customSkin.GetStyle("GDTB_EPEditor_key");
-            _prefKeyStyle.normal.textColor = Preferences.Secondary;
-            _prefKeyStyle.active.textColor = Preferences.Secondary;
-            _prefValueStyle = _customSkin.GetStyle("GDTB_EPEditor_value");
-            _prefValueStyle.normal.textColor = Preferences.Tertiary;
-            _prefValueStyle.active.textColor = Preferences.Tertiary;
-            _buttonStyle = _customSkin.GetStyle("GDTB_EPEditor_buttonText");
-            _buttonStyle.onActive.textColor = Preferences.Primary;
-            _buttonStyle.onNormal.textColor = Preferences.Tertiary;
-
-            _customSkin.settings.selectionColor = Preferences.Secondary;
-
-            // Change scrollbar color.
-            var scrollbar = Resources.Load(Constants.TEX_SCROLLBAR, typeof(Texture2D)) as Texture2D;
-
-#if UNITY_5 || UNITY_5_3_OR_NEWER
-            scrollbar.SetPixel(0, 0, Preferences.Secondary);
-#else
-				var pixels = scrollbar.GetPixels();
-				// We do it like this because minimum texture size in older versions of Unity is 2x2.
-				for(var i = 0; i < pixels.GetLength(0); i++)
-				{
-					scrollbar.SetPixel(i, 0, Preferences.Secondary);
-					scrollbar.SetPixel(i, 1, Preferences.Secondary);
-				}
-            #endif
-
-            scrollbar.Apply();
-            _customSkin.verticalScrollbarThumb.normal.background = scrollbar;
-        }
-
-
-        /// Set the minSize of the window based on preferences.
-        public void SetMinSize()
-        {
-            var window = GetWindow(typeof(WindowMain)) as WindowMain;
-            window.minSize = new Vector2(322f, 150f);
-        }
-
 
         /// Close open sub-windows (add, get, edit) when opening prefs.
         private void CloseOtherWindows()
@@ -578,5 +560,7 @@ namespace com.immortalhydra.gdtb.epeditor
                 window.LoadStyle();
             }
         }
+
+        #endregion
     }
 }

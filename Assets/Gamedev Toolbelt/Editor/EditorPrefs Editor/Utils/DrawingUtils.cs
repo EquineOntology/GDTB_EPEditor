@@ -42,7 +42,6 @@ namespace com.immortalhydra.gdtb.epeditor
             GUI.Label(new Rect(bgRect.x, bgRect.y - 1, bgRect.width, bgRect.height), aText, aStyle);
         }
 
-
         /// Draw custom selectionGrid.
         public static void DrawSelectionGrid(Rect aRect, string[] anElementArray, int aSelectedIndex,
             float anHorizontalSize, float aSpace, GUIStyle aNormalStyle, GUIStyle aPressedStyle)

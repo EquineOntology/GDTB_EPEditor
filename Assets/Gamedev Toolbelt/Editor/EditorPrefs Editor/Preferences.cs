@@ -57,9 +57,9 @@ namespace com.immortalhydra.gdtb.epeditor
         // Tertiary color.
         private const string PREFS_EPEDITOR_COLOR_TERTIARY = "GDTB_EPEditor_Tertiary";
         private static Color _tertiary = new Color(255, 255, 255, 1);
-        private static Color _tertiary_dark = new Color(164, 230, 200, 1);
+        private static Color _tertiary_dark = new Color(255, 255, 255, 1);
         private static Color _tertiary_light = new Color(56, 56, 56, 1);
-        private static Color _tertiary_default = new Color(164, 230, 200, 1);
+        private static Color _tertiary_default = new Color(255, 255, 255, 1);
 
         public static Color Tertiary
         {

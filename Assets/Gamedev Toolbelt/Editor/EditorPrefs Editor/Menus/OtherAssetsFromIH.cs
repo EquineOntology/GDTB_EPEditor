@@ -13,7 +13,7 @@ namespace com.immortalhydra.gdtb.epeditor
         {
             Application.OpenURL("https://www.assetstore.unity3d.com/en/#!/search/page=1/sortby=popularity/query=publisher:15617");
         }
-        
+
         #endregion
     }
 }

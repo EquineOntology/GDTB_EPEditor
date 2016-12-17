@@ -235,7 +235,7 @@ namespace com.immortalhydra.gdtb.epeditor
                 {
                     if(line.Contains("[MenuItem"))
                     {
-                        writer.WriteLine("        [MenuItem(" + '"' + "Window/Gamedev Toolbelt/EditorPrefs Editor " + aShortcut + '"' + ")]");
+                        writer.WriteLine("        [MenuItem(" + '"' + "Window/Gamedev Toolbelt/EditorPrefs Editor/Open EditorPrefs Editor " + aShortcut + '"' + ", false, 1)]");
                     }
                     else
                     {

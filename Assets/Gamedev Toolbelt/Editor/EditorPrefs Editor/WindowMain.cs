@@ -35,7 +35,7 @@ namespace com.immortalhydra.gdtb.epeditor
         private bool _showingScrollbar = false;
 
 
-        [MenuItem("Window/Gamedev Toolbelt/EditorPrefs Editor %e")]
+        [MenuItem("Window/Gamedev Toolbelt/EditorPrefs Editor/Open EditorPrefs Editor %e", false, 1)]
         public static void Init()
         {
             // Get existing open window or if none, make a new one.
